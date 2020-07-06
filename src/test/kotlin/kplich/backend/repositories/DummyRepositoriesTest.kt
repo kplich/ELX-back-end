@@ -12,7 +12,6 @@ import org.springframework.data.repository.findByIdOrNull
 @DataJpaTest
 class DummyRepositoriesTest @Autowired constructor(
         val entityManager: TestEntityManager,
-        val dummyRepository: DummyRepository,
         val dummyChildRepository: DummyChildRepository
 ) {
 
