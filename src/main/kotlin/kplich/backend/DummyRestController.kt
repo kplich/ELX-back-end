@@ -16,4 +16,6 @@ class DummyRestController(
 
     @GetMapping("/child/all")
     fun findAllChildren(): MutableIterable<DummyChild> = dummyChildRepository.findAll()
+
+    //this comment doesn't do anything
 }
