@@ -1,4 +1,4 @@
-package kplich.backend.dtos.requests
+package kplich.backend.payloads.requests
 
 import java.io.Serializable
 

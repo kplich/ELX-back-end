@@ -1,4 +1,4 @@
-package kplich.backend.configurations
+package kplich.backend.configurations.security
 
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.web.AuthenticationEntryPoint
