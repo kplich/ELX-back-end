@@ -21,10 +21,11 @@ class UserDetailsServiceImpl(
     }
 
     inner class UserDetailsImpl(
-            private val user: User,
-            private val authorities: MutableCollection<out GrantedAuthority> = mutableListOf(SimpleGrantedAuthority("user"))
+            private val user: User
     ) : UserDetails {
         override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
+            val authorities = mutableListOf<SimpleGrantedAuthority>()
+            user.roles.forEach { authorities.add(SimpleGrantedAuthority(it.name.name)) }
             return authorities
         }
 

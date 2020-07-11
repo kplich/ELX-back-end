@@ -3,6 +3,7 @@ package kplich.backend.controllers
 import kplich.backend.configurations.security.JwtUtil
 import kplich.backend.entities.Role
 import kplich.backend.entities.User
+import kplich.backend.payloads.requests.LoginRequest
 import kplich.backend.payloads.requests.SignupRequest
 import kplich.backend.payloads.responses.JwtResponse
 import kplich.backend.payloads.responses.SimpleMessageResponse
@@ -11,6 +12,7 @@ import kplich.backend.repositories.UserRepository
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
@@ -45,6 +47,19 @@ class AuthenticationController(
             val jwtResponse = authenticateUser(signupRequest.username, signupRequest.password)
             userRepository.saveAndFlush(user)
             ResponseEntity.ok(jwtResponse)
+        }
+        catch (e: Exception) {
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e)
+        }
+    }
+
+    @PostMapping("/log-in")
+    fun logInUser(@Valid @RequestBody loginRequest: LoginRequest): ResponseEntity<*> {
+        return try {
+            val jwtResponse = authenticateUser(loginRequest.username, loginRequest.password)
+            ResponseEntity.ok(jwtResponse)
+        } catch(e: BadCredentialsException) {
+            ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null)
         }
         catch (e: Exception) {
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.message)
