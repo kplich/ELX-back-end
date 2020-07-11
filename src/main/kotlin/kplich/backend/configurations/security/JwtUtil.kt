@@ -6,8 +6,10 @@ import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.UnsupportedJwtException
 import io.jsonwebtoken.io.Decoders
 import io.jsonwebtoken.security.Keys
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.core.Authentication
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Component
 import java.io.Serializable
 import java.time.Duration
@@ -19,14 +21,12 @@ class JwtUtil : Serializable {
     @Value("\${jwt.secret}")
     private val jwtSecret: String? = null
 
-    private val jwtExpirationMs = Duration.ofMinutes(10).toMillis()
-
     fun generateJwtToken(authentication: Authentication): String {
-        val userPrincipal = authentication.principal as UserDetailsImpl
+        val userPrincipal = authentication.principal as UserDetails
         return Jwts.builder()
-                .setSubject(userPrincipal.username) //				.claim("roles", String.valueOf(userPrincipal.getAuthorities()))
+                .setSubject(userPrincipal.username)
+                .claim("roles", userPrincipal.authorities.toString())
                 .setIssuedAt(Date())
-                .setExpiration(Date(Date().time + jwtExpirationMs))
                 .signWith(Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret)), SignatureAlgorithm.HS512)
                 .compact()
     }
@@ -40,16 +40,18 @@ class JwtUtil : Serializable {
             Jwts.parserBuilder().setSigningKey(jwtSecret).build().parseClaimsJws(authToken)
             return true
         } catch (e: SecurityException) {
-            System.err.println("Invalid JWT signature: ${e.message}")
+            logger.error("Invalid JWT signature: ${e.message}")
         } catch (e: MalformedJwtException) {
-            System.err.println("Invalid JWT token: ${e.message}")
+            logger.error("Invalid JWT token: ${e.message}")
         } catch (e: UnsupportedJwtException) {
-            System.err.println("JWT token is unsupported: ${e.message}")
+            logger.error("JWT token is unsupported: ${e.message}")
         } catch (e: IllegalArgumentException) {
-            System.err.println("JWT claims string is empty: ${e.message}")
+            logger.error("JWT claims string is empty: ${e.message}")
         }
         return false
     }
 
-
+    companion object {
+        private val logger = LoggerFactory.getLogger(JwtUtil::class.java)
+    }
 }

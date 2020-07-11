@@ -1,7 +1,6 @@
 package kplich.backend.controllers
 
 import kplich.backend.configurations.security.JwtUtil
-import kplich.backend.configurations.security.UserDetailsImpl
 import kplich.backend.entities.Role
 import kplich.backend.entities.User
 import kplich.backend.payloads.requests.SignupRequest
@@ -9,14 +8,16 @@ import kplich.backend.payloads.responses.JwtResponse
 import kplich.backend.payloads.responses.SimpleMessageResponse
 import kplich.backend.repositories.RoleRepository
 import kplich.backend.repositories.UserRepository
+import org.apache.coyote.Response
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.web.bind.annotation.*
+import java.util.*
 import javax.validation.Valid
-import kotlin.NoSuchElementException
 
 @RestController
 @CrossOrigin
@@ -38,21 +39,17 @@ class AuthenticationController(
         val user = User(signupRequest.username, passwordEncoder.encode(signupRequest.password))
 
         val roles = mutableSetOf<Role>()
-        signupRequest.roles.forEach {
-            val roleEnum = Role.RoleEnum.valueOf(it)
-            val role = roleRepository.findByName(roleEnum) ?: throw NoSuchElementException("Role $it not found!")
-            roles.add(role)
-        }
-
-        if(roles.size == 0) {
-            roles.add(roleRepository.findByName(Role.RoleEnum.ROLE_USER) ?: throw Exception("Role ROLE_USER not found!"))
-        }
-
+        roles.add(roleRepository.findByName(Role.RoleEnum.ROLE_USER) ?: throw Exception("Role ROLE_USER not found!"))
         user.roles = roles
 
-        userRepository.saveAndFlush(user)
-
-        return authenticateUser(signupRequest.username, signupRequest.password)
+        return try {
+            val authenticationResponse = authenticateUser(signupRequest.username, signupRequest.password)
+            userRepository.saveAndFlush(user)
+            authenticationResponse
+        }
+        catch (e: Exception) {
+            ResponseEntity.of(Optional.of(e))
+        }
     }
 
     private fun authenticateUser(username: String, password: String): ResponseEntity<*> {
@@ -61,9 +58,8 @@ class AuthenticationController(
         SecurityContextHolder.getContext().authentication = authentication
         val jwtToken = jwtUtil.generateJwtToken(authentication)
 
-        val userDetails = authentication.principal as UserDetailsImpl
+        val userDetails = authentication.principal as UserDetails
 
         return ResponseEntity.ok(JwtResponse(jwtToken, userDetails.username))
-
     }
 }

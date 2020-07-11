@@ -1,8 +1,8 @@
 package kplich.backend.configurations.security
 
+import kplich.backend.services.UserDetailsServiceImpl
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.http.HttpMethod
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
@@ -21,7 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 class AuthenticationConfiguration(
         private val userDetailsService: UserDetailsServiceImpl,
-        private val unauthorizedHandler: AuthEntryPointJwt,
+        private val unauthorizedHandler: UnauthorizedEntryPoint,
         private val authTokenFilter: AuthTokenFilter
 ) : WebSecurityConfigurerAdapter() {
 
@@ -44,10 +44,11 @@ class AuthenticationConfiguration(
     @Throws(Exception::class)
     override fun configure(http: HttpSecurity) {
         http
+                .csrf().disable()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests()
-                .antMatchers("/dummy/*").authenticated()
+                .antMatchers("/dummy/**").authenticated()
                 .anyRequest().permitAll()
         http.addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter::class.java)
     }

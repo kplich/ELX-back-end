@@ -5,6 +5,5 @@ import javax.validation.constraints.Size
 
 data class SignupRequest(
         @NotBlank @Size(min = 3, max = 20) val username: String,
-        @NotBlank @Size(min = 8, max = 40) val password: String,
-        val roles: Set<String> = hashSetOf("ROLE_USER")
+        @NotBlank @Size(min = 8, max = 40) val password: String
 )

@@ -1,20 +1,23 @@
 package kplich.backend.configurations.security
 
+import org.slf4j.LoggerFactory
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.stereotype.Component
 import java.io.IOException
-import java.io.Serializable
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-//https://dzone.com/articles/spring-boot-security-json-web-tokenjwt-hello-world
-
 @Component
-class JwtAuthenticationEntryPoint : AuthenticationEntryPoint, Serializable {
+class UnauthorizedEntryPoint : AuthenticationEntryPoint {
     @Throws(IOException::class)
     override fun commence(request: HttpServletRequest, response: HttpServletResponse,
                           authException: AuthenticationException) {
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized")
+        logger.error("Unauthorized error: {}", authException.message)
+        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Error: Unauthorized")
+    }
+
+    companion object {
+        private val logger = LoggerFactory.getLogger(UnauthorizedEntryPoint::class.java)
     }
 }
