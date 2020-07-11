@@ -45,7 +45,7 @@ class AuthenticationController(
         user.roles = roles
 
         return try {
-            val jwt = jwtUtil.generateJwtToken(signupRequest.username, listOf(Role.RoleEnum.ROLE_USER.name))
+            val jwt = jwtUtil.generateJwt(signupRequest.username, listOf(Role.RoleEnum.ROLE_USER.name))
             userRepository.saveAndFlush(user)
             ResponseEntity.ok(JwtResponse(jwt, signupRequest.username))
         }
@@ -71,7 +71,7 @@ class AuthenticationController(
         val authentication = authenticationManager.authenticate(UsernamePasswordAuthenticationToken(username, password))
 
         SecurityContextHolder.getContext().authentication = authentication
-        val jwtToken = jwtUtil.generateJwtToken(username, getRoles(SecurityContextHolder.getContext().authentication))
+        val jwtToken = jwtUtil.generateJwt(username, getRoles(SecurityContextHolder.getContext().authentication))
 
         val userDetails = authentication.principal as UserDetails
 

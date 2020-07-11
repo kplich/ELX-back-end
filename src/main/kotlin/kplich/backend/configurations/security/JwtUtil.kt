@@ -2,9 +2,7 @@ package kplich.backend.configurations.security
 
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.MalformedJwtException
-import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.UnsupportedJwtException
-import io.jsonwebtoken.io.Decoders
 import io.jsonwebtoken.security.Keys
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
@@ -16,22 +14,24 @@ import java.util.*
 class JwtUtil : Serializable {
 
     @Value("\${jwt.secret}")
-    private val jwtSecret: String? = null
+    private val jwtSecret: String = "secret"
 
-    fun generateJwtToken(username: String, roles: List<String>): String {
+    fun generateJwt(username: String, roles: List<String>): String {
+        val key = Keys.hmacShaKeyFor(jwtSecret.byteInputStream().readAllBytes())
+
         return Jwts.builder()
                 .setSubject(username)
                 .claim("roles", roles)
                 .setIssuedAt(Date())
-                .signWith(Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret)), SignatureAlgorithm.HS512)
+                .signWith(key)
                 .compact()
     }
 
-    fun getUserNameFromJwtToken(token: String?): String {
+    fun getUserNameFromJwtToken(token: String): String {
         return Jwts.parserBuilder().setSigningKey(jwtSecret).build().parseClaimsJws(token).body.subject
     }
 
-    fun validateJwtToken(authToken: String?): Boolean {
+    fun validateJwtToken(authToken: String): Boolean {
         try {
             Jwts.parserBuilder().setSigningKey(jwtSecret).build().parseClaimsJws(authToken)
             return true

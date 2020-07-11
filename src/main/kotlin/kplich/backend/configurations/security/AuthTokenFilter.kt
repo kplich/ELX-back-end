@@ -31,7 +31,7 @@ class AuthTokenFilter(
                         userDetails, null, userDetails.authorities)
                 authentication.details = WebAuthenticationDetailsSource().buildDetails(request)
                 SecurityContextHolder.getContext().authentication = authentication
-                response.addHeader("new_token", jwtUtil.generateJwtToken(username, getRoles(SecurityContextHolder.getContext().authentication)))
+                response.addHeader("new_token", jwtUtil.generateJwt(username, getRoles(SecurityContextHolder.getContext().authentication)))
             }
         } catch (e: Exception) {
             Companion.logger.error("Cannot set user authentication: {}", e.message)
