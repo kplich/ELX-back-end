@@ -14,6 +14,6 @@ class Dummy(
 @Table(name = "dummy_child")
 class DummyChild(
         var stringAttribute: String,
-        @ManyToOne var dummyParent: Dummy,
+        @ManyToOne() var dummyParent: Dummy,
         @Id @GeneratedValue var id: Long? = null
 )
