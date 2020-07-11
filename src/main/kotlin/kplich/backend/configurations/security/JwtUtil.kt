@@ -8,11 +8,8 @@ import io.jsonwebtoken.io.Decoders
 import io.jsonwebtoken.security.Keys
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.security.core.Authentication
-import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Component
 import java.io.Serializable
-import java.time.Duration
 import java.util.*
 
 @Component
@@ -21,11 +18,10 @@ class JwtUtil : Serializable {
     @Value("\${jwt.secret}")
     private val jwtSecret: String? = null
 
-    fun generateJwtToken(authentication: Authentication): String {
-        val userPrincipal = authentication.principal as UserDetails
+    fun generateJwtToken(username: String, roles: List<String>): String {
         return Jwts.builder()
-                .setSubject(userPrincipal.username)
-                .claim("roles", userPrincipal.authorities.toString())
+                .setSubject(username)
+                .claim("roles", roles)
                 .setIssuedAt(Date())
                 .signWith(Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret)), SignatureAlgorithm.HS512)
                 .compact()

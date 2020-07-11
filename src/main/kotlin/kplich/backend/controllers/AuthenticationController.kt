@@ -1,6 +1,7 @@
 package kplich.backend.controllers
 
 import kplich.backend.configurations.security.JwtUtil
+import kplich.backend.configurations.security.getRoles
 import kplich.backend.entities.Role
 import kplich.backend.entities.User
 import kplich.backend.payloads.requests.LoginRequest
@@ -44,9 +45,9 @@ class AuthenticationController(
         user.roles = roles
 
         return try {
-            val jwtResponse = authenticateUser(signupRequest.username, signupRequest.password)
+            val jwt = jwtUtil.generateJwtToken(signupRequest.username, listOf(Role.RoleEnum.ROLE_USER.name))
             userRepository.saveAndFlush(user)
-            ResponseEntity.ok(jwtResponse)
+            ResponseEntity.ok(JwtResponse(jwt, signupRequest.username))
         }
         catch (e: Exception) {
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e)
@@ -70,7 +71,7 @@ class AuthenticationController(
         val authentication = authenticationManager.authenticate(UsernamePasswordAuthenticationToken(username, password))
 
         SecurityContextHolder.getContext().authentication = authentication
-        val jwtToken = jwtUtil.generateJwtToken(authentication)
+        val jwtToken = jwtUtil.generateJwtToken(username, getRoles(SecurityContextHolder.getContext().authentication))
 
         val userDetails = authentication.principal as UserDetails
 
