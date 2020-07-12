@@ -35,7 +35,7 @@ class AuthenticationController(
     @PostMapping("/sign-up")
     fun registerUser(@Valid @RequestBody signupRequest: SignupRequest): ResponseEntity<*> {
         if(userRepository.existsByUsername(signupRequest.username)) {
-            return ResponseEntity.badRequest().body(SimpleMessageResponse("User with given username already exists!"))
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(SimpleMessageResponse("User with given username already exists!"))
         }
 
         val user = User(signupRequest.username, passwordEncoder.encode(signupRequest.password))
