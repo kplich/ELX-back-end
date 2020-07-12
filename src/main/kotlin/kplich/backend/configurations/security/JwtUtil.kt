@@ -17,7 +17,7 @@ class JwtUtil : Serializable {
     private val jwtSecret: String = "secret"
 
     fun generateJwt(username: String, roles: List<String>): String {
-        val key = Keys.hmacShaKeyFor(jwtSecret.byteInputStream().readAllBytes())
+        val key = Keys.hmacShaKeyFor(jwtSecret.toByteArray())
 
         return Jwts.builder()
                 .setSubject(username)
