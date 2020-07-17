@@ -1,15 +1,15 @@
 package kplich.backend.controllers
 
 import kplich.backend.configurations.security.JwtUtil
-import kplich.backend.configurations.security.getRoles
+import kplich.backend.configurations.security.getRolesFromAuthentication
+import kplich.backend.entities.ApplicationUser
 import kplich.backend.entities.Role
-import kplich.backend.entities.User
 import kplich.backend.payloads.requests.LoginRequest
 import kplich.backend.payloads.requests.SignupRequest
 import kplich.backend.payloads.responses.JwtResponse
 import kplich.backend.payloads.responses.SimpleMessageResponse
+import kplich.backend.repositories.ApplicationUserRepository
 import kplich.backend.repositories.RoleRepository
-import kplich.backend.repositories.UserRepository
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.AuthenticationManager
@@ -25,7 +25,7 @@ import javax.validation.Valid
 @CrossOrigin
 @RequestMapping("/auth")
 class AuthenticationController(
-        private val userRepository: UserRepository,
+        private val userRepository: ApplicationUserRepository,
         private val passwordEncoder: PasswordEncoder,
         private val roleRepository: RoleRepository,
         private val authenticationManager: AuthenticationManager,
@@ -38,16 +38,15 @@ class AuthenticationController(
             return ResponseEntity.status(HttpStatus.CONFLICT).body(SimpleMessageResponse("User with given username already exists!"))
         }
 
-        val user = User(signupRequest.username, passwordEncoder.encode(signupRequest.password))
+        val user = ApplicationUser(signupRequest.username, passwordEncoder.encode(signupRequest.password))
 
         val roles = mutableSetOf<Role>()
         roles.add(roleRepository.findByName(Role.RoleEnum.ROLE_USER) ?: throw Exception("Role ROLE_USER not found!"))
         user.roles = roles
 
         return try {
-            val jwt = jwtUtil.generateJwt(signupRequest.username, listOf(Role.RoleEnum.ROLE_USER.name))
             userRepository.saveAndFlush(user)
-            ResponseEntity.ok(JwtResponse(jwt, signupRequest.username))
+            ResponseEntity.status(HttpStatus.OK).build<Nothing>()
         }
         catch (e: Exception) {
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e)
@@ -71,7 +70,7 @@ class AuthenticationController(
         val authentication = authenticationManager.authenticate(UsernamePasswordAuthenticationToken(username, password))
 
         SecurityContextHolder.getContext().authentication = authentication
-        val jwtToken = jwtUtil.generateJwt(username, getRoles(SecurityContextHolder.getContext().authentication))
+        val jwtToken = jwtUtil.generateJwt(username, getRolesFromAuthentication(SecurityContextHolder.getContext().authentication))
 
         val userDetails = authentication.principal as UserDetails
 

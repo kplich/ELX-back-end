@@ -47,7 +47,6 @@ class JwtUtil : Serializable {
         return false
     }
 
-    companion object {
-        private val logger = LoggerFactory.getLogger(JwtUtil::class.java)
-    }
+
+    private val logger = LoggerFactory.getLogger(JwtUtil::class.java)
 }
