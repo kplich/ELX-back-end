@@ -1,23 +1,13 @@
 package kplich.backend.controllers
 
-import kplich.backend.configurations.security.JwtUtil
-import kplich.backend.configurations.security.getRolesFromAuthentication
-import kplich.backend.entities.ApplicationUser
-import kplich.backend.entities.Role
+import kplich.backend.exceptions.UserAlreadyExistsException
 import kplich.backend.payloads.requests.LoginRequest
 import kplich.backend.payloads.requests.SignupRequest
-import kplich.backend.payloads.responses.JwtResponse
 import kplich.backend.payloads.responses.SimpleMessageResponse
-import kplich.backend.repositories.ApplicationUserRepository
-import kplich.backend.repositories.RoleRepository
+import kplich.backend.services.UserDetailsServiceImpl
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.BadCredentialsException
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.security.core.userdetails.UserDetails
-import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 
@@ -25,28 +15,16 @@ import javax.validation.Valid
 @CrossOrigin
 @RequestMapping("/auth")
 class AuthenticationController(
-        private val userRepository: ApplicationUserRepository,
-        private val passwordEncoder: PasswordEncoder,
-        private val roleRepository: RoleRepository,
-        private val authenticationManager: AuthenticationManager,
-        private val jwtUtil: JwtUtil
-){
+        private val userService: UserDetailsServiceImpl){
 
     @PostMapping("/sign-up")
     fun registerUser(@Valid @RequestBody signupRequest: SignupRequest): ResponseEntity<*> {
-        if(userRepository.existsByUsername(signupRequest.username)) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(SimpleMessageResponse("User with given username already exists!"))
-        }
-
-        val user = ApplicationUser(signupRequest.username, passwordEncoder.encode(signupRequest.password))
-
-        val roles = mutableSetOf<Role>()
-        roles.add(roleRepository.findByName(Role.RoleEnum.ROLE_USER) ?: throw Exception("Role ROLE_USER not found!"))
-        user.roles = roles
-
         return try {
-            userRepository.saveAndFlush(user)
+            userService.save(signupRequest)
             ResponseEntity.status(HttpStatus.OK).build<Nothing>()
+        }
+        catch (e: UserAlreadyExistsException) {
+            ResponseEntity.status(HttpStatus.CONFLICT).body(SimpleMessageResponse(e.message))
         }
         catch (e: Exception) {
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e)
@@ -56,24 +34,14 @@ class AuthenticationController(
     @PostMapping("/log-in")
     fun logInUser(@Valid @RequestBody loginRequest: LoginRequest): ResponseEntity<*> {
         return try {
-            val jwtResponse = authenticateUser(loginRequest.username, loginRequest.password)
+            val jwtResponse = userService.authenticateUser(loginRequest)
             ResponseEntity.ok(jwtResponse)
-        } catch(e: BadCredentialsException) {
+        }
+        catch(e: BadCredentialsException) {
             ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null)
         }
         catch (e: Exception) {
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.message)
         }
-    }
-
-    private fun authenticateUser(username: String, password: String): JwtResponse {
-        val authentication = authenticationManager.authenticate(UsernamePasswordAuthenticationToken(username, password))
-
-        SecurityContextHolder.getContext().authentication = authentication
-        val jwtToken = jwtUtil.generateJwt(username, getRolesFromAuthentication(SecurityContextHolder.getContext().authentication))
-
-        val userDetails = authentication.principal as UserDetails
-
-        return JwtResponse(jwtToken, userDetails.username)
     }
 }

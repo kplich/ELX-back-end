@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 class JWTAuthorizationFilter(authManager: AuthenticationManager) : BasicAuthenticationFilter(authManager) {
+
     @Throws(IOException::class, ServletException::class)
     override fun doFilterInternal(request: HttpServletRequest,
                                   response: HttpServletResponse,
@@ -43,6 +44,7 @@ class JWTAuthorizationFilter(authManager: AuthenticationManager) : BasicAuthenti
                     .body
 
             return if (token != null) {
+                @Suppress("UNCHECKED_CAST")
                 UsernamePasswordAuthenticationToken(
                         token.get("username", String::class.java),
                         null,

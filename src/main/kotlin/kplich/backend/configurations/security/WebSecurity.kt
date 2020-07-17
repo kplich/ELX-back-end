@@ -13,13 +13,11 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 
-
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 class WebSecurity(
-        private val userDetailsService: UserDetailsServiceImpl,
-        private val jwtUtil: JwtUtil) : WebSecurityConfigurerAdapter() {
+        private val userDetailsService: UserDetailsServiceImpl) : WebSecurityConfigurerAdapter() {
 
     @Throws(Exception::class)
     public override fun configure(authenticationManagerBuilder: AuthenticationManagerBuilder) {
@@ -36,7 +34,7 @@ class WebSecurity(
                 .antMatchers(HttpMethod.POST, "/auth/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .addFilter(JWTAuthenticationFilter(authenticationManager(), jwtUtil))
+                .addFilter(JWTAuthenticationFilter(authenticationManager()))
                 .addFilter(JWTAuthorizationFilter(authenticationManager()))
     }
 
