@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import kplich.backend.payloads.requests.LoginRequest
 import kplich.backend.payloads.responses.JwtResponse
 import kplich.backend.services.UserDetailsServiceImpl
+import org.hamcrest.core.StringContains.containsString
 import org.junit.jupiter.api.Test
+import org.junit.platform.commons.logging.LoggerFactory
 import org.mockito.BDDMockito.given
 import org.mockito.invocation.InvocationOnMock
 import org.springframework.beans.factory.annotation.Autowired
@@ -37,9 +39,9 @@ class LogInTest {
 
         // when
         mockMvc.perform(
-                    post("/auth/log-in")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(loginRequest)))
+                post(LOG_IN_PATH)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loginRequest)))
                 // then
                 .andExpect(status().isUnauthorized)
     }
@@ -52,9 +54,9 @@ class LogInTest {
 
         // when
         mockMvc.perform(
-                    post("/auth/log-in")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(loginRequest)))
+                post(LOG_IN_PATH)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loginRequest)))
                 // then
                 .andExpect(status().isUnauthorized)
     }
@@ -67,16 +69,52 @@ class LogInTest {
 
         // when
         mockMvc.perform(
-                    post("/auth/log-in")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(loginRequest)))
+                post(LOG_IN_PATH)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loginRequest)))
                 // then
                 .andExpect(status().isOk)
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(objectMapper.writeValueAsString(JWT_RESPONSE)))
     }
 
+    @Test
+    fun `empty username will return 400 Bad Request`() {
+        // given
+        val loginRequest = LoginRequest(EMPTY_STRING, CORRECT_PASSWORD)
+        given(userService.authenticateUser(loginRequest)).will(mockUserServiceBehavior())
+
+        // when
+        mockMvc.perform(
+                post(LOG_IN_PATH)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loginRequest)))
+                // then
+                .andExpect(status().isBadRequest)
+                .andExpect(content().string(containsString(LoginRequest.USERNAME_REQUIRED)))
+    }
+
+    @Test
+    fun `empty password will return 400 Bad Request`() {
+        // given
+        val loginRequest = LoginRequest(CORRECT_USERNAME, EMPTY_STRING)
+        given(userService.authenticateUser(loginRequest)).will(mockUserServiceBehavior())
+
+        // when
+        mockMvc.perform(
+                post(LOG_IN_PATH)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loginRequest)))
+                // then
+                .andExpect(status().isBadRequest)
+                .andExpect(content().string(containsString(LoginRequest.PASSWORD_REQUIRED)))
+    }
+
+
     companion object {
+        private const val LOG_IN_PATH = "/auth/log-in"
+        private const val EMPTY_STRING = ""
+
         private const val CORRECT_USERNAME = "username"
         private const val INCORRECT_USERNAME = "user"
 
@@ -90,11 +128,15 @@ class LogInTest {
             return {
                 val req: LoginRequest = it.arguments[0] as LoginRequest
                 if (req.username == CORRECT_USERNAME && req.password == CORRECT_PASSWORD) {
+                    logger.info{ "Responding correctly!" }
                     JWT_RESPONSE
                 } else {
+                    logger.info { "Exception!" }
                     throw BadCredentialsException("")
                 }
             }
         }
+
+        private val logger = LoggerFactory.getLogger(LogInTest::class.java)
     }
 }

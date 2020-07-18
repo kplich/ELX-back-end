@@ -41,6 +41,7 @@ class UserDetailsServiceImpl(
         return User(user.username, user.password, emptyList())
     }
 
+    @Throws(UserAlreadyExistsException::class, RoleNotFoundException::class)
     fun save(signupRequest: SignupRequest) {
         if(userRepository.existsByUsername(signupRequest.username)) {
             throw UserAlreadyExistsException(signupRequest.username)
