@@ -9,6 +9,6 @@ data class Role (
         @Enumerated(EnumType.STRING) var name: RoleEnum
 ) {
     enum class RoleEnum {
-        ROLE_ADMIN, ROLE_USER
+        ROLE_USER
     }
 }

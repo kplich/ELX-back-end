@@ -1,56 +1,70 @@
 package kplich.backend.services
 
-import kplich.backend.entities.User
-import kplich.backend.repositories.UserRepository
-import org.springframework.security.core.GrantedAuthority
-import org.springframework.security.core.authority.SimpleGrantedAuthority
+import kplich.backend.configurations.security.JwtUtil
+import kplich.backend.configurations.security.getAuthoritiesFromRoles
+import kplich.backend.configurations.security.getRoles
+import kplich.backend.entities.ApplicationUser
+import kplich.backend.entities.Role
+import kplich.backend.exceptions.RoleNotFoundException
+import kplich.backend.exceptions.UserAlreadyExistsException
+import kplich.backend.payloads.requests.LoginRequest
+import kplich.backend.payloads.requests.SignUpRequest
+import kplich.backend.payloads.responses.JwtResponse
+import kplich.backend.repositories.ApplicationUserRepository
+import kplich.backend.repositories.RoleRepository
+import org.springframework.context.annotation.Lazy
+import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+
+// Lazy annotations required due to beans created in WebSecurity configuration that depends on UserDetailsService
 
 @Service
 class UserDetailsServiceImpl(
-        private val userRepository: UserRepository
+        private val userRepository: ApplicationUserRepository,
+        private val roleRepository: RoleRepository,
+        private val jwtUtil: JwtUtil,
+        @Lazy private val passwordEncoder: PasswordEncoder,
+        @Lazy private val authenticationManager: AuthenticationManager
 ): UserDetailsService {
 
+    @Transactional(readOnly = true)
+    @Throws(UsernameNotFoundException::class)
     override fun loadUserByUsername(username: String): UserDetails {
         val user = userRepository.findByUsername(username) ?: throw UsernameNotFoundException(username)
-
-        return UserDetailsImpl(user)
+        return User(user.username, user.password, getAuthoritiesFromRoles(user.roles))
     }
 
-    inner class UserDetailsImpl(
-            private val user: User
-    ) : UserDetails {
-        override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
-            val authorities = mutableListOf<SimpleGrantedAuthority>()
-            user.roles.forEach { authorities.add(SimpleGrantedAuthority(it.name.name)) }
-            return authorities
+    @Throws(UserAlreadyExistsException::class, RoleNotFoundException::class)
+    fun save(signUpRequest: SignUpRequest) {
+        if(userRepository.existsByUsername(signUpRequest.username)) {
+            throw UserAlreadyExistsException(signUpRequest.username)
         }
 
-        override fun isEnabled(): Boolean {
-            return true
-        }
+        val user = ApplicationUser(signUpRequest.username, passwordEncoder.encode(signUpRequest.password))
 
-        override fun getUsername(): String {
-            return user.username
-        }
+        val roles = mutableSetOf<Role>()
+        roles.add(roleRepository.findByName(Role.RoleEnum.ROLE_USER) ?: throw RoleNotFoundException(Role.RoleEnum.ROLE_USER))
+        user.roles = roles
 
-        override fun isCredentialsNonExpired(): Boolean {
-            return true
-        }
+        userRepository.save(user)
+    }
 
-        override fun getPassword(): String {
-            return user.password
-        }
+    fun authenticateUser(loginRequest: LoginRequest): JwtResponse {
+        val authentication = authenticationManager.authenticate(UsernamePasswordAuthenticationToken(loginRequest.username, loginRequest.password))
 
-        override fun isAccountNonExpired(): Boolean {
-            return true
-        }
+        SecurityContextHolder.getContext().authentication = authentication
+        val jwtToken = jwtUtil.generateJwt(loginRequest.username, SecurityContextHolder.getContext().authentication.getRoles())
 
-        override fun isAccountNonLocked(): Boolean {
-            return true
-        }
+        val userDetails = authentication.principal as UserDetails
+
+        return JwtResponse(jwtToken, userDetails.username)
     }
 }
