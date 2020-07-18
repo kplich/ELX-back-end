@@ -1,6 +1,7 @@
 package kplich.backend.services
 
 import kplich.backend.configurations.security.JwtUtil
+import kplich.backend.configurations.security.getAuthoritiesFromRoles
 import kplich.backend.configurations.security.getRoles
 import kplich.backend.entities.ApplicationUser
 import kplich.backend.entities.Role
@@ -38,7 +39,7 @@ class UserDetailsServiceImpl(
     @Throws(UsernameNotFoundException::class)
     override fun loadUserByUsername(username: String): UserDetails {
         val user = userRepository.findByUsername(username) ?: throw UsernameNotFoundException(username)
-        return User(user.username, user.password, emptyList())
+        return User(user.username, user.password, getAuthoritiesFromRoles(user.roles))
     }
 
     @Throws(UserAlreadyExistsException::class, RoleNotFoundException::class)

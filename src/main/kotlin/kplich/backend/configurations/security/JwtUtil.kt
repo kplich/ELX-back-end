@@ -1,5 +1,6 @@
 package kplich.backend.configurations.security
 
+import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.MalformedJwtException
 import io.jsonwebtoken.UnsupportedJwtException
@@ -33,7 +34,8 @@ class JwtUtil : Serializable {
 
     fun validateJwtToken(authToken: String): Boolean {
         try {
-            Jwts.parserBuilder().setSigningKey(jwtSecret).build().parseClaimsJws(authToken)
+            val key = Keys.hmacShaKeyFor(jwtSecret.toByteArray())
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(authToken)
             return true
         } catch (e: SecurityException) {
             logger.error("Invalid JWT signature: ${e.message}")
@@ -47,6 +49,12 @@ class JwtUtil : Serializable {
         return false
     }
 
+    fun parseJwtClaims(token: String): Claims {
+        val key = Keys.hmacShaKeyFor(jwtSecret.toByteArray())
+        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).body
+    }
 
-    private val logger = LoggerFactory.getLogger(JwtUtil::class.java)
+    companion object {
+        private val logger = LoggerFactory.getLogger(JwtUtil::class.java)
+    }
 }
