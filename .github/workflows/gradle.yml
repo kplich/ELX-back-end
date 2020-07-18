@@ -9,6 +9,9 @@ on:
   pull_request:
     branches: [ master, develop ]
 
+env:
+  JWT_SECRET: secret
+
 jobs:
   build:
 
