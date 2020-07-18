@@ -14,8 +14,7 @@ import javax.validation.Valid
 @RestController
 @CrossOrigin
 @RequestMapping("/auth")
-class AuthenticationController(
-        private val userService: UserDetailsServiceImpl){
+class AuthenticationController(private val userService: UserDetailsServiceImpl) {
 
     @PostMapping("/sign-up")
     fun registerUser(@Valid @RequestBody signupRequest: SignupRequest): ResponseEntity<*> {
