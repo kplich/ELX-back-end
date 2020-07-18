@@ -6,7 +6,6 @@ import kplich.backend.payloads.responses.JwtResponse
 import kplich.backend.services.UserDetailsServiceImpl
 import org.hamcrest.core.StringContains.containsString
 import org.junit.jupiter.api.Test
-import org.junit.platform.commons.logging.LoggerFactory
 import org.mockito.BDDMockito.given
 import org.mockito.invocation.InvocationOnMock
 import org.springframework.beans.factory.annotation.Autowired
@@ -128,15 +127,11 @@ class LogInTest {
             return {
                 val req: LoginRequest = it.arguments[0] as LoginRequest
                 if (req.username == CORRECT_USERNAME && req.password == CORRECT_PASSWORD) {
-                    logger.info{ "Responding correctly!" }
                     JWT_RESPONSE
                 } else {
-                    logger.info { "Exception!" }
                     throw BadCredentialsException("")
                 }
             }
         }
-
-        private val logger = LoggerFactory.getLogger(LogInTest::class.java)
     }
 }

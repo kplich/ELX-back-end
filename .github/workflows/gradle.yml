@@ -10,7 +10,7 @@ on:
     branches: [ master, develop ]
 
 env:
-  JWT_SECRET: secret
+  JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
 jobs:
   build:
