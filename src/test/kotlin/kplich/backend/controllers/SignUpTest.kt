@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import kplich.backend.entities.Role
 import kplich.backend.exceptions.RoleNotFoundException
 import kplich.backend.exceptions.UserAlreadyExistsException
-import kplich.backend.payloads.requests.SignupRequest
+import kplich.backend.payloads.requests.SignUpRequest
 import kplich.backend.services.UserDetailsServiceImpl
 import org.hamcrest.core.StringContains.containsString
 import org.junit.jupiter.api.Test
@@ -37,7 +37,7 @@ class SignUpTest {
     @Test
     fun `correct username and password return 200 OK`() {
         // given
-        val signupRequest = SignupRequest(CORRECT_USERNAME, CORRECT_PASSWORD)
+        val signupRequest = SignUpRequest(CORRECT_USERNAME, CORRECT_PASSWORD)
         given(userService.save(signupRequest)).will(mockUserServiceBehavior())
 
         // when
@@ -51,7 +51,7 @@ class SignUpTest {
     @Test
     fun `too short username returns 400 Bad Request`() {
         // given
-        val signupRequest = SignupRequest(TOO_SHORT_USERNAME, CORRECT_PASSWORD)
+        val signupRequest = SignUpRequest(TOO_SHORT_USERNAME, CORRECT_PASSWORD)
         given(userService.save(signupRequest)).will(mockUserServiceBehavior())
 
         // when
@@ -61,13 +61,13 @@ class SignUpTest {
                 // then
                 .andExpect(status().isBadRequest)
                 .andExpect(content().string(containsString(VALIDATION_ERROR)))
-                .andExpect(content().string(containsString(SignupRequest.USERNAME_MUST_BE_BETWEEN_3_AND_20)))
+                .andExpect(content().string(containsString(SignUpRequest.USERNAME_MUST_BE_BETWEEN_3_AND_20)))
     }
 
     @Test
     fun `too short password returns 400 Bad Request`() {
         // given
-        val signupRequest = SignupRequest(CORRECT_USERNAME, TOO_SHORT_PASSWORD)
+        val signupRequest = SignUpRequest(CORRECT_USERNAME, TOO_SHORT_PASSWORD)
         given(userService.save(signupRequest)).will(mockUserServiceBehavior())
 
         // when
@@ -77,13 +77,13 @@ class SignUpTest {
                 // then
                 .andExpect(status().isBadRequest)
                 .andExpect(content().string(containsString(VALIDATION_ERROR)))
-                .andExpect(content().string(containsString(SignupRequest.PASSWORD_MUST_BE_BETWEEN_8_AND_40)))
+                .andExpect(content().string(containsString(SignUpRequest.PASSWORD_MUST_BE_BETWEEN_8_AND_40)))
     }
 
     @Test
     fun `not matching password returns 400 Bad Request`() {
         // given
-        val signupRequest = SignupRequest(CORRECT_USERNAME, NOT_MATCHING_PASSWORD)
+        val signupRequest = SignUpRequest(CORRECT_USERNAME, NOT_MATCHING_PASSWORD)
         given(userService.save(signupRequest)).will(mockUserServiceBehavior())
 
         // when
@@ -93,15 +93,15 @@ class SignUpTest {
                 // then
                 .andExpect(status().isBadRequest)
                 .andExpect(content().string(containsString(VALIDATION_ERROR)))
-                .andExpect(content().string(containsString(SignupRequest.PASSWORD_MUST_HAVE_SPECIAL_CHARACTER)))
-                .andExpect(content().string(containsString(SignupRequest.PASSWORD_MUST_HAVE_DIGIT)))
+                .andExpect(content().string(containsString(SignUpRequest.PASSWORD_MUST_HAVE_SPECIAL_CHARACTER)))
+                .andExpect(content().string(containsString(SignUpRequest.PASSWORD_MUST_HAVE_DIGIT)))
 
     }
 
     @Test
     fun `empty username returns 400 Bad Request`() {
         // given
-        val signupRequest = SignupRequest(EMPTY_STRING, CORRECT_PASSWORD)
+        val signupRequest = SignUpRequest(EMPTY_STRING, CORRECT_PASSWORD)
         given(userService.save(signupRequest)).will(mockUserServiceBehavior())
 
         // when
@@ -111,13 +111,13 @@ class SignUpTest {
                 // then
                 .andExpect(status().isBadRequest)
                 .andExpect(content().string(containsString(VALIDATION_ERROR)))
-                .andExpect(content().string(containsString(SignupRequest.USERNAME_REQUIRED)))
+                .andExpect(content().string(containsString(SignUpRequest.USERNAME_REQUIRED)))
     }
 
     @Test
     fun `empty password returns 400 Bad Request`() {
         // given
-        val signupRequest = SignupRequest(CORRECT_USERNAME, EMPTY_STRING)
+        val signupRequest = SignUpRequest(CORRECT_USERNAME, EMPTY_STRING)
         given(userService.save(signupRequest)).will(mockUserServiceBehavior())
 
         // when
@@ -127,13 +127,13 @@ class SignUpTest {
                 // then
                 .andExpect(status().isBadRequest)
                 .andExpect(content().string(containsString(VALIDATION_ERROR)))
-                .andExpect(content().string(containsString(SignupRequest.PASSWORD_REQUIRED)))
+                .andExpect(content().string(containsString(SignUpRequest.PASSWORD_REQUIRED)))
     }
 
     @Test
     fun `existing user returns 409 Conflict`() {
         // given
-        val signupRequest = SignupRequest(EXISTING_USERNAME, CORRECT_PASSWORD)
+        val signupRequest = SignUpRequest(EXISTING_USERNAME, CORRECT_PASSWORD)
         given(userService.save(signupRequest)).will(mockUserServiceBehavior())
 
         // when
@@ -163,7 +163,7 @@ class SignUpTest {
 
         private fun mockUserServiceBehavior(): (InvocationOnMock) -> Unit {
             return {
-                val req: SignupRequest = it.arguments[0] as SignupRequest
+                val req: SignUpRequest = it.arguments[0] as SignUpRequest
                 if (req.username == EXISTING_USERNAME) {
                     throw UserAlreadyExistsException(req.username)
                 }

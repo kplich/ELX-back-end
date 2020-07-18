@@ -2,7 +2,7 @@ package kplich.backend.controllers
 
 import kplich.backend.exceptions.UserAlreadyExistsException
 import kplich.backend.payloads.requests.LoginRequest
-import kplich.backend.payloads.requests.SignupRequest
+import kplich.backend.payloads.requests.SignUpRequest
 import kplich.backend.payloads.responses.SimpleMessageResponse
 import kplich.backend.services.UserDetailsServiceImpl
 import org.springframework.http.HttpStatus
@@ -17,9 +17,9 @@ import javax.validation.Valid
 class AuthenticationController(private val userService: UserDetailsServiceImpl) {
 
     @PostMapping("/sign-up")
-    fun registerUser(@Valid @RequestBody signupRequest: SignupRequest): ResponseEntity<*> {
+    fun registerUser(@Valid @RequestBody signUpRequest: SignUpRequest): ResponseEntity<*> {
         return try {
-            userService.save(signupRequest)
+            userService.save(signUpRequest)
             ResponseEntity.status(HttpStatus.OK).build<Nothing>()
         }
         catch (e: UserAlreadyExistsException) {

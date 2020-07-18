@@ -3,7 +3,7 @@ package kplich.backend.services
 import kplich.backend.configurations.security.JwtUtil
 import kplich.backend.entities.Role
 import kplich.backend.payloads.requests.LoginRequest
-import kplich.backend.payloads.requests.SignupRequest
+import kplich.backend.payloads.requests.SignUpRequest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
@@ -32,7 +32,7 @@ class UserDetailsServiceImplTest {
     @Test
     @Order(2)
     fun `new user is added and returned`() {
-        userService.save(SignupRequest(USERNAME, CORRECT_PASWORD))
+        userService.save(SignUpRequest(USERNAME, CORRECT_PASWORD))
 
         val user = userService.loadUserByUsername(USERNAME)
         assertThat(user).isNotNull

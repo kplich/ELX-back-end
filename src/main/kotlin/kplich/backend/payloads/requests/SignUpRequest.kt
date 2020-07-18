@@ -4,7 +4,7 @@ import javax.validation.constraints.NotBlank
 import javax.validation.constraints.Pattern
 import javax.validation.constraints.Size
 
-data class SignupRequest(
+data class SignUpRequest(
         @get:NotBlank(message = USERNAME_REQUIRED)
         @get:Size(min = 3, max = 20, message = USERNAME_MUST_BE_BETWEEN_3_AND_20)
         @get:Pattern(regexp = "\\w*", message = USERNAME_NOT_IN_PATTERN)

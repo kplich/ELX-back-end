@@ -8,7 +8,7 @@ import kplich.backend.entities.Role
 import kplich.backend.exceptions.RoleNotFoundException
 import kplich.backend.exceptions.UserAlreadyExistsException
 import kplich.backend.payloads.requests.LoginRequest
-import kplich.backend.payloads.requests.SignupRequest
+import kplich.backend.payloads.requests.SignUpRequest
 import kplich.backend.payloads.responses.JwtResponse
 import kplich.backend.repositories.ApplicationUserRepository
 import kplich.backend.repositories.RoleRepository
@@ -43,12 +43,12 @@ class UserDetailsServiceImpl(
     }
 
     @Throws(UserAlreadyExistsException::class, RoleNotFoundException::class)
-    fun save(signupRequest: SignupRequest) {
-        if(userRepository.existsByUsername(signupRequest.username)) {
-            throw UserAlreadyExistsException(signupRequest.username)
+    fun save(signUpRequest: SignUpRequest) {
+        if(userRepository.existsByUsername(signUpRequest.username)) {
+            throw UserAlreadyExistsException(signUpRequest.username)
         }
 
-        val user = ApplicationUser(signupRequest.username, passwordEncoder.encode(signupRequest.password))
+        val user = ApplicationUser(signUpRequest.username, passwordEncoder.encode(signUpRequest.password))
 
         val roles = mutableSetOf<Role>()
         roles.add(roleRepository.findByName(Role.RoleEnum.ROLE_USER) ?: throw RoleNotFoundException(Role.RoleEnum.ROLE_USER))
