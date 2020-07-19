@@ -39,7 +39,7 @@ class JWTAuthenticationFilter(authManager: AuthenticationManager) : UsernamePass
             req: HttpServletRequest,
             res: HttpServletResponse, chain: FilterChain?,
             auth: Authentication) {
-        val jwt = jwtUtil.generateJwt(auth.name, auth.getRoles())
+        val jwt = jwtUtil.generateJwt(auth.name, auth.getRolesAsStrings())
         res.addHeader(HEADER_STRING, "$TOKEN_PREFIX $jwt")
     }
 }

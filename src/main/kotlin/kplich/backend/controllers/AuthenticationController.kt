@@ -2,6 +2,7 @@ package kplich.backend.controllers
 
 import kplich.backend.exceptions.UserAlreadyExistsException
 import kplich.backend.payloads.requests.LoginRequest
+import kplich.backend.payloads.requests.PasswordChangeRequest
 import kplich.backend.payloads.requests.SignUpRequest
 import kplich.backend.payloads.responses.SimpleMessageResponse
 import kplich.backend.services.UserDetailsServiceImpl
@@ -40,6 +41,18 @@ class AuthenticationController(private val userService: UserDetailsServiceImpl) 
             ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null)
         }
         catch (e: Exception) {
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.message)
+        }
+    }
+
+    @PostMapping("/change-password")
+    fun changePassword(@RequestBody @Valid passwordChangeRequest: PasswordChangeRequest): ResponseEntity<*> {
+        return try {
+            userService.changePassword(passwordChangeRequest)
+            ResponseEntity.status(HttpStatus.OK).build<Nothing>()
+        } catch (e: BadCredentialsException) {
+            ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null)
+        } catch (e: Exception) {
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.message)
         }
     }

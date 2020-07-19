@@ -8,7 +8,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority
 /**
  * Converts authorities in Authentication to list of strings
  */
-fun Authentication.getRoles(): List<String> {
+fun Authentication.getRolesAsStrings(): List<String> {
     val roles = mutableListOf<String>()
     authorities.forEach {
         roles.add(it.authority)
