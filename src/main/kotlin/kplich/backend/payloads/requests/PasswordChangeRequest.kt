@@ -4,6 +4,7 @@ import kplich.backend.payloads.requests.PasswordChangeRequest.Companion.PASSWORD
 import javax.validation.Constraint
 import javax.validation.ConstraintValidator
 import javax.validation.ConstraintValidatorContext
+import javax.validation.Payload
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.Pattern
 import javax.validation.constraints.Size
@@ -36,15 +37,13 @@ data class PasswordChangeRequest(
     }
 }
 
+@Suppress("unused") // parameters required by constraint validation?
 @Constraint(validatedBy = [PasswordChangeRequestValidator::class])
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class PasswordsNotEqual(val message: String = "{error.address}", val groups: Array<KClass<*>> = [])
+annotation class PasswordsNotEqual(val message: String = "", val groups: Array<KClass<*>> = [], val payload: Array<KClass<out Payload>> = [])
 
 class PasswordChangeRequestValidator : ConstraintValidator<PasswordsNotEqual, PasswordChangeRequest> {
-    /**
-     * Validate zipcode and city depending on the country
-     */
     override fun isValid(request: PasswordChangeRequest, context: ConstraintValidatorContext): Boolean {
         return request.oldPassword != request.newPassword
     }
