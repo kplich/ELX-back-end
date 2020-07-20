@@ -1,6 +1,7 @@
 package kplich.backend.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import kplich.backend.configurations.security.JwtUtil
 import kplich.backend.entities.Role
 import kplich.backend.exceptions.RoleNotFoundException
 import kplich.backend.exceptions.UserAlreadyExistsException
@@ -22,7 +23,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 /**
  * Only most basic validations are tested.
  */
-@WebMvcTest(AuthenticationController::class)
+@WebMvcTest(AuthenticationController::class, JwtUtil::class)
 class SignUpTest {
 
     @MockBean
@@ -35,24 +36,24 @@ class SignUpTest {
     private lateinit var objectMapper: ObjectMapper
 
     @Test
-    fun `correct username and password return 200 OK`() {
+    fun `correct username and password return 201 Created`() {
         // given
         val signupRequest = SignUpRequest(CORRECT_USERNAME, CORRECT_PASSWORD)
-        given(userService.save(signupRequest)).will(mockUserServiceBehavior())
+        given(userService.saveNewUser(signupRequest)).will(mockUserServiceBehavior())
 
         // when
         mockMvc.perform(post(SIGN_UP_PATH)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(signupRequest)))
                 // then
-                .andExpect(status().isOk)
+                .andExpect(status().isCreated)
     }
 
     @Test
     fun `too short username returns 400 Bad Request`() {
         // given
         val signupRequest = SignUpRequest(TOO_SHORT_USERNAME, CORRECT_PASSWORD)
-        given(userService.save(signupRequest)).will(mockUserServiceBehavior())
+        given(userService.saveNewUser(signupRequest)).will(mockUserServiceBehavior())
 
         // when
         mockMvc.perform(post(SIGN_UP_PATH)
@@ -68,7 +69,7 @@ class SignUpTest {
     fun `too short password returns 400 Bad Request`() {
         // given
         val signupRequest = SignUpRequest(CORRECT_USERNAME, TOO_SHORT_PASSWORD)
-        given(userService.save(signupRequest)).will(mockUserServiceBehavior())
+        given(userService.saveNewUser(signupRequest)).will(mockUserServiceBehavior())
 
         // when
         mockMvc.perform(post(SIGN_UP_PATH)
@@ -84,7 +85,7 @@ class SignUpTest {
     fun `not matching password returns 400 Bad Request`() {
         // given
         val signupRequest = SignUpRequest(CORRECT_USERNAME, NOT_MATCHING_PASSWORD)
-        given(userService.save(signupRequest)).will(mockUserServiceBehavior())
+        given(userService.saveNewUser(signupRequest)).will(mockUserServiceBehavior())
 
         // when
         mockMvc.perform(post(SIGN_UP_PATH)
@@ -102,7 +103,7 @@ class SignUpTest {
     fun `empty username returns 400 Bad Request`() {
         // given
         val signupRequest = SignUpRequest(EMPTY_STRING, CORRECT_PASSWORD)
-        given(userService.save(signupRequest)).will(mockUserServiceBehavior())
+        given(userService.saveNewUser(signupRequest)).will(mockUserServiceBehavior())
 
         // when
         mockMvc.perform(post(SIGN_UP_PATH)
@@ -118,7 +119,7 @@ class SignUpTest {
     fun `empty password returns 400 Bad Request`() {
         // given
         val signupRequest = SignUpRequest(CORRECT_USERNAME, EMPTY_STRING)
-        given(userService.save(signupRequest)).will(mockUserServiceBehavior())
+        given(userService.saveNewUser(signupRequest)).will(mockUserServiceBehavior())
 
         // when
         mockMvc.perform(post(SIGN_UP_PATH)
@@ -134,7 +135,7 @@ class SignUpTest {
     fun `existing user returns 409 Conflict`() {
         // given
         val signupRequest = SignUpRequest(EXISTING_USERNAME, CORRECT_PASSWORD)
-        given(userService.save(signupRequest)).will(mockUserServiceBehavior())
+        given(userService.saveNewUser(signupRequest)).will(mockUserServiceBehavior())
 
         // when
         mockMvc.perform(post(SIGN_UP_PATH)

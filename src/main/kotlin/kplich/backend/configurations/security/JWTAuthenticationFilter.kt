@@ -1,22 +1,26 @@
 package kplich.backend.configurations.security
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import kplich.backend.configurations.security.SecurityConstants.HEADER_STRING
-import kplich.backend.configurations.security.SecurityConstants.TOKEN_PREFIX
+import kplich.backend.configurations.security.SecurityConstants.AUTHORIZATION
+import kplich.backend.configurations.security.SecurityConstants.BEARER
 import kplich.backend.entities.ApplicationUser
+import org.springframework.context.annotation.Lazy
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import org.springframework.stereotype.Component
 import java.io.IOException
 import javax.servlet.FilterChain
 import javax.servlet.ServletException
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-class JWTAuthenticationFilter(authManager: AuthenticationManager) : UsernamePasswordAuthenticationFilter() {
-    private val jwtUtil = JwtUtil()
+@Component
+class JWTAuthenticationFilter(
+        @Lazy authManager: AuthenticationManager,
+        private val jwtUtil: JwtUtil) : UsernamePasswordAuthenticationFilter() {
 
     init {
         authenticationManager = authManager
@@ -40,7 +44,7 @@ class JWTAuthenticationFilter(authManager: AuthenticationManager) : UsernamePass
             res: HttpServletResponse, chain: FilterChain?,
             auth: Authentication) {
         val jwt = jwtUtil.generateJwt(auth.name, auth.getRolesAsStrings())
-        res.addHeader(HEADER_STRING, "$TOKEN_PREFIX $jwt")
+        res.addHeader(AUTHORIZATION, "$BEARER $jwt")
     }
 }
 

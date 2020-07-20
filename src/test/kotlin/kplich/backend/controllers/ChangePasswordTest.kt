@@ -1,6 +1,7 @@
 package kplich.backend.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import kplich.backend.configurations.security.JwtUtil
 import kplich.backend.payloads.requests.PasswordChangeRequest
 import kplich.backend.services.UserDetailsServiceImpl
 import org.hamcrest.CoreMatchers.equalTo
@@ -17,11 +18,14 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
-@WebMvcTest(AuthenticationController::class)
+@WebMvcTest(AuthenticationController::class, JwtUtil::class)
 class ChangePasswordTest {
 
     @MockBean
     private lateinit var userService: UserDetailsServiceImpl
+
+    @Autowired
+    private lateinit var jwtUtil: JwtUtil
 
     @Autowired
     private lateinit var mockMvc: MockMvc
@@ -37,7 +41,8 @@ class ChangePasswordTest {
         mockMvc.perform(
                 post(CHANGE_PASSWORD_PATH)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(passwordChangeRequest)))
+                        .content(objectMapper.writeValueAsString(passwordChangeRequest))
+                        .header(AUTHORIZATION, getTokenHeader()))
                 .andExpect(status().isBadRequest)
                 .andExpect(content().string(containsString(PasswordChangeRequest.PASSWORDS_MUSTNT_MATCH)))
     }
@@ -50,7 +55,8 @@ class ChangePasswordTest {
         mockMvc.perform(
                 post(CHANGE_PASSWORD_PATH)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(passwordChangeRequest)))
+                        .content(objectMapper.writeValueAsString(passwordChangeRequest))
+                        .header(AUTHORIZATION, getTokenHeader()))
                 .andExpect(status().isBadRequest)
                 .andExpect(content().string(containsString(PasswordChangeRequest.PASSWORD_MUST_HAVE_DIGIT)))
                 .andExpect(content().string(containsString(PasswordChangeRequest.PASSWORD_MUST_HAVE_SPECIAL_CHARACTER)))
@@ -66,12 +72,35 @@ class ChangePasswordTest {
         mockMvc.perform(
                 post(CHANGE_PASSWORD_PATH)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(passwordChangeRequest)))
+                        .content(objectMapper.writeValueAsString(passwordChangeRequest))
+                        .header(AUTHORIZATION, getTokenHeader()))
                 .andExpect(status().isOk)
                 .andExpect(content().string(equalTo(EMPTY_BODY)))
     }
 
+    @Test
+    fun `request won't be serviced without authentication`() {
+        val passwordChangeRequest = PasswordChangeRequest(OLD_PASSWORD, NEW_CORRECT_PASSWORD)
+        given(userService.changePassword(passwordChangeRequest)).will { }
+
+        mockMvc.perform(
+                post(CHANGE_PASSWORD_PATH)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(passwordChangeRequest)))
+                .andExpect(status().isForbidden)
+                .andExpect(content().string(equalTo(EMPTY_BODY)))
+    }
+
+    private fun getTokenHeader(): String {
+        return "$BEARER ${jwtUtil.generateJwt(USERNAME, listOf("ROLE_USER"))}"
+    }
+
     companion object {
+        private const val USERNAME = "testing_user"
+
+        private const val AUTHORIZATION = "Authorization"
+        private const val BEARER = "Bearer"
+
         private const val CHANGE_PASSWORD_PATH = "/auth/change-password"
 
         private const val OLD_PASSWORD = "old_password"

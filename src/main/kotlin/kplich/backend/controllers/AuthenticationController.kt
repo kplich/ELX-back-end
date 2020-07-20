@@ -4,7 +4,6 @@ import kplich.backend.exceptions.UserAlreadyExistsException
 import kplich.backend.payloads.requests.LoginRequest
 import kplich.backend.payloads.requests.PasswordChangeRequest
 import kplich.backend.payloads.requests.SignUpRequest
-import kplich.backend.payloads.responses.SimpleMessageResponse
 import kplich.backend.services.UserDetailsServiceImpl
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -20,11 +19,11 @@ class AuthenticationController(private val userService: UserDetailsServiceImpl) 
     @PostMapping("/sign-up")
     fun registerUser(@Valid @RequestBody signUpRequest: SignUpRequest): ResponseEntity<*> {
         return try {
-            userService.save(signUpRequest)
-            ResponseEntity.status(HttpStatus.OK).build<Nothing>()
+            userService.saveNewUser(signUpRequest)
+            ResponseEntity.status(HttpStatus.CREATED).build<Nothing>()
         }
         catch (e: UserAlreadyExistsException) {
-            ResponseEntity.status(HttpStatus.CONFLICT).body(SimpleMessageResponse(e.message))
+            ResponseEntity.status(HttpStatus.CONFLICT).body(e)
         }
         catch (e: Exception) {
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e)
@@ -38,10 +37,10 @@ class AuthenticationController(private val userService: UserDetailsServiceImpl) 
             ResponseEntity.ok(jwtResponse)
         }
         catch(e: BadCredentialsException) {
-            ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null)
+            ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e)
         }
         catch (e: Exception) {
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.message)
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e)
         }
     }
 
@@ -51,9 +50,9 @@ class AuthenticationController(private val userService: UserDetailsServiceImpl) 
             userService.changePassword(passwordChangeRequest)
             ResponseEntity.status(HttpStatus.OK).build<Nothing>()
         } catch (e: BadCredentialsException) {
-            ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null)
+            ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e)
         } catch (e: Exception) {
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.message)
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e)
         }
     }
 }

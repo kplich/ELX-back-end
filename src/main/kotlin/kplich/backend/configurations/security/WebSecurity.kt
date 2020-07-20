@@ -22,7 +22,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 class WebSecurity(
-        private val userDetailsService: UserDetailsServiceImpl) : WebSecurityConfigurerAdapter() {
+        private val userDetailsService: UserDetailsServiceImpl,
+        private val jwtAuthenticationFilter: JWTAuthenticationFilter,
+        private val jwtAuthorizationFilter: JWTAuthorizationFilter) : WebSecurityConfigurerAdapter() {
 
     @Value("\${cors.origins}")
     private val allowedOrigins: List<String> = emptyList()
@@ -42,11 +44,12 @@ class WebSecurity(
                 .cors().and()
                 .csrf().disable()
                 .authorizeRequests()
-                    .antMatchers(HttpMethod.POST, "/auth/**").permitAll()
+                    .antMatchers(HttpMethod.POST, "/auth/log-in").permitAll()
+                    .antMatchers(HttpMethod.POST, "/auth/sign-up").permitAll()
                     .anyRequest().authenticated()
                     .and()
-                .addFilter(JWTAuthenticationFilter(authenticationManager()))
-                .addFilter(JWTAuthorizationFilter(authenticationManager()))
+                .addFilter(jwtAuthenticationFilter)
+                .addFilter(jwtAuthorizationFilter)
     }
 
     @Bean

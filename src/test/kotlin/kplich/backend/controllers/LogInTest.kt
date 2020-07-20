@@ -1,6 +1,7 @@
 package kplich.backend.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import kplich.backend.configurations.security.JwtUtil
 import kplich.backend.payloads.requests.LoginRequest
 import kplich.backend.payloads.responses.JwtResponse
 import kplich.backend.services.UserDetailsServiceImpl
@@ -18,7 +19,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
-@WebMvcTest(AuthenticationController::class)
+@WebMvcTest(AuthenticationController::class, JwtUtil::class)
 class LogInTest {
 
     @MockBean
