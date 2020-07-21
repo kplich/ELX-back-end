@@ -16,7 +16,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 class WebSecurity(
         private val userDetailsService: UserDetailsServiceImpl,
-        private val jwtAuthenticationFilter: JWTAuthenticationFilter,
         private val jwtAuthorizationFilter: JWTAuthorizationFilter
 ) : WebSecurityConfigurerAdapter() {
 
@@ -39,7 +38,6 @@ class WebSecurity(
                 .antMatchers(HttpMethod.POST, "/auth/log-in").permitAll()
                 .antMatchers(HttpMethod.POST, "/auth/sign-up").permitAll()
                 .anyRequest().authenticated().and()
-                .addFilter(jwtAuthenticationFilter)
                 .addFilter(jwtAuthorizationFilter)
     }
 
