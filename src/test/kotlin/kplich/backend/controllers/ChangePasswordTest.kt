@@ -92,7 +92,7 @@ class ChangePasswordTest {
     }
 
     private fun getTokenHeader(): String {
-        return "$BEARER ${jwtUtil.generateJwt(USERNAME, listOf("ROLE_USER"))}"
+        return "$BEARER ${jwtUtil.generateJwt(USERNAME)}"
     }
 
     companion object {

@@ -13,12 +13,11 @@ class JwtUtil(
         @Value("\${jwt.secret}") private val jwtSecret: String
 ) : Serializable {
 
-    fun generateJwt(username: String, roles: List<String>): String {
+    fun generateJwt(username: String): String {
         val key = Keys.hmacShaKeyFor(jwtSecret.toByteArray())
 
         return Jwts.builder()
                 .setSubject(username)
-                .claim(CLAIM_ROLES_KEY, roles)
                 .setIssuedAt(Date())
                 .signWith(key)
                 .compact()
@@ -31,6 +30,5 @@ class JwtUtil(
 
     companion object {
         const val CLAIM_SUBJECT_KEY = "sub"
-        const val CLAIM_ROLES_KEY = "roles"
     }
 }

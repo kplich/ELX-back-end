@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
+import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.web.cors.CorsConfiguration
@@ -23,7 +24,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 class WebSecurity(
         private val userDetailsService: UserDetailsServiceImpl,
-        private val jwtAuthorizationFilter: JWTAuthorizationFilter) : WebSecurityConfigurerAdapter() {
+        private val jwtAuthorizationFilter: JwtAuthorizationFilter,
+        private val jwtAuthenticationFilter: JwtAuthenticationFilter) : WebSecurityConfigurerAdapter() {
 
     @Value("\${cors.origins}")
     private val allowedOrigins: List<String> = emptyList()
@@ -42,12 +44,16 @@ class WebSecurity(
         http
                 .cors().and()
                 .csrf().disable()
+                .addFilter(jwtAuthenticationFilter)
+                .addFilter(jwtAuthorizationFilter)
                 .authorizeRequests()
                     .antMatchers(HttpMethod.POST, "/auth/log-in").permitAll()
                     .antMatchers(HttpMethod.POST, "/auth/sign-up").permitAll()
                     .anyRequest().authenticated()
                     .and()
-                .addFilter(jwtAuthorizationFilter)
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+
+        jwtAuthenticationFilter.setFilterProcessesUrl("/auth/log-in")
     }
 
     @Bean
@@ -61,9 +67,8 @@ class WebSecurity(
         val configuration = CorsConfiguration().apply {
             allowedOrigins = this@WebSecurity.allowedOrigins
             allowedMethods = listOf("GET", "POST", "PUT", "DELETE")
-            allowedHeaders = listOf(HttpHeaders.CONTENT_TYPE)
+            allowedHeaders = listOf(HttpHeaders.CONTENT_TYPE, HttpHeaders.AUTHORIZATION)
         }
-        println(configuration.allowedOrigins)
 
         return UrlBasedCorsConfigurationSource().apply {
             registerCorsConfiguration("/**", configuration)
