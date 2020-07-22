@@ -1,20 +1,17 @@
 package kplich.backend.services
 
-import kplich.backend.configurations.security.JwtUtil
 import kplich.backend.configurations.security.getAuthoritiesFromRoles
-import kplich.backend.configurations.security.getRoles
 import kplich.backend.entities.ApplicationUser
 import kplich.backend.entities.Role
 import kplich.backend.exceptions.RoleNotFoundException
 import kplich.backend.exceptions.UserAlreadyExistsException
-import kplich.backend.payloads.requests.LoginRequest
+import kplich.backend.payloads.requests.PasswordChangeRequest
 import kplich.backend.payloads.requests.SignUpRequest
-import kplich.backend.payloads.responses.JwtResponse
 import kplich.backend.repositories.ApplicationUserRepository
 import kplich.backend.repositories.RoleRepository
 import org.springframework.context.annotation.Lazy
-import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException
+import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetails
@@ -30,26 +27,24 @@ import org.springframework.transaction.annotation.Transactional
 class UserDetailsServiceImpl(
         private val userRepository: ApplicationUserRepository,
         private val roleRepository: RoleRepository,
-        private val jwtUtil: JwtUtil,
-        @Lazy private val passwordEncoder: PasswordEncoder,
-        @Lazy private val authenticationManager: AuthenticationManager
+        @Lazy private val passwordEncoder: PasswordEncoder
 ): UserDetailsService {
 
     @Transactional(readOnly = true)
     @Throws(UsernameNotFoundException::class)
     override fun loadUserByUsername(username: String): UserDetails {
-        val user = userRepository.findByUsername(username) ?: throw UsernameNotFoundException(username)
-        return User(user.username, user.password, getAuthoritiesFromRoles(user.roles))
+        val appUser = userRepository.findByUsername(username) ?: throw UsernameNotFoundException(username)
+        return User(appUser.username, appUser.password, getAuthoritiesFromRoles(appUser.roles))
     }
 
     @Throws(UserAlreadyExistsException::class, RoleNotFoundException::class)
-    fun save(signUpRequest: SignUpRequest) {
+    fun saveNewUser(signUpRequest: SignUpRequest) {
         if(userRepository.existsByUsername(signUpRequest.username)) {
             throw UserAlreadyExistsException(signUpRequest.username)
         }
 
+        println(passwordEncoder.hashCode())
         val user = ApplicationUser(signUpRequest.username, passwordEncoder.encode(signUpRequest.password))
-
         val roles = mutableSetOf<Role>()
         roles.add(roleRepository.findByName(Role.RoleEnum.ROLE_USER) ?: throw RoleNotFoundException(Role.RoleEnum.ROLE_USER))
         user.roles = roles
@@ -57,14 +52,29 @@ class UserDetailsServiceImpl(
         userRepository.save(user)
     }
 
-    fun authenticateUser(loginRequest: LoginRequest): JwtResponse {
-        val authentication = authenticationManager.authenticate(UsernamePasswordAuthenticationToken(loginRequest.username, loginRequest.password))
+    @Throws(RoleNotFoundException::class, AuthenticationCredentialsNotFoundException::class, BadCredentialsException::class)
+    @Transactional
+    fun changePassword(passwordChangeRequest: PasswordChangeRequest) {
 
-        SecurityContextHolder.getContext().authentication = authentication
-        val jwtToken = jwtUtil.generateJwt(loginRequest.username, SecurityContextHolder.getContext().authentication.getRoles())
+        // it is assumed that user is authenticated and authorized to perform requests that will call this method,
+        // therefore their credentials can be obtained
+        val userAuthentication = SecurityContextHolder.getContext().authentication
 
-        val userDetails = authentication.principal as UserDetails
+        if(userAuthentication != null) {
+            val username = userAuthentication.name
 
-        return JwtResponse(jwtToken, userDetails.username)
+            val userDetails = loadUserByUsername(username)
+
+            if(passwordEncoder.matches(passwordChangeRequest.oldPassword, userDetails.password)) {
+                val userWithNewPassword = userRepository.findByUsername(username)
+                        ?: throw UsernameNotFoundException("Username $username not found!")
+                userWithNewPassword.password = passwordEncoder.encode(passwordChangeRequest.newPassword)
+                userRepository.save(userWithNewPassword)
+            }
+            else throw BadCredentialsException("Invalid old password!")
+        }
+        else {
+            throw AuthenticationCredentialsNotFoundException("No authentication found!")
+        }
     }
 }
