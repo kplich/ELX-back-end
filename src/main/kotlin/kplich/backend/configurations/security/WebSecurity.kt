@@ -68,6 +68,7 @@ class WebSecurity(
             allowedOrigins = this@WebSecurity.allowedOrigins
             allowedMethods = listOf("GET", "POST", "PUT", "DELETE")
             allowedHeaders = listOf(HttpHeaders.CONTENT_TYPE, HttpHeaders.AUTHORIZATION)
+            exposedHeaders = listOf(HttpHeaders.AUTHORIZATION)
         }
 
         return UrlBasedCorsConfigurationSource().apply {
