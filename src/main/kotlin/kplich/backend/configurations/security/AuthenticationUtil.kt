@@ -1,11 +1,9 @@
 package kplich.backend.configurations.security
 
-import org.springframework.security.core.Authentication
+import kplich.backend.entities.Role
+import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 
-fun getRoles(authentication: Authentication): List<String> {
-    val roles = mutableListOf<String>()
-    authentication.authorities.forEach {
-        roles.add(it.authority)
-    }
-    return roles
+fun getAuthoritiesFromRoles(roles: Collection<Role>): Collection<GrantedAuthority> {
+    return roles.map { role -> SimpleGrantedAuthority(role.name.name) }
 }
