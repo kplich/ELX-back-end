@@ -13,6 +13,7 @@ import kplich.backend.entities.Item.Companion.STATUS_REQUIRED_MSG
 import kplich.backend.entities.Item.Companion.TITLE_LENGTH_MSG
 import kplich.backend.entities.Item.Companion.TITLE_MAX_LENGTH
 import kplich.backend.entities.Item.Companion.TITLE_MIN_LENGTH
+import java.time.LocalDateTime
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
@@ -41,4 +42,7 @@ data class ItemAddRequest(
         @NotNull(message = PHOTOS_REQUIRED_MSG)
         @Size(min = 0, max = 8, message = PHOTOS_SIZE_MSG)
         val photoUrls: List<String>
-)
+) {
+    val added: LocalDateTime = LocalDateTime.now()
+    val close: LocalDateTime? = null
+}

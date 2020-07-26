@@ -4,7 +4,7 @@ import kplich.backend.entities.Item
 import kplich.backend.entities.ItemPhoto
 import kplich.backend.exceptions.BadAddItemRequestException
 import kplich.backend.payloads.requests.ItemAddRequest
-import kplich.backend.payloads.responses.ItemAddedResponse
+import kplich.backend.payloads.responses.ItemResponse
 import kplich.backend.repositories.ApplicationUserRepository
 import kplich.backend.repositories.CategoryRepository
 import kplich.backend.repositories.ItemRepository
@@ -12,7 +12,6 @@ import kplich.backend.repositories.PhotoRepository
 import org.modelmapper.ModelMapper
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDateTime
 
 @Service
 class ItemService(
@@ -25,7 +24,7 @@ class ItemService(
 
     @Throws(BadAddItemRequestException::class)
     @Transactional
-    fun addItem(itemAddRequest: ItemAddRequest): ItemAddedResponse {
+    fun addItem(itemAddRequest: ItemAddRequest): ItemResponse {
         val addedByUserEntity = userRepository.findByUsername(itemAddRequest.addedBy)
                 ?: throw BadAddItemRequestException("No user with username ${itemAddRequest.addedBy} found.")
 
@@ -34,9 +33,7 @@ class ItemService(
 
         val newItemEntity: Item = modelMapper.map(itemAddRequest, Item::class.java).apply {
             addedBy = addedByUserEntity
-            added = LocalDateTime.now()
             category = categoryEntity
-            closed = null
         }
 
         val savedItemEntity = itemRepository.save(newItemEntity)
@@ -54,7 +51,7 @@ class ItemService(
         )
 
         return with(updatedItemEntity) {
-            ItemAddedResponse(
+            ItemResponse(
                     this.title,
                     this.description,
                     this.price.toFloat(),
