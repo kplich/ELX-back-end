@@ -2,22 +2,20 @@ package kplich.backend.services
 
 import kplich.backend.entities.Item
 import kplich.backend.entities.ItemPhoto
-import kplich.backend.exceptions.BadAddItemRequestException
-import kplich.backend.exceptions.ItemAlreadyClosedException
-import kplich.backend.exceptions.ItemNotFoundException
-import kplich.backend.exceptions.UnauthorizedItemClosingRequest
+import kplich.backend.exceptions.*
 import kplich.backend.payloads.requests.ItemAddRequest
+import kplich.backend.payloads.requests.ItemUpdateRequest
 import kplich.backend.payloads.responses.ItemResponse
-import kplich.backend.repositories.ApplicationUserRepository
-import kplich.backend.repositories.CategoryRepository
-import kplich.backend.repositories.ItemRepository
-import kplich.backend.repositories.PhotoRepository
+import kplich.backend.repositories.*
 import org.modelmapper.ModelMapper
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.math.MathContext
+import java.math.RoundingMode
 import java.time.LocalDateTime
+
+// TODO: improve model mapping
 
 @Service
 class ItemService(
@@ -27,43 +25,80 @@ class ItemService(
         private val categoryRepository: CategoryRepository,
         private val photoRepository: PhotoRepository
 ) {
-    
-    fun updateItem()
 
-    @Throws(ItemNotFoundException::class, UnauthorizedItemClosingRequest::class, ItemAlreadyClosedException::class)
+    @Throws(
+            ItemNotFoundException::class,
+            UnauthorizedItemUpdateRequestException::class,
+            NewItemCategoryNotFound::class)
+    @Transactional
+    fun updateItem(request: ItemUpdateRequest): ItemResponse {
+        val oldItem = itemRepository.findByIdOrThrow(request.id, ::ItemNotFoundException)
+
+        if (oldItem.canBeUpdatedByCurrentlyLoggedUser()) throw UnauthorizedItemUpdateRequestException(oldItem.id)
+
+        if (oldItem.closed) throw ClosedItemUpdateException()
+
+        val categoryEntity = categoryRepository.findByIdOrThrow(request.category, ::NewItemCategoryNotFound)
+
+        photoRepository.deleteAll(oldItem.photos)
+
+        val newItemPrePhotos = itemRepository.save(
+                oldItem.apply {
+                    title = request.title
+                    description = request.description
+                    price = request.price
+                            .toBigDecimal(MathContext(13)).setScale(4, RoundingMode.HALF_UP)
+                    category = categoryEntity
+                    usedStatus = request.usedStatus
+                }
+        )
+
+        val newItemPhotos = request.photos.map { url ->
+            photoRepository.save(
+                    ItemPhoto(url, newItemPrePhotos)
+            )
+        }.toMutableList()
+
+        val newItem = itemRepository.save(
+                newItemPrePhotos.apply {
+                    photos = newItemPhotos
+                }
+        )
+
+        return newItem.toResponse()
+    }
+
+    @Throws(ItemNotFoundException::class, UnauthorizedItemUpdateRequestException::class, ItemAlreadyClosedException::class)
     @Transactional
     fun closeItem(id: Long): ItemResponse {
-        val item = itemRepository.findByIdOrNull(id) ?: throw ItemNotFoundException(id)
+        val item = itemRepository.findByIdOrThrow(id, ::ItemNotFoundException)
 
-        val loggedUser = SecurityContextHolder.getContext().authentication
-        if (loggedUser.name != item.addedBy.username) throw UnauthorizedItemClosingRequest(loggedUser.name, id)
+        if (item.canBeUpdatedByCurrentlyLoggedUser()) throw UnauthorizedItemUpdateRequestException(id)
 
-        if (item.closed != null) throw ItemAlreadyClosedException(id)
+        if (item.closed) throw ItemAlreadyClosedException(id)
 
         return itemRepository.save(
                 item.apply {
-                    closed = LocalDateTime.now()
+                    closedOn = LocalDateTime.now()
                 }
         ).toResponse()
     }
 
     @Throws(ItemNotFoundException::class)
     fun getItem(id: Long): ItemResponse {
-        val item = itemRepository.findByIdOrNull(id) ?: throw ItemNotFoundException(id)
+        val item = itemRepository.findByIdOrThrow(id, ::ItemNotFoundException)
 
         return item.toResponse()
     }
 
     @Throws(BadAddItemRequestException::class)
     @Transactional
-    fun addItem(itemAddRequest: ItemAddRequest): ItemResponse {
-        val addedByUserEntity = userRepository.findByIdOrNull(itemAddRequest.addedBy)
-                ?: throw BadAddItemRequestException("No user with id ${itemAddRequest.addedBy} found.")
+    fun addItem(request: ItemAddRequest): ItemResponse {
+        val addedByUserEntity = userRepository.findByIdOrThrow(request.addedBy, ::ItemAddingUserNotFound)
 
-        val categoryEntity = categoryRepository.findByIdOrNull(itemAddRequest.category)
-                ?: throw BadAddItemRequestException("No category with id ${itemAddRequest.category} found")
+        val categoryEntity = categoryRepository.findByIdOrThrow(request.category, ::NewItemCategoryNotFound)
 
-        val mappedEntity: Item = modelMapper.map(itemAddRequest, Item::class.java)
+        val mappedEntity: Item = modelMapper.map(request, Item::class.java)
         val newItemEntity = mappedEntity.apply {
             addedBy = addedByUserEntity
             category = categoryEntity
@@ -71,7 +106,7 @@ class ItemService(
 
         val savedItemEntity = itemRepository.save(newItemEntity)
 
-        val itemPhotos = itemAddRequest.photos.map { url ->
+        val itemPhotos = request.photos.map { url ->
             photoRepository.save(
                     ItemPhoto(url, savedItemEntity)
             )
@@ -86,15 +121,19 @@ class ItemService(
         return updatedItemEntity.toResponse()
     }
 
-    private fun Item.toResponse(): ItemResponse =
-            ItemResponse(
-                this.title,
-                this.description,
-                this.price.toFloat(),
-                this.addedBy.username,
-                this.added,
-                this.category.name,
-                this.usedStatus.name,
-                this.photos.map { photo -> photo.url },
-                this.closed)
+    private fun Item.toResponse(): ItemResponse = ItemResponse(
+                                                    this.title,
+                                                    this.description,
+                                                    this.price.toFloat(),
+                                                    this.addedBy.username,
+                                                    this.addedOn,
+                                                    this.category.name,
+                                                    this.usedStatus.name,
+                                                    this.photos.map { photo -> photo.url },
+                                                    this.closedOn)
+
+    private fun Item.canBeUpdatedByCurrentlyLoggedUser(): Boolean {
+        val loggedInUsername = SecurityContextHolder.getContext().authentication.name
+        return this.addedBy.username == loggedInUsername
+    }
 }

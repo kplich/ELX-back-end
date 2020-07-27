@@ -1,10 +1,8 @@
 package kplich.backend.controllers
 
-import kplich.backend.exceptions.BadAddItemRequestException
-import kplich.backend.exceptions.ItemAlreadyClosedException
-import kplich.backend.exceptions.ItemNotFoundException
-import kplich.backend.exceptions.UnauthorizedItemClosingRequest
 import kplich.backend.payloads.requests.ItemAddRequest
+import kplich.backend.payloads.requests.ItemUpdateRequest
+import kplich.backend.payloads.responses.ItemResponse
 import kplich.backend.services.ItemService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -18,38 +16,27 @@ class ItemController(
         private val itemService: ItemService
 ) {
 
+    @PutMapping("/")
+    @ResponseStatus(HttpStatus.OK)
+    fun updateItem(@Valid @RequestBody itemUpdateRequest: ItemUpdateRequest): ResponseEntity<ItemResponse> {
+        return ResponseEntity.ok(itemService.updateItem(itemUpdateRequest))
+    }
+
+    @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{id}/close")
-    fun closeItem(@PathVariable id: Long): ResponseEntity<*> {
-        return try {
-            ResponseEntity.ok(itemService.closeItem(id))
-        } catch (e: ItemNotFoundException) {
-            ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.message)
-        } catch (e: UnauthorizedItemClosingRequest) {
-            ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.message)
-        } catch (e: ItemAlreadyClosedException) {
-            ResponseEntity.status(HttpStatus.CONFLICT).body(e.message)
-        }
+    fun closeItem(@PathVariable id: Long): ResponseEntity<ItemResponse> {
+        return ResponseEntity.ok(itemService.closeItem(id))
     }
 
     @GetMapping("/{id}")
-    fun getItem(@PathVariable id: Long): ResponseEntity<*> {
-        return try {
-            ResponseEntity.ok(itemService.getItem(id))
-        } catch (e: ItemNotFoundException) {
-            ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.message)
-        } catch (e: Exception) {
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.message)
-        }
+    @ResponseStatus(HttpStatus.OK)
+    fun getItem(@PathVariable id: Long): ResponseEntity<ItemResponse> {
+        return ResponseEntity.ok(itemService.getItem(id))
     }
 
     @PostMapping("/")
-    fun addItem(@Valid @RequestBody itemAddRequest: ItemAddRequest): ResponseEntity<*> {
-        return try {
-            ResponseEntity.status(HttpStatus.CREATED).body(itemService.addItem(itemAddRequest))
-        } catch (e: BadAddItemRequestException) {
-            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.message)
-        } catch (e: Exception) {
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.message)
-        }
+    @ResponseStatus(HttpStatus.CREATED)
+    fun addItem(@RequestBody @Valid itemAddRequest: ItemAddRequest): ResponseEntity<ItemResponse> {
+        return ResponseEntity.status(HttpStatus.CREATED).body(itemService.addItem(itemAddRequest))
     }
 }

@@ -19,7 +19,7 @@ data class Item(
         var title: String,
 
         @NotBlank(message = DESCRIPTION_REQUIRED_MSG)
-        @Size(min = DESCRIPTION_MIN_LENGTH, max = DESCRIPTION_MAX_LENGTH, message = DESCRIPTION_LENGTH_MSG)
+        @Size(min = 25, max = 25, message = DESCRIPTION_LENGTH_MSG)
         var description: String,
 
         @NotNull(message = PRICE_REQUIRED_MSG)
@@ -48,12 +48,17 @@ data class Item(
 
         @NotNull(message = ADDED_DATE_REQUIRED_MSG)
         @Size(min = 0, max = 8, message = PHOTOS_SIZE_MSG)
-        var added: LocalDateTime = LocalDateTime.now(),
+        var addedOn: LocalDateTime = LocalDateTime.now(),
 
-        var closed: LocalDateTime? = null,
+        var closedOn: LocalDateTime? = null,
 
-        @Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id: Long = 0
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        var id: Long = 0
         ) {
+
+    val closed get(): Boolean = closedOn != null
+
     companion object {
         const val TITLE_REQURIED_MSG = "Title is required."
         const val TITLE_MIN_LENGTH = 10
@@ -91,7 +96,7 @@ annotation class ClosedAfterAdded(val message: String = "", val groups: Array<KC
 
 class ClosedAfterAddedValidator : ConstraintValidator<ClosedAfterAdded, Item> {
     override fun isValid(item: Item, context: ConstraintValidatorContext): Boolean {
-        return item.closed == null || item.closed!!.isAfter(item.added)
+        return item.closedOn == null || item.closedOn!!.isAfter(item.addedOn)
     }
 }
 
