@@ -25,7 +25,7 @@ data class ApplicationUser(
         @ManyToMany(fetch = FetchType.LAZY)
         @JoinTable(
                 name = "user_roles",
-                joinColumns = [JoinColumn(name = "user_id")],
+                joinColumns = [JoinColumn(name = "id")],
                 inverseJoinColumns = [JoinColumn(name = "role_id")])
         var roles: MutableSet<Role> = hashSetOf()
 )

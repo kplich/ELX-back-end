@@ -4,9 +4,9 @@ import org.springframework.http.HttpStatus
 
 abstract class BadAddItemRequestException(override val message: String) : ElxResponseException(HttpStatus.BAD_REQUEST, message)
 
-class ItemAddingUserNotFound(id: Long): BadAddItemRequestException("No user with ID $id found.")
+class NewItemUserNotFoundException(id: Long): BadAddItemRequestException("No user with ID $id found.")
 
-class NewItemCategoryNotFound(id: Int): BadAddItemRequestException("No category with ID $id found")
+class NewItemCategoryNotFoundException(id: Int): BadAddItemRequestException("No category with ID $id found")
 
 class ItemNotFoundException(id: Long) : ElxResponseException(HttpStatus.NOT_FOUND, "Item with ID $id not found.")
 

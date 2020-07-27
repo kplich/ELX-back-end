@@ -5,8 +5,8 @@ import kplich.backend.entities.ApplicationUser
 import kplich.backend.entities.Role
 import kplich.backend.exceptions.RoleNotFoundException
 import kplich.backend.exceptions.UserAlreadyExistsException
-import kplich.backend.payloads.requests.PasswordChangeRequest
-import kplich.backend.payloads.requests.SignUpRequest
+import kplich.backend.payloads.requests.authentication.PasswordChangeRequest
+import kplich.backend.payloads.requests.authentication.SignUpRequest
 import kplich.backend.repositories.ApplicationUserRepository
 import kplich.backend.repositories.RoleRepository
 import org.springframework.context.annotation.Lazy
@@ -77,4 +77,6 @@ class UserDetailsServiceImpl(
             throw AuthenticationCredentialsNotFoundException("No authentication found!")
         }
     }
+
+
 }

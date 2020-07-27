@@ -1,7 +1,7 @@
 package kplich.backend.controllers
 
-import kplich.backend.payloads.requests.PasswordChangeRequest
-import kplich.backend.payloads.requests.SignUpRequest
+import kplich.backend.payloads.requests.authentication.PasswordChangeRequest
+import kplich.backend.payloads.requests.authentication.SignUpRequest
 import kplich.backend.services.UserDetailsServiceImpl
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity

@@ -1,5 +1,7 @@
 package kplich.backend.entities
 
+import com.fasterxml.jackson.annotation.JsonBackReference
+import com.fasterxml.jackson.annotation.JsonManagedReference
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import javax.persistence.*
@@ -14,40 +16,41 @@ import kotlin.reflect.KClass
 @Table(name = "items")
 @ClosedAfterAdded
 data class Item(
-        @NotBlank(message = TITLE_REQURIED_MSG)
-        @Size(min = TITLE_MIN_LENGTH, max = TITLE_MAX_LENGTH, message = TITLE_LENGTH_MSG)
+        @get:NotBlank(message = TITLE_REQURIED_MSG)
+        @get:Size(min = TITLE_MIN_LENGTH, max = TITLE_MAX_LENGTH, message = TITLE_LENGTH_MSG)
         var title: String,
 
-        @NotBlank(message = DESCRIPTION_REQUIRED_MSG)
-        @Size(min = 25, max = 25, message = DESCRIPTION_LENGTH_MSG)
+        @get:NotBlank(message = DESCRIPTION_REQUIRED_MSG)
+        @get:Size(min = DESCRIPTION_MIN_LENGTH, max = DESCRIPTION_MAX_LENGTH, message = DESCRIPTION_LENGTH_MSG)
         var description: String,
 
-        @NotNull(message = PRICE_REQUIRED_MSG)
-        @DecimalMin(value = "0.0", inclusive = true, message = PRICE_TOO_LOW_MSG)
-        @DecimalMax(value = "100000000.0", inclusive = true, message = PRICE_TOO_HIGH_MSG)
-        @Digits(integer = 9, fraction = 4, message = PRICE_TOO_PRECISE_MSG)
+        @get:NotNull(message = PRICE_REQUIRED_MSG)
+        @get:DecimalMin(value = "0.0", inclusive = true, message = PRICE_TOO_LOW_MSG)
+        @get:DecimalMax(value = "100000000.0", inclusive = true, message = PRICE_TOO_HIGH_MSG)
+        @get:Digits(integer = 9, fraction = 4, message = PRICE_TOO_PRECISE_MSG)
         var price: BigDecimal,
 
-        @NotNull(message = ADDING_USER_REQUIRED_MSG)
-        @ManyToOne(fetch = FetchType.LAZY)
-        @JoinColumn(name = "user_id")
+        @get:NotNull(message = ADDING_USER_REQUIRED_MSG)
+        @ManyToOne(fetch = FetchType.EAGER, optional = false)
+        @JoinColumn(name = "added_by_id")
         var addedBy: ApplicationUser,
 
-        @NotNull(message = CATEGORY_REQUIRED_MSG)
-        @ManyToOne(fetch = FetchType.LAZY)
+        @get:NotNull(message = CATEGORY_REQUIRED_MSG)
+        @ManyToOne(fetch = FetchType.EAGER, optional = false)
         @JoinColumn(name = "category_id")
         var category: Category,
 
-        @NotNull(message = STATUS_REQUIRED_MSG)
+        @get:NotNull(message = STATUS_REQUIRED_MSG)
         @Enumerated(EnumType.STRING)
         var usedStatus: UsedStatus,
 
-        @NotNull(message = PHOTOS_REQUIRED_MSG)
-        @OneToMany(mappedBy = "item")
+        @get:NotNull(message = PHOTOS_REQUIRED_MSG)
+        @get:Size(min = 0, max = 8, message = PHOTOS_SIZE_MSG)
+        @OneToMany(mappedBy = "item", targetEntity = ItemPhoto::class)
+        @JsonManagedReference
         var photos: MutableList<ItemPhoto>,
 
-        @NotNull(message = ADDED_DATE_REQUIRED_MSG)
-        @Size(min = 0, max = 8, message = PHOTOS_SIZE_MSG)
+        @get:NotNull(message = ADDED_DATE_REQUIRED_MSG)
         var addedOn: LocalDateTime = LocalDateTime.now(),
 
         var closedOn: LocalDateTime? = null,
@@ -57,6 +60,7 @@ data class Item(
         var id: Long = 0
         ) {
 
+    @get:Transient
     val closed get(): Boolean = closedOn != null
 
     companion object {
@@ -103,8 +107,11 @@ class ClosedAfterAddedValidator : ConstraintValidator<ClosedAfterAdded, Item> {
 @Entity
 @Table(name = "categories")
 data class Category(
-        @NotBlank var name: String,
-        @Id var id: Int
+        @get:NotBlank
+        var name: String,
+
+        @Id
+        var id: Int
 )
 
 enum class UsedStatus {
@@ -114,7 +121,15 @@ enum class UsedStatus {
 @Entity
 @Table(name = "item_photos")
 data class ItemPhoto(
-        @NotNull @NotBlank var url: String,
-        @ManyToOne var item: Item,
-        @Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id: Long = 0
+        @get:NotNull
+        @get:NotBlank
+        var url: String,
+
+        @ManyToOne(fetch = FetchType.LAZY)
+        @JsonBackReference
+        var item: Item,
+
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        var id: Long = 0
 )
