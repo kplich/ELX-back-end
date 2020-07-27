@@ -5,7 +5,7 @@ import kplich.backend.entities.ItemPhoto
 import kplich.backend.exceptions.*
 import kplich.backend.payloads.requests.ItemAddRequest
 import kplich.backend.payloads.requests.ItemUpdateRequest
-import kplich.backend.payloads.responses.ItemResponse
+import kplich.backend.payloads.responses.ItemSimpleResponse
 import kplich.backend.repositories.*
 import org.modelmapper.ModelMapper
 import org.springframework.security.core.context.SecurityContextHolder
@@ -31,7 +31,7 @@ class ItemService(
             UnauthorizedItemUpdateRequestException::class,
             NewItemCategoryNotFound::class)
     @Transactional
-    fun updateItem(request: ItemUpdateRequest): ItemResponse {
+    fun updateItem(request: ItemUpdateRequest): ItemSimpleResponse {
         val oldItem = itemRepository.findByIdOrThrow(request.id, ::ItemNotFoundException)
 
         if (oldItem.canBeUpdatedByCurrentlyLoggedUser()) throw UnauthorizedItemUpdateRequestException(oldItem.id)
@@ -70,7 +70,7 @@ class ItemService(
 
     @Throws(ItemNotFoundException::class, UnauthorizedItemUpdateRequestException::class, ItemAlreadyClosedException::class)
     @Transactional
-    fun closeItem(id: Long): ItemResponse {
+    fun closeItem(id: Long): ItemSimpleResponse {
         val item = itemRepository.findByIdOrThrow(id, ::ItemNotFoundException)
 
         if (item.canBeUpdatedByCurrentlyLoggedUser()) throw UnauthorizedItemUpdateRequestException(id)
@@ -85,7 +85,7 @@ class ItemService(
     }
 
     @Throws(ItemNotFoundException::class)
-    fun getItem(id: Long): ItemResponse {
+    fun getItem(id: Long): ItemSimpleResponse {
         val item = itemRepository.findByIdOrThrow(id, ::ItemNotFoundException)
 
         return item.toResponse()
@@ -93,7 +93,7 @@ class ItemService(
 
     @Throws(BadAddItemRequestException::class)
     @Transactional
-    fun addItem(request: ItemAddRequest): ItemResponse {
+    fun addItem(request: ItemAddRequest): ItemSimpleResponse {
         val addedByUserEntity = userRepository.findByIdOrThrow(request.addedBy, ::ItemAddingUserNotFound)
 
         val categoryEntity = categoryRepository.findByIdOrThrow(request.category, ::NewItemCategoryNotFound)
@@ -121,7 +121,7 @@ class ItemService(
         return updatedItemEntity.toResponse()
     }
 
-    private fun Item.toResponse(): ItemResponse = ItemResponse(
+    private fun Item.toResponse(): ItemSimpleResponse = ItemSimpleResponse(
                                                     this.title,
                                                     this.description,
                                                     this.price.toFloat(),

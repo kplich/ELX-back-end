@@ -1,23 +1,17 @@
 package kplich.backend.exceptions
 
 import org.springframework.http.HttpStatus
-import org.springframework.web.bind.annotation.ResponseStatus
 
-@ResponseStatus(value = HttpStatus.BAD_REQUEST)
-abstract class BadAddItemRequestException(override val message: String) : ElxException(message)
+abstract class BadAddItemRequestException(override val message: String) : ElxResponseException(HttpStatus.BAD_REQUEST, message)
 
-class ItemAddingUserNotFound(id: Long): BadAddItemRequestException("No user with id $id found.")
+class ItemAddingUserNotFound(id: Long): BadAddItemRequestException("No user with ID $id found.")
 
-class NewItemCategoryNotFound(id: Int): BadAddItemRequestException("No category with id $id found")
+class NewItemCategoryNotFound(id: Int): BadAddItemRequestException("No category with ID $id found")
 
-@ResponseStatus(value = HttpStatus.NOT_FOUND)
-class ItemNotFoundException(id: Long) : ElxException("Item with id $id not found.")
+class ItemNotFoundException(id: Long) : ElxResponseException(HttpStatus.NOT_FOUND, "Item with ID $id not found.")
 
-@ResponseStatus(value = HttpStatus.CONFLICT)
-class ItemAlreadyClosedException(id: Long): ElxException("Item with id $id is already closed.")
+class ItemAlreadyClosedException(id: Long): ElxResponseException(HttpStatus.CONFLICT, "Item with ID $id is already closed.")
 
-@ResponseStatus(value = HttpStatus.UNAUTHORIZED)
-class UnauthorizedItemUpdateRequestException(id: Long): ElxException("This user isn't authorized to update item with id $id.")
+class UnauthorizedItemUpdateRequestException(id: Long): ElxResponseException(HttpStatus.UNAUTHORIZED, "This user isn't authorized to update item with ID $id.")
 
-@ResponseStatus(value = HttpStatus.CONFLICT)
-class ClosedItemUpdateException: ElxException("A closed item can't be updated.")
+class ClosedItemUpdateException: ElxResponseException(HttpStatus.CONFLICT, "A closed item can't be updated.")

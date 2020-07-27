@@ -2,13 +2,9 @@ package kplich.backend.exceptions
 
 import kplich.backend.entities.Role
 import org.springframework.http.HttpStatus
-import org.springframework.web.bind.annotation.ResponseStatus
 
-@ResponseStatus(HttpStatus.NOT_FOUND)
-class UserNotFoundException(val username: String) : ElxException("No user with username $username found!")
+class UserNotFoundException(val username: String) : ElxResponseException(HttpStatus.NOT_FOUND, "No user with username $username found!")
 
-@ResponseStatus(HttpStatus.NOT_FOUND)
-class RoleNotFoundException(role: Role.RoleEnum) : ElxException("Role $role not found!")
+class RoleNotFoundException(role: Role.RoleEnum) : ElxResponseException(HttpStatus.NOT_FOUND, "Role $role not found!")
 
-@ResponseStatus(HttpStatus.CONFLICT)
-class UserAlreadyExistsException(username: String) : ElxException("User with username $username already exists!")
+class UserAlreadyExistsException(username: String) : ElxResponseException(HttpStatus.CONFLICT, "User with username $username already exists!")

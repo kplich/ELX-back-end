@@ -2,7 +2,7 @@ package kplich.backend.controllers
 
 import kplich.backend.payloads.requests.ItemAddRequest
 import kplich.backend.payloads.requests.ItemUpdateRequest
-import kplich.backend.payloads.responses.ItemResponse
+import kplich.backend.payloads.responses.ItemSimpleResponse
 import kplich.backend.services.ItemService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -18,25 +18,25 @@ class ItemController(
 
     @PutMapping("/")
     @ResponseStatus(HttpStatus.OK)
-    fun updateItem(@Valid @RequestBody itemUpdateRequest: ItemUpdateRequest): ResponseEntity<ItemResponse> {
+    fun updateItem(@Valid @RequestBody itemUpdateRequest: ItemUpdateRequest): ResponseEntity<ItemSimpleResponse> {
         return ResponseEntity.ok(itemService.updateItem(itemUpdateRequest))
     }
 
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{id}/close")
-    fun closeItem(@PathVariable id: Long): ResponseEntity<ItemResponse> {
+    fun closeItem(@PathVariable id: Long): ResponseEntity<ItemSimpleResponse> {
         return ResponseEntity.ok(itemService.closeItem(id))
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    fun getItem(@PathVariable id: Long): ResponseEntity<ItemResponse> {
+    fun getItem(@PathVariable id: Long): ResponseEntity<ItemSimpleResponse> {
         return ResponseEntity.ok(itemService.getItem(id))
     }
 
     @PostMapping("/")
     @ResponseStatus(HttpStatus.CREATED)
-    fun addItem(@RequestBody @Valid itemAddRequest: ItemAddRequest): ResponseEntity<ItemResponse> {
+    fun addItem(@RequestBody @Valid itemAddRequest: ItemAddRequest): ResponseEntity<ItemSimpleResponse> {
         return ResponseEntity.status(HttpStatus.CREATED).body(itemService.addItem(itemAddRequest))
     }
 }
