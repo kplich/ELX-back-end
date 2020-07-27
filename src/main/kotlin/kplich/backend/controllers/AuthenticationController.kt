@@ -22,10 +22,10 @@ class AuthenticationController(private val userService: UserDetailsServiceImpl) 
             ResponseEntity.status(HttpStatus.CREATED).build<Nothing>()
         }
         catch (e: UserAlreadyExistsException) {
-            ResponseEntity.status(HttpStatus.CONFLICT).body(e)
+            ResponseEntity.status(HttpStatus.CONFLICT).body(e.message)
         }
         catch (e: Exception) {
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e)
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.message)
         }
     }
 
@@ -35,9 +35,9 @@ class AuthenticationController(private val userService: UserDetailsServiceImpl) 
             userService.changePassword(passwordChangeRequest)
             ResponseEntity.status(HttpStatus.OK).build<Nothing>()
         } catch (e: BadCredentialsException) {
-            ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e)
+            ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.message)
         } catch (e: Exception) {
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e)
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.message)
         }
     }
 }

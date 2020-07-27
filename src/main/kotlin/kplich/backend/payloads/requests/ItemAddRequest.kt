@@ -31,17 +31,17 @@ data class ItemAddRequest(
         val price: Float,
 
         @NotBlank(message = ADDED_DATE_REQUIRED_MSG)
-        val addedBy: String,
+        val addedBy: Long,
 
         @NotBlank(message = CATEGORY_REQUIRED_MSG)
-        val category: String,
+        val category: Int,
 
         @NotBlank(message = STATUS_REQUIRED_MSG)
         val usedStatus: String,
 
         @NotNull(message = PHOTOS_REQUIRED_MSG)
         @Size(min = 0, max = 8, message = PHOTOS_SIZE_MSG)
-        val photoUrls: List<String>
+        val photos: List<String>
 ) {
     val added: LocalDateTime = LocalDateTime.now()
     val close: LocalDateTime? = null
