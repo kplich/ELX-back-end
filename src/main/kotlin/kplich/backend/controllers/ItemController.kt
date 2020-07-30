@@ -1,5 +1,6 @@
 package kplich.backend.controllers
 
+import kplich.backend.entities.Category
 import kplich.backend.payloads.requests.items.ItemAddRequest
 import kplich.backend.payloads.requests.items.ItemSearchingCriteria
 import kplich.backend.payloads.requests.items.ItemUpdateRequest
@@ -16,7 +17,6 @@ import javax.validation.Valid
 class ItemController(
         private val itemService: ItemService
 ) {
-
     @PutMapping("/")
     @ResponseStatus(HttpStatus.OK)
     fun updateItem(@Valid @RequestBody itemUpdateRequest: ItemUpdateRequest): ResponseEntity<ItemResponse> {
@@ -45,5 +45,17 @@ class ItemController(
     @ResponseStatus(HttpStatus.CREATED)
     fun addItem(@RequestBody @Valid itemAddRequest: ItemAddRequest): ResponseEntity<ItemResponse> {
         return ResponseEntity.status(HttpStatus.CREATED).body(itemService.addItem(itemAddRequest))
+    }
+}
+
+@Controller
+@RequestMapping("/categories")
+class CategoryController(
+        private val itemService: ItemService
+) {
+    @GetMapping("")
+    @ResponseStatus(HttpStatus.OK)
+    fun getCategories(): ResponseEntity<List<Category>> {
+        return ResponseEntity.ok(itemService.getCategories())
     }
 }

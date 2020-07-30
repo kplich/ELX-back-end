@@ -1,5 +1,6 @@
 package kplich.backend.services
 
+import kplich.backend.entities.Category
 import kplich.backend.entities.Item
 import kplich.backend.entities.ItemPhoto
 import kplich.backend.exceptions.*
@@ -24,6 +25,10 @@ class ItemService(
         private val photoRepository: PhotoRepository,
         private val userService: UserDetailsServiceImpl
 ) {
+
+    fun getCategories(): List<Category> {
+        return categoryRepository.findAll().toList()
+    }
 
     @Throws(BadAddItemRequestException::class)
     @Transactional
@@ -138,9 +143,5 @@ class ItemService(
     private fun Item.cannotBeUpdatedByCurrentlyLoggedUser(): Boolean {
         val loggedInId = userService.getCurrentlyLoggedId()
         return this.addedBy.id != loggedInId
-    }
-
-    companion object {
-        private const val PAGE_SIZE = 15
     }
 }
