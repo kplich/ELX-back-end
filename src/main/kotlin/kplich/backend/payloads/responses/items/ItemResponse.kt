@@ -10,11 +10,11 @@ data class ItemResponse(
         val description: String,
         val price: BigDecimal,
         val addedBy: ItemAddedByResponse,
-        val added: LocalDateTime,
+        val addedOn: LocalDateTime,
         val category: ItemCategoryResponse,
         val usedStatus: UsedStatus,
         val photoUrls: List<String>,
-        val closed: LocalDateTime?
+        val closedOn: LocalDateTime?
 ) {
     data class ItemAddedByResponse(
             val id: Long,

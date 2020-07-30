@@ -2,7 +2,6 @@ package kplich.backend.payloads.requests.items
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import kplich.backend.entities.Item
-import kplich.backend.entities.Item.Companion.ADDING_USER_REQUIRED_MSG
 import kplich.backend.entities.Item.Companion.CATEGORY_REQUIRED_MSG
 import kplich.backend.entities.Item.Companion.DESCRIPTION_LENGTH_MSG
 import kplich.backend.entities.Item.Companion.DESCRIPTION_MAX_LENGTH
@@ -36,9 +35,6 @@ data class ItemAddRequest(
         @get:DecimalMax(value = "100000000.0", inclusive = true, message = PRICE_TOO_HIGH_MSG)
         @get:Digits(integer = 9, fraction = 4, message = PRICE_TOO_PRECISE_MSG)
         val price: BigDecimal,
-
-        @get:NotNull(message = ADDING_USER_REQUIRED_MSG)
-        val addedBy: Long,
 
         @get:NotNull(message = CATEGORY_REQUIRED_MSG)
         val category: Int,

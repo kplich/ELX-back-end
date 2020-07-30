@@ -50,6 +50,7 @@ class WebSecurity(
                     .antMatchers(HttpMethod.POST, "/auth/log-in").permitAll()
                     .antMatchers(HttpMethod.POST, "/auth/sign-up").permitAll()
                     .antMatchers(HttpMethod.GET, "/items/{id:[0-9]+}").permitAll()
+                    .antMatchers(HttpMethod.GET, "/items").permitAll()
                     .anyRequest().authenticated()
                     .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)

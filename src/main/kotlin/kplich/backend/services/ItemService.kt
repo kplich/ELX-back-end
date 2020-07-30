@@ -4,22 +4,25 @@ import kplich.backend.entities.Item
 import kplich.backend.entities.ItemPhoto
 import kplich.backend.exceptions.*
 import kplich.backend.payloads.requests.items.ItemAddRequest
+import kplich.backend.payloads.requests.items.ItemSearchingCriteria
 import kplich.backend.payloads.requests.items.ItemUpdateRequest
 import kplich.backend.payloads.responses.items.ItemResponse
-import kplich.backend.repositories.*
-import org.springframework.security.core.context.SecurityContextHolder
+import kplich.backend.repositories.ApplicationUserRepository
+import kplich.backend.repositories.findByIdOrThrow
+import kplich.backend.repositories.items.CategoryRepository
+import kplich.backend.repositories.items.ItemRepository
+import kplich.backend.repositories.items.PhotoRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
-
-// TODO: improve model mapping
 
 @Service
 class ItemService(
         private val itemRepository: ItemRepository,
         private val userRepository: ApplicationUserRepository,
         private val categoryRepository: CategoryRepository,
-        private val photoRepository: PhotoRepository
+        private val photoRepository: PhotoRepository,
+        private val userService: UserDetailsServiceImpl
 ) {
 
     @Throws(BadAddItemRequestException::class)
@@ -59,12 +62,25 @@ class ItemService(
         }).toResponse()
     }
 
+    fun getAllItems(filteringCriteria: ItemSearchingCriteria?): List<ItemResponse> {
+
+        // TODO: some more sophisticated filtering method should be used
+        return itemRepository.findAll().filter { item ->
+            ItemSearchingCriteria.isNotClosed.test(item).and(
+                    filteringCriteria?.testItemForFilters(item) ?: true)
+        }.map {
+            it.toResponse()
+        }
+    }
+
     private fun ItemAddRequest.mapToItem(): Item {
         // fields or many to one associations
         val title = this.title
         val description = this.description
         val price = this.price
-        val addedBy = userRepository.findByIdOrThrow(this.addedBy, ::NewItemUserNotFoundException)
+
+        val loggedInId = userService.getCurrentlyLoggedId()
+        val addedBy = userRepository.findByIdOrThrow(loggedInId, ::NewItemUserNotFoundException)
         val category = categoryRepository.findByIdOrThrow(this.category, ::NewItemCategoryNotFoundException)
         val usedStatus = this.usedStatus
 
@@ -99,7 +115,6 @@ class ItemService(
         val title = this.title
         val description = this.description
         val price = this.price
-        val addedBy = userRepository.findByIdOrThrow(oldItem.addedBy.id, ::NewItemUserNotFoundException)
         val category = categoryRepository.findByIdOrThrow(this.category, ::NewItemCategoryNotFoundException)
         val usedStatus = this.usedStatus
 
@@ -107,7 +122,6 @@ class ItemService(
             this.title = title
             this.description = description
             this.price = price
-            this.addedBy = addedBy
             this.category = category
             this.usedStatus = usedStatus
         })
@@ -122,7 +136,11 @@ class ItemService(
     }
 
     private fun Item.cannotBeUpdatedByCurrentlyLoggedUser(): Boolean {
-        val loggedInUsername = SecurityContextHolder.getContext().authentication.name
-        return this.addedBy.username != loggedInUsername
+        val loggedInId = userService.getCurrentlyLoggedId()
+        return this.addedBy.id != loggedInId
+    }
+
+    companion object {
+        private const val PAGE_SIZE = 15
     }
 }

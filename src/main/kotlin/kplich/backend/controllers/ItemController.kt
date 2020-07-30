@@ -1,6 +1,7 @@
 package kplich.backend.controllers
 
 import kplich.backend.payloads.requests.items.ItemAddRequest
+import kplich.backend.payloads.requests.items.ItemSearchingCriteria
 import kplich.backend.payloads.requests.items.ItemUpdateRequest
 import kplich.backend.payloads.responses.items.ItemResponse
 import kplich.backend.services.ItemService
@@ -32,6 +33,12 @@ class ItemController(
     @ResponseStatus(HttpStatus.OK)
     fun getItem(@PathVariable id: Long): ResponseEntity<ItemResponse> {
         return ResponseEntity.ok(itemService.getItem(id))
+    }
+
+    @GetMapping("")
+    @ResponseStatus(HttpStatus.OK)
+    fun getAllItems(@Valid @RequestBody(required = false) searchingCriteria: ItemSearchingCriteria?): ResponseEntity<List<ItemResponse>> {
+        return ResponseEntity.ok(itemService.getAllItems(searchingCriteria))
     }
 
     @PostMapping("/")

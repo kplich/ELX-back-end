@@ -3,6 +3,7 @@ package kplich.backend.services
 import kplich.backend.configurations.security.getAuthoritiesFromRoles
 import kplich.backend.entities.ApplicationUser
 import kplich.backend.entities.Role
+import kplich.backend.exceptions.NoUserLoggedInException
 import kplich.backend.exceptions.RoleNotFoundException
 import kplich.backend.exceptions.UserAlreadyExistsException
 import kplich.backend.payloads.requests.authentication.PasswordChangeRequest
@@ -78,5 +79,9 @@ class UserDetailsServiceImpl(
         }
     }
 
-
+    fun getCurrentlyLoggedId(): Long {
+        val loggedUsersName = SecurityContextHolder.getContext().authentication?.name ?: throw NoUserLoggedInException()
+        val id = userRepository.findByUsername(loggedUsersName)?.id ?: throw UsernameNotFoundException(loggedUsersName)
+        return id
+    }
 }
