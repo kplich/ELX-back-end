@@ -68,7 +68,7 @@ class ItemService(
     }
 
     fun getAllItems(filteringCriteria: ItemSearchingCriteria?): List<ItemResponse> {
-
+        // TODO: implement relevance of of search results
         // TODO: some more sophisticated filtering method should be used
         return itemRepository.findAll().filter { item ->
             ItemSearchingCriteria.isNotClosed.test(item).and(
