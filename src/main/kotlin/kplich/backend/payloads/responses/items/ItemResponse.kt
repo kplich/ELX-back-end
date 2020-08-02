@@ -11,7 +11,7 @@ data class ItemResponse(
         val price: BigDecimal,
         val addedBy: ItemAddedByResponse,
         val addedOn: LocalDateTime,
-        val category: ItemCategoryResponse,
+        val category: CategoryResponse,
         val usedStatus: UsedStatus,
         val photoUrls: List<String>,
         val closedOn: LocalDateTime?
@@ -21,8 +21,5 @@ data class ItemResponse(
             val username: String
     )
 
-    data class ItemCategoryResponse(
-            val id: Int,
-            val name: String
-    )
+
 }

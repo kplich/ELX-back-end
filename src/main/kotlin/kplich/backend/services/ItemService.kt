@@ -7,12 +7,14 @@ import kplich.backend.exceptions.*
 import kplich.backend.payloads.requests.items.ItemAddRequest
 import kplich.backend.payloads.requests.items.ItemSearchingCriteria
 import kplich.backend.payloads.requests.items.ItemUpdateRequest
+import kplich.backend.payloads.responses.items.CategoryResponse
 import kplich.backend.payloads.responses.items.ItemResponse
 import kplich.backend.repositories.ApplicationUserRepository
 import kplich.backend.repositories.findByIdOrThrow
 import kplich.backend.repositories.items.CategoryRepository
 import kplich.backend.repositories.items.ItemRepository
 import kplich.backend.repositories.items.PhotoRepository
+import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
@@ -26,17 +28,18 @@ class ItemService(
         private val userService: UserDetailsServiceImpl
 ) {
 
-    fun getCategories(): List<Category> {
-        return categoryRepository.findAll().toList()
+    fun getCategories(): List<CategoryResponse> {
+        return categoryRepository.findAll().map { it.toResponse() }
     }
 
-    @Throws(BadAddItemRequestException::class)
+    @Throws(BadEditItemRequestException::class, UnauthorizedItemAddingRequestException::class)
     @Transactional
     fun addItem(request: ItemAddRequest): ItemResponse {
         return itemRepository.save(request.mapToItem()).toResponse()
     }
 
     @Throws(ItemNotFoundException::class)
+    @Transactional(readOnly = true)
     fun getItem(id: Long): ItemResponse {
         return itemRepository.findByIdOrThrow(id, ::ItemNotFoundException).toResponse()
     }
@@ -44,7 +47,7 @@ class ItemService(
     @Throws(
             ItemNotFoundException::class,
             UnauthorizedItemUpdateRequestException::class,
-            NewItemCategoryNotFoundException::class)
+            BadEditItemRequestException::class)
     @Transactional
     fun updateItem(request: ItemUpdateRequest): ItemResponse {
         val oldItem = itemRepository.findByIdOrThrow(request.id, ::ItemNotFoundException)
@@ -54,7 +57,11 @@ class ItemService(
         return itemRepository.save(request.mapToItem(oldItem)).toResponse()
     }
 
-    @Throws(ItemNotFoundException::class, UnauthorizedItemUpdateRequestException::class, ItemAlreadyClosedException::class)
+    @Throws(
+            ItemNotFoundException::class,
+            UnauthorizedItemUpdateRequestException::class,
+            ItemAlreadyClosedException::class
+    )
     @Transactional
     fun closeItem(id: Long): ItemResponse {
         val item = itemRepository.findByIdOrThrow(id, ::ItemNotFoundException)
@@ -67,7 +74,8 @@ class ItemService(
         }).toResponse()
     }
 
-    fun getAllItems(filteringCriteria: ItemSearchingCriteria?): List<ItemResponse> {
+    @Transactional(readOnly = true)
+    fun getAllOpenItems(filteringCriteria: ItemSearchingCriteria?): List<ItemResponse> {
         // TODO: implement relevance of of search results
         // TODO: some more sophisticated filtering method should be used
         return itemRepository.findAll().filter { item ->
@@ -78,15 +86,29 @@ class ItemService(
         }
     }
 
+    private fun Category.toResponse(): CategoryResponse = CategoryResponse(this.id, this.name)
+
+    @Throws(
+            UnauthorizedItemAddingRequestException::class,
+            UserIdNotFoundException::class,
+            CategoryNotFoundException::class
+    )
     private fun ItemAddRequest.mapToItem(): Item {
         // fields or many to one associations
         val title = this.title
         val description = this.description
         val price = this.price
 
-        val loggedInId = userService.getCurrentlyLoggedId()
-        val addedBy = userRepository.findByIdOrThrow(loggedInId, ::NewItemUserNotFoundException)
-        val category = categoryRepository.findByIdOrThrow(this.category, ::NewItemCategoryNotFoundException)
+        val loggedInId = try {
+            userService.getCurrentlyLoggedId()
+        } catch (e: UsernameNotFoundException) {
+            throw UnauthorizedItemAddingRequestException()
+        } catch (e: NoUserLoggedInException) {
+            throw UnauthorizedItemAddingRequestException()
+        }
+
+        val addedBy = userRepository.findByIdOrThrow(loggedInId, ::UserIdNotFoundException)
+        val category = categoryRepository.findByIdOrThrow(this.category, ::CategoryNotFoundException)
         val usedStatus = this.usedStatus
 
         // one to many association
@@ -108,27 +130,44 @@ class ItemService(
             this.price,
             with(this.addedBy) { ItemResponse.ItemAddedByResponse(id, username) },
             this.addedOn,
-            with(this.category) { ItemResponse.ItemCategoryResponse(id, name) },
+            this.category.toResponse(),
             this.usedStatus,
             this.photos.map { photo -> photo.url },
             this.closedOn
     )
 
+    private fun Item.update(request: ItemUpdateRequest): Item {
+        photoRepository.deleteAll(this.photos)
+
+        this.title = request.title
+        this.description = request.description
+        this.price = request.price
+        this.category = categoryRepository
+                .findByIdOrThrow(request.category, ::CategoryNotFoundException)
+        this.usedStatus = request.usedStatus
+
+        val savedPrePhotos = itemRepository.save(this)
+
+        val itemPhotos = request.photos.map {
+            photoRepository.save(ItemPhoto(it, savedPrePhotos))
+        }.toMutableList()
+
+        savedPrePhotos.photos = itemPhotos
+
+        return this
+    }
+
     private fun ItemUpdateRequest.mapToItem(oldItem: Item): Item {
         photoRepository.deleteAll(oldItem.photos)
 
-        val title = this.title
-        val description = this.description
-        val price = this.price
-        val category = categoryRepository.findByIdOrThrow(this.category, ::NewItemCategoryNotFoundException)
-        val usedStatus = this.usedStatus
+        val category = categoryRepository.findByIdOrThrow(this.category, ::CategoryNotFoundException)
 
         val itemSavedPrePhotos = itemRepository.save(oldItem.apply {
-            this.title = title
-            this.description = description
-            this.price = price
+            this.title = this@mapToItem.title
+            this.description = this@mapToItem.description
+            this.price = this@mapToItem.price
             this.category = category
-            this.usedStatus = usedStatus
+            this.usedStatus = this@mapToItem.usedStatus
         })
 
         val itemPhotos = this.photos.map {
@@ -141,7 +180,13 @@ class ItemService(
     }
 
     private fun Item.cannotBeUpdatedByCurrentlyLoggedUser(): Boolean {
-        val loggedInId = userService.getCurrentlyLoggedId()
-        return this.addedBy.id != loggedInId
+        return try {
+            val loggedInId = userService.getCurrentlyLoggedId()
+            this.addedBy.id != loggedInId
+        } catch (e: NoUserLoggedInException) {
+            true
+        } catch (e: UsernameNotFoundException) {
+            true
+        }
     }
 }

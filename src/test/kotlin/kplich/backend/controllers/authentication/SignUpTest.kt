@@ -1,7 +1,8 @@
-package kplich.backend.controllers
+package kplich.backend.controllers.authentication
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import kplich.backend.configurations.security.JwtUtil
+import kplich.backend.controllers.AuthenticationController
 import kplich.backend.entities.Role
 import kplich.backend.exceptions.RoleNotFoundException
 import kplich.backend.exceptions.UserAlreadyExistsException

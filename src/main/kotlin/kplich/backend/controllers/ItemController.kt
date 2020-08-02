@@ -1,9 +1,9 @@
 package kplich.backend.controllers
 
-import kplich.backend.entities.Category
 import kplich.backend.payloads.requests.items.ItemAddRequest
 import kplich.backend.payloads.requests.items.ItemSearchingCriteria
 import kplich.backend.payloads.requests.items.ItemUpdateRequest
+import kplich.backend.payloads.responses.items.CategoryResponse
 import kplich.backend.payloads.responses.items.ItemResponse
 import kplich.backend.services.ItemService
 import org.springframework.http.HttpStatus
@@ -38,7 +38,7 @@ class ItemController(
     @GetMapping("")
     @ResponseStatus(HttpStatus.OK)
     fun getAllItems(@Valid @RequestBody(required = false) searchingCriteria: ItemSearchingCriteria?): ResponseEntity<List<ItemResponse>> {
-        return ResponseEntity.ok(itemService.getAllItems(searchingCriteria))
+        return ResponseEntity.ok(itemService.getAllOpenItems(searchingCriteria))
     }
 
     @PostMapping("/")
@@ -55,7 +55,7 @@ class CategoryController(
 ) {
     @GetMapping("")
     @ResponseStatus(HttpStatus.OK)
-    fun getCategories(): ResponseEntity<List<Category>> {
+    fun getCategories(): ResponseEntity<List<CategoryResponse>> {
         return ResponseEntity.ok(itemService.getCategories())
     }
 }
