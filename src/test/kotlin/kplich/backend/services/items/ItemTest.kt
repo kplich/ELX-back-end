@@ -1,73 +1,17 @@
 package kplich.backend.services.items
 
-import kplich.backend.entities.UsedStatus
-import kplich.backend.payloads.responses.items.CategoryResponse
-import kplich.backend.payloads.responses.items.ItemResponse
+import kplich.backend.data.ItemTestData
 import kplich.backend.services.ItemService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import java.math.BigDecimal
-import java.time.LocalDateTime
 
 /**
  * Data for test are loaded from script resources/data-h2.sql.
  */
 @SpringBootTest
-abstract class ItemTest {
+abstract class ItemTest : ItemTestData() {
     @Autowired
     protected lateinit var itemService: ItemService
 
-    protected val categories
-        get(): Map<Int, CategoryResponse> = mapOf(
-                1 to CategoryResponse(1, "House and Garden"),
-                2 to CategoryResponse(2, "Electronics"),
-                3 to CategoryResponse(3, "Fashion")
-        )
 
-    protected val users
-        get(): Map<Int, ItemResponse.ItemAddedByResponse> = mapOf(
-                1 to ItemResponse.ItemAddedByResponse(1, "kplich"),
-                2 to ItemResponse.ItemAddedByResponse(2, "kplich2"),
-                3 to ItemResponse.ItemAddedByResponse(3, "kplich3")
-        )
-
-    protected val items
-        get(): Map<Long, ItemResponse> = mapOf(
-                1L to ItemResponse(
-                        id = 1L,
-                        title = "1 Quick title that will have more than 10 characters",
-                        description = "1 Quick description of an open item in category House and Garden",
-                        price = BigDecimal("1.2345"),
-                        addedBy = users[1]!!,
-                        addedOn = LocalDateTime.parse("2020-05-05T21:40:10.096853"),
-                        category = categories[1]!!,
-                        usedStatus = UsedStatus.NEW,
-                        photoUrls = emptyList(),
-                        closedOn = null
-                ),
-                2L to ItemResponse(
-                        id = 2L,
-                        title = "2 Quick title that will have more than 10 characters",
-                        description = "2 Quick description of a closed item! in category Electronics",
-                        price = BigDecimal("2.0000"),
-                        addedBy = users[2]!!,
-                        addedOn = LocalDateTime.parse("2020-06-06T21:40:10.096853"),
-                        category = categories[2]!!,
-                        usedStatus = UsedStatus.USED,
-                        photoUrls = emptyList(),
-                        closedOn = LocalDateTime.parse("2020-06-07T21:37:00.420069")
-                ),
-                3L to ItemResponse(
-                        id = 3L,
-                        title = "3 Quick title that will have more than 10 characters",
-                        description = "3 Quick description of an in category Fashion",
-                        price = BigDecimal("3.3333"),
-                        addedBy = users[3]!!,
-                        addedOn = LocalDateTime.parse("2020-07-07T21:40:10.096853"),
-                        category = categories[3]!!,
-                        usedStatus = UsedStatus.NOT_APPLICABLE,
-                        photoUrls = emptyList(),
-                        closedOn = null
-                )
-        )
 }

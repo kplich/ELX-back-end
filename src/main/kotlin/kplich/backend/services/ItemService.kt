@@ -5,7 +5,7 @@ import kplich.backend.entities.Item
 import kplich.backend.entities.ItemPhoto
 import kplich.backend.exceptions.*
 import kplich.backend.payloads.requests.items.ItemAddRequest
-import kplich.backend.payloads.requests.items.ItemSearchingCriteria
+import kplich.backend.payloads.requests.items.ItemFilteringCriteria
 import kplich.backend.payloads.requests.items.ItemUpdateRequest
 import kplich.backend.payloads.responses.items.CategoryResponse
 import kplich.backend.payloads.responses.items.ItemResponse
@@ -75,11 +75,11 @@ class ItemService(
     }
 
     @Transactional(readOnly = true)
-    fun getAllOpenItems(filteringCriteria: ItemSearchingCriteria?): List<ItemResponse> {
+    fun getAllOpenItems(filteringCriteria: ItemFilteringCriteria?): List<ItemResponse> {
         // TODO: implement relevance of of search results
         // TODO: some more sophisticated filtering method should be used
         return itemRepository.findAll().filter { item ->
-            ItemSearchingCriteria.isNotClosed.test(item).and(
+            ItemFilteringCriteria.isNotClosed.test(item).and(
                     filteringCriteria?.testItemForFilters(item) ?: true)
         }.map {
             it.toResponse()

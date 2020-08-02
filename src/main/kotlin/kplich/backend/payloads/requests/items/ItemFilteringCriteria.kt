@@ -8,9 +8,8 @@ import java.util.regex.Pattern
 import javax.validation.constraints.DecimalMax
 import javax.validation.constraints.DecimalMin
 import javax.validation.constraints.Digits
-import javax.validation.constraints.Size
 
-data class ItemSearchingCriteria (
+data class ItemFilteringCriteria(
         val searchQuery: String?,
         val category: Int?,
 
@@ -24,7 +23,6 @@ data class ItemSearchingCriteria (
         @get:Digits(integer = 9, fraction = 4, message = Item.PRICE_TOO_PRECISE_MSG)
         val maximalPrice: BigDecimal?,
 
-        @get:Size(min = 1)
         val statuses: List<UsedStatus>?
 ) {
     private val containsWords get(): Predicate<Item> = Predicate { t ->

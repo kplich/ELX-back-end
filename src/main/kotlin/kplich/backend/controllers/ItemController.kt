@@ -1,7 +1,7 @@
 package kplich.backend.controllers
 
 import kplich.backend.payloads.requests.items.ItemAddRequest
-import kplich.backend.payloads.requests.items.ItemSearchingCriteria
+import kplich.backend.payloads.requests.items.ItemFilteringCriteria
 import kplich.backend.payloads.requests.items.ItemUpdateRequest
 import kplich.backend.payloads.responses.items.CategoryResponse
 import kplich.backend.payloads.responses.items.ItemResponse
@@ -37,8 +37,8 @@ class ItemController(
 
     @GetMapping("")
     @ResponseStatus(HttpStatus.OK)
-    fun getAllItems(@Valid @RequestBody(required = false) searchingCriteria: ItemSearchingCriteria?): ResponseEntity<List<ItemResponse>> {
-        return ResponseEntity.ok(itemService.getAllOpenItems(searchingCriteria))
+    fun getAllItems(@Valid @RequestBody(required = false) filteringCriteria: ItemFilteringCriteria?): ResponseEntity<List<ItemResponse>> {
+        return ResponseEntity.ok(itemService.getAllOpenItems(filteringCriteria))
     }
 
     @PostMapping("/")

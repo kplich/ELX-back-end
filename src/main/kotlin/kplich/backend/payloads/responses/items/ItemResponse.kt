@@ -16,10 +16,9 @@ data class ItemResponse(
         val photoUrls: List<String>,
         val closedOn: LocalDateTime?
 ) {
+
     data class ItemAddedByResponse(
             val id: Long,
             val username: String
     )
-
-
 }
