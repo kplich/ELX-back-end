@@ -10,11 +10,11 @@ INSERT INTO public.users (id, joined, password, username) -- kplich3/P@ssw0rd3
 VALUES (3, '2020-04-04 21:35:30.082832', '$2a$10$oCE.MaPe3SnqURnAHqUuq.Sl/U7/OSXLEQo3olfOaoW4MvTwIbqn6', 'kplich3');
 
 -- user roles
-INSERT INTO public.user_roles (id, role_id)
+INSERT INTO public.user_roles (user_id, role_id)
 VALUES (1, 1);
-INSERT INTO public.user_roles (id, role_id)
+INSERT INTO public.user_roles (user_id, role_id)
 VALUES (2, 1);
-INSERT INTO public.user_roles (id, role_id)
+INSERT INTO public.user_roles (user_id, role_id)
 VALUES (3, 1);
 
 INSERT INTO categories (id, name)
