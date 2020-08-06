@@ -5,6 +5,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import org.springframework.context.annotation.Bean
 
+@Suppress("unused") // not called explicitly anywhere, but
 class ObjectMapperConfiguration {
     @Bean
     fun getObjectMapper(): ObjectMapper {

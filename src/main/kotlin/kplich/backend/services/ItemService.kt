@@ -136,27 +136,6 @@ class ItemService(
             this.closedOn
     )
 
-    private fun Item.update(request: ItemUpdateRequest): Item {
-        photoRepository.deleteAll(this.photos)
-
-        this.title = request.title
-        this.description = request.description
-        this.price = request.price
-        this.category = categoryRepository
-                .findByIdOrThrow(request.category, ::CategoryNotFoundException)
-        this.usedStatus = request.usedStatus
-
-        val savedPrePhotos = itemRepository.save(this)
-
-        val itemPhotos = request.photos.map {
-            photoRepository.save(ItemPhoto(it, savedPrePhotos))
-        }.toMutableList()
-
-        savedPrePhotos.photos = itemPhotos
-
-        return this
-    }
-
     private fun ItemUpdateRequest.mapToItem(oldItem: Item): Item {
         photoRepository.deleteAll(oldItem.photos)
 

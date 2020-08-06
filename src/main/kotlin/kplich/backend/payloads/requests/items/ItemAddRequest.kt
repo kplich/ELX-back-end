@@ -51,6 +51,4 @@ data class ItemAddRequest(
 
         @JsonIgnore
         val closedOn: LocalDateTime? = null
-) {
-
-}
+)

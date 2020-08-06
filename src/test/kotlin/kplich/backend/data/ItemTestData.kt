@@ -14,7 +14,7 @@ abstract class ItemTestData {
                 3 to CategoryResponse(3, "Fashion")
         )
 
-    protected val users
+    private val users
         get(): Map<Int, ItemResponse.ItemAddedByResponse> = mapOf(
                 1 to ItemResponse.ItemAddedByResponse(1, "kplich"),
                 2 to ItemResponse.ItemAddedByResponse(2, "kplich2"),
@@ -28,9 +28,9 @@ abstract class ItemTestData {
                         title = "1 Quick title that will have more than 10 characters",
                         description = "1 Quick description of an open item in category House and Garden",
                         price = BigDecimal("1.2345"),
-                        addedBy = users[1]!!,
+                        addedBy = users[1] ?: error("user not found"),
                         addedOn = LocalDateTime.parse("2020-05-05T21:40:10.096853"),
-                        category = categories[1]!!,
+                        category = categories[1] ?: error("category not found"),
                         usedStatus = UsedStatus.NEW,
                         photoUrls = emptyList(),
                         closedOn = null
@@ -40,9 +40,9 @@ abstract class ItemTestData {
                         title = "2 Quick title that will have more than 10 characters",
                         description = "2 Quick description of a closed item! in category Electronics",
                         price = BigDecimal("2.0000"),
-                        addedBy = users[2]!!,
+                        addedBy = users[2] ?: error("user not found"),
                         addedOn = LocalDateTime.parse("2020-06-06T21:40:10.096853"),
-                        category = categories[2]!!,
+                        category = categories[2] ?: error("category not found"),
                         usedStatus = UsedStatus.USED,
                         photoUrls = emptyList(),
                         closedOn = LocalDateTime.parse("2020-06-07T21:37:00.420069")
@@ -52,9 +52,9 @@ abstract class ItemTestData {
                         title = "3 Quick title that will have more than 10 characters",
                         description = "3 Quick description of an in category Fashion",
                         price = BigDecimal("3.3333"),
-                        addedBy = users[3]!!,
+                        addedBy = users[3] ?: error("user not found"),
                         addedOn = LocalDateTime.parse("2020-07-07T21:40:10.096853"),
-                        category = categories[3]!!,
+                        category = categories[3] ?: error("category not found"),
                         usedStatus = UsedStatus.NOT_APPLICABLE,
                         photoUrls = emptyList(),
                         closedOn = null
