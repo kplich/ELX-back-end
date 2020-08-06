@@ -13,14 +13,19 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 class RestExceptionHandler: ResponseEntityExceptionHandler() {
 
     override fun handleMethodArgumentNotValid(ex: MethodArgumentNotValidException, headers: HttpHeaders, status: HttpStatus, request: WebRequest): ResponseEntity<Any> {
-        val error = ApiError(status, "Validation error", ex.bindingResult.toString())
+        val error = ApiError(status, VALIDATION_ERROR_MESSAGE, ex.bindingResult.toString())
 
         return error.response
     }
 
     override fun handleHttpMessageNotReadable(ex: HttpMessageNotReadableException, headers: HttpHeaders, status: HttpStatus, request: WebRequest): ResponseEntity<Any> {
-        val error = ApiError(status, "Malformed JSON.", ex.cause?.localizedMessage ?: ex.localizedMessage)
+        val error = ApiError(status, MALFORMED_JSON_MESSAGE, ex.cause?.localizedMessage ?: ex.localizedMessage)
 
         return error.response
+    }
+
+    companion object {
+        const val VALIDATION_ERROR_MESSAGE = "Validation Error"
+        const val MALFORMED_JSON_MESSAGE = "Malformed JSON"
     }
 }

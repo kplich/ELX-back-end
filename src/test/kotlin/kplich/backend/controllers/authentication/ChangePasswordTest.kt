@@ -76,7 +76,7 @@ class ChangePasswordTest {
                         .content(objectMapper.writeValueAsString(passwordChangeRequest))
                         .header(AUTHORIZATION, getTokenHeader()))
                 .andExpect(status().isOk)
-                .andExpect(content().string(equalTo(EMPTY_BODY)))
+                .andExpect(content().string(equalTo(EMPTY_JSON_BODY)))
     }
 
     @Test
@@ -109,5 +109,6 @@ class ChangePasswordTest {
         private const val NEW_CORRECT_PASSWORD = "P@ssw0rd"
 
         private const val EMPTY_BODY = ""
+        private const val EMPTY_JSON_BODY = "{}"
     }
 }
