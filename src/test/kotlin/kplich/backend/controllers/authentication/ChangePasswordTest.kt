@@ -1,8 +1,9 @@
-package kplich.backend.controllers
+package kplich.backend.controllers.authentication
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import kplich.backend.configurations.security.JwtUtil
-import kplich.backend.payloads.requests.PasswordChangeRequest
+import kplich.backend.controllers.AuthenticationController
+import kplich.backend.payloads.requests.authentication.PasswordChangeRequest
 import kplich.backend.services.UserDetailsServiceImpl
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.not
@@ -75,7 +76,7 @@ class ChangePasswordTest {
                         .content(objectMapper.writeValueAsString(passwordChangeRequest))
                         .header(AUTHORIZATION, getTokenHeader()))
                 .andExpect(status().isOk)
-                .andExpect(content().string(equalTo(EMPTY_BODY)))
+                .andExpect(content().string(equalTo(EMPTY_JSON_BODY)))
     }
 
     @Test
@@ -108,5 +109,6 @@ class ChangePasswordTest {
         private const val NEW_CORRECT_PASSWORD = "P@ssw0rd"
 
         private const val EMPTY_BODY = ""
+        private const val EMPTY_JSON_BODY = "{}"
     }
 }

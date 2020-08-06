@@ -1,6 +1,6 @@
-package kplich.backend.payloads.requests
+package kplich.backend.payloads.requests.authentication
 
-import kplich.backend.payloads.requests.PasswordChangeRequest.Companion.PASSWORDS_MUSTNT_MATCH
+import kplich.backend.payloads.requests.authentication.PasswordChangeRequest.Companion.PASSWORDS_MUSTNT_MATCH
 import javax.validation.Constraint
 import javax.validation.ConstraintValidator
 import javax.validation.ConstraintValidatorContext

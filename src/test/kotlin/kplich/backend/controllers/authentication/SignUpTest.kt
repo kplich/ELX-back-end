@@ -1,11 +1,13 @@
-package kplich.backend.controllers
+package kplich.backend.controllers.authentication
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import kplich.backend.configurations.errorhandling.RestExceptionHandler.Companion.VALIDATION_ERROR_MESSAGE
 import kplich.backend.configurations.security.JwtUtil
+import kplich.backend.controllers.AuthenticationController
 import kplich.backend.entities.Role
 import kplich.backend.exceptions.RoleNotFoundException
 import kplich.backend.exceptions.UserAlreadyExistsException
-import kplich.backend.payloads.requests.SignUpRequest
+import kplich.backend.payloads.requests.authentication.SignUpRequest
 import kplich.backend.services.UserDetailsServiceImpl
 import org.hamcrest.core.StringContains.containsString
 import org.junit.jupiter.api.Test
@@ -61,7 +63,7 @@ class SignUpTest {
                 .content(objectMapper.writeValueAsString(signupRequest)))
                 // then
                 .andExpect(status().isBadRequest)
-                .andExpect(content().string(containsString(VALIDATION_ERROR)))
+                .andExpect(content().string(containsString(VALIDATION_ERROR_MESSAGE)))
                 .andExpect(content().string(containsString(SignUpRequest.USERNAME_MUST_BE_BETWEEN_3_AND_20)))
     }
 
@@ -77,7 +79,7 @@ class SignUpTest {
                 .content(objectMapper.writeValueAsString(signupRequest)))
                 // then
                 .andExpect(status().isBadRequest)
-                .andExpect(content().string(containsString(VALIDATION_ERROR)))
+                .andExpect(content().string(containsString(VALIDATION_ERROR_MESSAGE)))
                 .andExpect(content().string(containsString(SignUpRequest.PASSWORD_MUST_BE_BETWEEN_8_AND_40)))
     }
 
@@ -93,7 +95,7 @@ class SignUpTest {
                 .content(objectMapper.writeValueAsString(signupRequest)))
                 // then
                 .andExpect(status().isBadRequest)
-                .andExpect(content().string(containsString(VALIDATION_ERROR)))
+                .andExpect(content().string(containsString(VALIDATION_ERROR_MESSAGE)))
                 .andExpect(content().string(containsString(SignUpRequest.PASSWORD_MUST_HAVE_SPECIAL_CHARACTER)))
                 .andExpect(content().string(containsString(SignUpRequest.PASSWORD_MUST_HAVE_DIGIT)))
 
@@ -111,7 +113,7 @@ class SignUpTest {
                 .content(objectMapper.writeValueAsString(signupRequest)))
                 // then
                 .andExpect(status().isBadRequest)
-                .andExpect(content().string(containsString(VALIDATION_ERROR)))
+                .andExpect(content().string(containsString(VALIDATION_ERROR_MESSAGE)))
                 .andExpect(content().string(containsString(SignUpRequest.USERNAME_REQUIRED)))
     }
 
@@ -127,7 +129,7 @@ class SignUpTest {
                 .content(objectMapper.writeValueAsString(signupRequest)))
                 // then
                 .andExpect(status().isBadRequest)
-                .andExpect(content().string(containsString(VALIDATION_ERROR)))
+                .andExpect(content().string(containsString(VALIDATION_ERROR_MESSAGE)))
                 .andExpect(content().string(containsString(SignUpRequest.PASSWORD_REQUIRED)))
     }
 
@@ -143,7 +145,7 @@ class SignUpTest {
                 .content(objectMapper.writeValueAsString(signupRequest)))
                 // then
                 .andExpect(status().isConflict)
-                .andExpect(content().string(containsString(UserAlreadyExistsException(EXISTING_USERNAME).message)))
+                .andExpect(content().string(EMPTY_BODY))
     }
 
 
@@ -160,7 +162,7 @@ class SignUpTest {
         private const val TOO_SHORT_PASSWORD = "pass"
         private const val NOT_MATCHING_PASSWORD = "password"
 
-        private const val VALIDATION_ERROR = "Validation Error"
+        private const val EMPTY_BODY = ""
 
         private fun mockUserServiceBehavior(): (InvocationOnMock) -> Unit {
             return {
