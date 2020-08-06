@@ -145,7 +145,7 @@ class SignUpTest {
                 .content(objectMapper.writeValueAsString(signupRequest)))
                 // then
                 .andExpect(status().isConflict)
-                .andExpect(content().string(EMPTY_BODY)) // TODO: expected body containing message, actually body is empty
+                .andExpect(content().string(EMPTY_BODY))
     }
 
 
