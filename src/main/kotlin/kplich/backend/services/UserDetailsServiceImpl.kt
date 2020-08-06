@@ -3,10 +3,11 @@ package kplich.backend.services
 import kplich.backend.configurations.security.getAuthoritiesFromRoles
 import kplich.backend.entities.ApplicationUser
 import kplich.backend.entities.Role
+import kplich.backend.exceptions.NoUserLoggedInException
 import kplich.backend.exceptions.RoleNotFoundException
 import kplich.backend.exceptions.UserAlreadyExistsException
-import kplich.backend.payloads.requests.PasswordChangeRequest
-import kplich.backend.payloads.requests.SignUpRequest
+import kplich.backend.payloads.requests.authentication.PasswordChangeRequest
+import kplich.backend.payloads.requests.authentication.SignUpRequest
 import kplich.backend.repositories.ApplicationUserRepository
 import kplich.backend.repositories.RoleRepository
 import org.springframework.context.annotation.Lazy
@@ -60,21 +61,28 @@ class UserDetailsServiceImpl(
         // therefore their credentials can be obtained
         val userAuthentication = SecurityContextHolder.getContext().authentication
 
-        if(userAuthentication != null) {
+        if (userAuthentication != null) {
             val username = userAuthentication.name
 
             val userDetails = loadUserByUsername(username)
 
-            if(passwordEncoder.matches(passwordChangeRequest.oldPassword, userDetails.password)) {
+            if (passwordEncoder.matches(passwordChangeRequest.oldPassword, userDetails.password)) {
                 val userWithNewPassword = userRepository.findByUsername(username)
                         ?: throw UsernameNotFoundException("Username $username not found!")
                 userWithNewPassword.password = passwordEncoder.encode(passwordChangeRequest.newPassword)
                 userRepository.save(userWithNewPassword)
-            }
-            else throw BadCredentialsException("Invalid old password!")
-        }
-        else {
+            } else throw BadCredentialsException("Invalid old password!")
+        } else {
             throw AuthenticationCredentialsNotFoundException("No authentication found!")
         }
+    }
+
+    @Throws(
+            NoUserLoggedInException::class,
+            UsernameNotFoundException::class
+    )
+    fun getCurrentlyLoggedId(): Long {
+        val loggedUsersName = SecurityContextHolder.getContext().authentication?.name ?: throw NoUserLoggedInException()
+        return userRepository.findByUsername(loggedUsersName)?.id ?: throw UsernameNotFoundException(loggedUsersName)
     }
 }

@@ -1,4 +1,4 @@
-package kplich.backend.payloads.requests
+package kplich.backend.payloads.requests.authentication
 
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.Pattern

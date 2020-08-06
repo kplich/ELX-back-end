@@ -1,8 +1,8 @@
 package kplich.backend.repositories
 
 import kplich.backend.entities.Role
-import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.repository.CrudRepository
 
-interface RoleRepository: JpaRepository<Role, Long> {
+interface RoleRepository: CrudRepository<Role, Long> {
     fun findByName(name: Role.RoleEnum): Role?
 }
