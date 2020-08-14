@@ -10,6 +10,7 @@ import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.config.http.SessionCreationPolicy
@@ -57,6 +58,15 @@ class WebSecurity(
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
         jwtAuthenticationFilter.setFilterProcessesUrl("/auth/log-in")
+    }
+
+    override fun configure(web: WebSecurity?) {
+        web?.ignoring()
+                ?.antMatchers("/v2/api-docs/**")
+                ?.antMatchers("/swagger.json")
+                ?.antMatchers("/swagger-ui.html")
+                ?.antMatchers("/swagger-resources/**")
+                ?.antMatchers("/webjars/**")
     }
 
     @Bean
