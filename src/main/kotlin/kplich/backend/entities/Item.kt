@@ -14,7 +14,7 @@ import kotlin.reflect.KClass
 
 @Entity
 @Table(name = "items")
-@ClosedAfterAdded
+@ClosedAfterAdded(message = Item.CLOSED_AFTER_ADDED_MSG)
 data class Item(
         @get:NotBlank(message = TITLE_REQURIED_MSG)
         @get:Size(min = TITLE_MIN_LENGTH, max = TITLE_MAX_LENGTH, message = TITLE_LENGTH_MSG)
@@ -25,8 +25,8 @@ data class Item(
         var description: String,
 
         @get:NotNull(message = PRICE_REQUIRED_MSG)
-        @get:DecimalMin(value = "0.0", inclusive = true, message = PRICE_TOO_LOW_MSG)
-        @get:DecimalMax(value = "100000000.0", inclusive = true, message = PRICE_TOO_HIGH_MSG)
+        @get:DecimalMin(value = PRICE_MINIMUM, inclusive = true, message = PRICE_TOO_LOW_MSG)
+        @get:DecimalMax(value = PRICE_MAXIMUM, inclusive = true, message = PRICE_TOO_HIGH_MSG)
         @get:Digits(integer = 9, fraction = 4, message = PRICE_TOO_PRECISE_MSG)
         var price: BigDecimal,
 
@@ -45,7 +45,7 @@ data class Item(
         var usedStatus: UsedStatus,
 
         @get:NotNull(message = PHOTOS_REQUIRED_MSG)
-        @get:Size(min = 0, max = 8, message = PHOTOS_SIZE_MSG)
+        @get:Size(min = PHOTOS_MINIMAL_SIZE, max = PHOTOS_MAXIMAL_SIZE, message = PHOTOS_SIZE_MSG)
         @OneToMany(mappedBy = "item", targetEntity = ItemPhoto::class)
         @JsonManagedReference
         var photos: MutableList<ItemPhoto>,
@@ -75,7 +75,9 @@ data class Item(
         const val DESCRIPTION_LENGTH_MSG = "Description must be between $DESCRIPTION_MIN_LENGTH and $DESCRIPTION_MAX_LENGTH characters long."
 
         const val PRICE_REQUIRED_MSG = "Price is required."
+        const val PRICE_MINIMUM = "0.0"
         const val PRICE_TOO_LOW_MSG = "The lowest price allowed is 0 Ξ."
+        const val PRICE_MAXIMUM = "100000000.0"
         const val PRICE_TOO_HIGH_MSG = "The highest price allowed is 100000000 Ξ."
         const val PRICE_TOO_PRECISE_MSG = "Price should have precision of 0.0001 Ξ."
 
@@ -88,14 +90,17 @@ data class Item(
         const val ADDED_DATE_REQUIRED_MSG = "Added date is required."
 
         const val PHOTOS_REQUIRED_MSG = "Photo list mustn't be null."
+        const val PHOTOS_MINIMAL_SIZE = 0
+        const val PHOTOS_MAXIMAL_SIZE = 8
         const val PHOTOS_SIZE_MSG = "Item can have at most 8 photos."
+
+        const val CLOSED_AFTER_ADDED_MSG = "Item can be closed only after it has been added"
     }
 }
 
 @Suppress("unused") // parameters required by constraint validation?
 @Constraint(validatedBy = [ClosedAfterAddedValidator::class])
 @Target(AnnotationTarget.CLASS)
-@Retention(AnnotationRetention.RUNTIME)
 annotation class ClosedAfterAdded(val message: String = "", val groups: Array<KClass<*>> = [], val payload: Array<KClass<out Payload>> = [])
 
 class ClosedAfterAddedValidator : ConstraintValidator<ClosedAfterAdded, Item> {
