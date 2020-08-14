@@ -2,6 +2,14 @@ package kplich.backend.entities
 
 import com.fasterxml.jackson.annotation.JsonBackReference
 import com.fasterxml.jackson.annotation.JsonManagedReference
+import kplich.backend.configurations.PricePrecisionConstants.PRICE_DECIMAL_PART
+import kplich.backend.configurations.PricePrecisionConstants.PRICE_INTEGER_PART
+import kplich.backend.configurations.PricePrecisionConstants.PRICE_MAXIMUM_STRING
+import kplich.backend.configurations.PricePrecisionConstants.PRICE_MINIMUM_STRING
+import kplich.backend.configurations.PricePrecisionConstants.PRICE_REQUIRED_MSG
+import kplich.backend.configurations.PricePrecisionConstants.PRICE_TOO_HIGH_MSG
+import kplich.backend.configurations.PricePrecisionConstants.PRICE_TOO_LOW_MSG
+import kplich.backend.configurations.PricePrecisionConstants.PRICE_TOO_PRECISE_MSG
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import javax.persistence.*
@@ -25,9 +33,9 @@ data class Item(
         var description: String,
 
         @get:NotNull(message = PRICE_REQUIRED_MSG)
-        @get:DecimalMin(value = PRICE_MINIMUM, inclusive = true, message = PRICE_TOO_LOW_MSG)
-        @get:DecimalMax(value = PRICE_MAXIMUM, inclusive = true, message = PRICE_TOO_HIGH_MSG)
-        @get:Digits(integer = 9, fraction = 4, message = PRICE_TOO_PRECISE_MSG)
+        @get:DecimalMin(value = PRICE_MINIMUM_STRING, inclusive = true, message = PRICE_TOO_LOW_MSG)
+        @get:DecimalMax(value = PRICE_MAXIMUM_STRING, inclusive = true, message = PRICE_TOO_HIGH_MSG)
+        @get:Digits(integer = PRICE_INTEGER_PART, fraction = PRICE_DECIMAL_PART, message = PRICE_TOO_PRECISE_MSG)
         var price: BigDecimal,
 
         @get:NotNull(message = ADDING_USER_REQUIRED_MSG)
@@ -73,13 +81,6 @@ data class Item(
         const val DESCRIPTION_MIN_LENGTH = 25
         const val DESCRIPTION_MAX_LENGTH = 5000
         const val DESCRIPTION_LENGTH_MSG = "Description must be between $DESCRIPTION_MIN_LENGTH and $DESCRIPTION_MAX_LENGTH characters long."
-
-        const val PRICE_REQUIRED_MSG = "Price is required."
-        const val PRICE_MINIMUM = "0.0"
-        const val PRICE_TOO_LOW_MSG = "The lowest price allowed is 0 Ξ."
-        const val PRICE_MAXIMUM = "100000000.0"
-        const val PRICE_TOO_HIGH_MSG = "The highest price allowed is 100000000 Ξ."
-        const val PRICE_TOO_PRECISE_MSG = "Price should have precision of 0.0001 Ξ."
 
         const val ADDING_USER_REQUIRED_MSG = "Adding user is required."
 

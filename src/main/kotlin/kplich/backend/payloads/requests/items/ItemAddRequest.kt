@@ -1,6 +1,14 @@
 package kplich.backend.payloads.requests.items
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import kplich.backend.configurations.PricePrecisionConstants.PRICE_DECIMAL_PART
+import kplich.backend.configurations.PricePrecisionConstants.PRICE_INTEGER_PART
+import kplich.backend.configurations.PricePrecisionConstants.PRICE_MAXIMUM_STRING
+import kplich.backend.configurations.PricePrecisionConstants.PRICE_MINIMUM_STRING
+import kplich.backend.configurations.PricePrecisionConstants.PRICE_REQUIRED_MSG
+import kplich.backend.configurations.PricePrecisionConstants.PRICE_TOO_HIGH_MSG
+import kplich.backend.configurations.PricePrecisionConstants.PRICE_TOO_LOW_MSG
+import kplich.backend.configurations.PricePrecisionConstants.PRICE_TOO_PRECISE_MSG
 import kplich.backend.entities.Item
 import kplich.backend.entities.Item.Companion.CATEGORY_REQUIRED_MSG
 import kplich.backend.entities.Item.Companion.DESCRIPTION_LENGTH_MSG
@@ -8,10 +16,6 @@ import kplich.backend.entities.Item.Companion.DESCRIPTION_MAX_LENGTH
 import kplich.backend.entities.Item.Companion.DESCRIPTION_MIN_LENGTH
 import kplich.backend.entities.Item.Companion.PHOTOS_REQUIRED_MSG
 import kplich.backend.entities.Item.Companion.PHOTOS_SIZE_MSG
-import kplich.backend.entities.Item.Companion.PRICE_REQUIRED_MSG
-import kplich.backend.entities.Item.Companion.PRICE_TOO_HIGH_MSG
-import kplich.backend.entities.Item.Companion.PRICE_TOO_LOW_MSG
-import kplich.backend.entities.Item.Companion.PRICE_TOO_PRECISE_MSG
 import kplich.backend.entities.Item.Companion.STATUS_REQUIRED_MSG
 import kplich.backend.entities.Item.Companion.TITLE_LENGTH_MSG
 import kplich.backend.entities.Item.Companion.TITLE_MAX_LENGTH
@@ -31,9 +35,9 @@ data class ItemAddRequest(
         val description: String,
 
         @get:NotNull(message = PRICE_REQUIRED_MSG)
-        @get:DecimalMin(value = "0.0", inclusive = true, message = PRICE_TOO_LOW_MSG)
-        @get:DecimalMax(value = "100000000.0", inclusive = true, message = PRICE_TOO_HIGH_MSG)
-        @get:Digits(integer = 9, fraction = 4, message = PRICE_TOO_PRECISE_MSG)
+        @get:DecimalMin(value = PRICE_MINIMUM_STRING, inclusive = true, message = PRICE_TOO_LOW_MSG)
+        @get:DecimalMax(value = PRICE_MAXIMUM_STRING, inclusive = true, message = PRICE_TOO_HIGH_MSG)
+        @get:Digits(integer = PRICE_INTEGER_PART, fraction = PRICE_DECIMAL_PART, message = PRICE_TOO_PRECISE_MSG)
         val price: BigDecimal,
 
         @get:NotNull(message = CATEGORY_REQUIRED_MSG)

@@ -1,5 +1,12 @@
 package kplich.backend.payloads.requests.items
 
+import kplich.backend.configurations.PricePrecisionConstants.PRICE_DECIMAL_PART
+import kplich.backend.configurations.PricePrecisionConstants.PRICE_INTEGER_PART
+import kplich.backend.configurations.PricePrecisionConstants.PRICE_MAXIMUM_STRING
+import kplich.backend.configurations.PricePrecisionConstants.PRICE_MINIMUM_STRING
+import kplich.backend.configurations.PricePrecisionConstants.PRICE_TOO_HIGH_MSG
+import kplich.backend.configurations.PricePrecisionConstants.PRICE_TOO_LOW_MSG
+import kplich.backend.configurations.PricePrecisionConstants.PRICE_TOO_PRECISE_MSG
 import kplich.backend.entities.Item
 import kplich.backend.entities.UsedStatus
 import java.math.BigDecimal
@@ -13,14 +20,14 @@ data class ItemFilteringCriteria(
         val searchQuery: String?,
         val category: Int?,
 
-        @get:DecimalMin(value = "0.0", inclusive = true, message = Item.PRICE_TOO_LOW_MSG)
-        @get:DecimalMax(value = "100000000.0", inclusive = true, message = Item.PRICE_TOO_HIGH_MSG)
-        @get:Digits(integer = 9, fraction = 4, message = Item.PRICE_TOO_PRECISE_MSG)
+        @get:DecimalMin(value = PRICE_MINIMUM_STRING, inclusive = true, message = PRICE_TOO_LOW_MSG)
+        @get:DecimalMax(value = PRICE_MAXIMUM_STRING, inclusive = true, message = PRICE_TOO_HIGH_MSG)
+        @get:Digits(integer = PRICE_INTEGER_PART, fraction = PRICE_DECIMAL_PART, message = PRICE_TOO_PRECISE_MSG)
         val minimalPrice: BigDecimal?,
 
-        @get:DecimalMin(value = "0.0", inclusive = true, message = Item.PRICE_TOO_LOW_MSG)
-        @get:DecimalMax(value = "100000000.0", inclusive = true, message = Item.PRICE_TOO_HIGH_MSG)
-        @get:Digits(integer = 9, fraction = 4, message = Item.PRICE_TOO_PRECISE_MSG)
+        @get:DecimalMin(value = PRICE_MINIMUM_STRING, inclusive = true, message = PRICE_TOO_LOW_MSG)
+        @get:DecimalMax(value = PRICE_MAXIMUM_STRING, inclusive = true, message = PRICE_TOO_HIGH_MSG)
+        @get:Digits(integer = PRICE_INTEGER_PART, fraction = PRICE_DECIMAL_PART, message = PRICE_TOO_PRECISE_MSG)
         val maximalPrice: BigDecimal?,
 
         val statuses: List<UsedStatus>?
