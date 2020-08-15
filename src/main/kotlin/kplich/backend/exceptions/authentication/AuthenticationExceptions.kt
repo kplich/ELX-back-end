@@ -1,6 +1,7 @@
-package kplich.backend.exceptions
+package kplich.backend.exceptions.authentication
 
 import kplich.backend.entities.Role
+import kplich.backend.exceptions.ElxResponseException
 import org.springframework.http.HttpStatus
 
 class RoleNotFoundException(role: Role.RoleEnum) : ElxResponseException(HttpStatus.NOT_FOUND, "Role $role not found!")

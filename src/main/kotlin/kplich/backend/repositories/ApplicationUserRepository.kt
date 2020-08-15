@@ -1,9 +1,9 @@
 package kplich.backend.repositories
 
 import kplich.backend.entities.ApplicationUser
-import org.springframework.data.repository.CrudRepository
+import org.springframework.data.jpa.repository.JpaRepository
 
-interface ApplicationUserRepository : CrudRepository<ApplicationUser, Long> {
+interface ApplicationUserRepository : JpaRepository<ApplicationUser, Long> {
     fun findByUsername(username: String): ApplicationUser?
 
     fun existsByUsername(username: String): Boolean

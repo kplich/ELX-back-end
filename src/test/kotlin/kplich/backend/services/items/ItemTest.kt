@@ -1,7 +1,6 @@
 package kplich.backend.services.items
 
 import kplich.backend.data.ItemTestData
-import kplich.backend.services.ItemService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 

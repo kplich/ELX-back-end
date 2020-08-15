@@ -1,9 +1,10 @@
-package kplich.backend.services
+package kplich.backend.services.items
 
 import kplich.backend.entities.Category
 import kplich.backend.entities.Item
 import kplich.backend.entities.ItemPhoto
-import kplich.backend.exceptions.*
+import kplich.backend.exceptions.authentication.NoUserLoggedInException
+import kplich.backend.exceptions.items.*
 import kplich.backend.payloads.requests.items.ItemAddRequest
 import kplich.backend.payloads.requests.items.ItemFilteringCriteria
 import kplich.backend.payloads.requests.items.ItemUpdateRequest
@@ -14,6 +15,8 @@ import kplich.backend.repositories.findByIdOrThrow
 import kplich.backend.repositories.items.CategoryRepository
 import kplich.backend.repositories.items.ItemRepository
 import kplich.backend.repositories.items.PhotoRepository
+import kplich.backend.services.ResponseService
+import kplich.backend.services.UserService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -25,7 +28,7 @@ class ItemService(
         private val userRepository: ApplicationUserRepository,
         private val categoryRepository: CategoryRepository,
         private val photoRepository: PhotoRepository,
-        private val userService: UserService
+        private val responseService: ResponseService
 ) {
 
     fun getCategories(): List<CategoryResponse> {
@@ -51,8 +54,10 @@ class ItemService(
     @Transactional
     fun updateItem(request: ItemUpdateRequest): ItemResponse {
         val oldItem = itemRepository.findByIdOrThrow(request.id, ::ItemNotFoundException)
-        if (oldItem.cannotBeUpdatedByCurrentlyLoggedUser()) throw UnauthorizedItemUpdateRequestException(oldItem.id)
-        if (oldItem.closed) throw ClosedItemUpdateException()
+        if (oldItem.cannotBeUpdatedByCurrentlyLoggedUser())
+            throw UnauthorizedItemUpdateRequestException(oldItem.id)
+        if (oldItem.closed)
+            throw ClosedItemUpdateException()
 
         return itemRepository.save(request.mapToItem(oldItem)).toResponse()
     }
@@ -86,7 +91,9 @@ class ItemService(
         }
     }
 
-    private fun Category.toResponse(): CategoryResponse = CategoryResponse(this.id, this.name)
+    private fun Category.toResponse(): CategoryResponse = responseService.categoryToResponse(this)
+
+    private fun Item.toResponse(): ItemResponse = responseService.itemToResponse(this)
 
     @Throws(
             UnauthorizedItemAddingRequestException::class,
@@ -100,7 +107,7 @@ class ItemService(
         val price = this.price
 
         val loggedInId = try {
-            userService.getCurrentlyLoggedId()
+            UserService.getCurrentlyLoggedId()
         } catch (e: NoUserLoggedInException) {
             throw UnauthorizedItemAddingRequestException()
         }
@@ -120,19 +127,6 @@ class ItemService(
             this.photos = itemPhotos
         }
     }
-
-    private fun Item.toResponse(): ItemResponse = ItemResponse(
-            this.id,
-            this.title,
-            this.description,
-            this.price,
-            with(this.addedBy) { ItemResponse.ItemAddedByResponse(id, username) },
-            this.addedOn,
-            this.category.toResponse(),
-            this.usedStatus,
-            this.photos.map { photo -> photo.url },
-            this.closedOn
-    )
 
     private fun ItemUpdateRequest.mapToItem(oldItem: Item): Item {
         photoRepository.deleteAll(oldItem.photos)
@@ -158,7 +152,7 @@ class ItemService(
 
     private fun Item.cannotBeUpdatedByCurrentlyLoggedUser(): Boolean {
         return try {
-            val loggedInId = userService.getCurrentlyLoggedId()
+            val loggedInId = UserService.getCurrentlyLoggedId()
             this.addedBy.id != loggedInId
         } catch (e: NoUserLoggedInException) {
             true

@@ -1,6 +1,6 @@
 package kplich.backend.repositories.items
 
 import kplich.backend.entities.Category
-import org.springframework.data.repository.CrudRepository
+import org.springframework.data.jpa.repository.JpaRepository
 
-interface CategoryRepository : CrudRepository<Category, Int>
+interface CategoryRepository : JpaRepository<Category, Int>

@@ -11,7 +11,6 @@ import kplich.backend.configurations.PricePrecisionConstants.PRICE_REQUIRED_MSG
 import kplich.backend.configurations.PricePrecisionConstants.PRICE_TOO_HIGH_MSG
 import kplich.backend.configurations.PricePrecisionConstants.PRICE_TOO_LOW_MSG
 import kplich.backend.configurations.PricePrecisionConstants.PRICE_TOO_PRECISE_MSG
-import java.io.Serializable
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import javax.persistence.*
@@ -23,26 +22,20 @@ import javax.validation.constraints.*
 import kotlin.reflect.KClass
 
 @Entity
-@Table(name = "conversations")
-@IdClass(ConversationId::class)
+@Table(name = "conversations", indexes = [Index(columnList = "interested_user_id, item_id", unique = true)])
 data class Conversation(
         @Id
+        var id: Long,
+
         @OneToOne
         var interestedUser: ApplicationUser,
 
-        @Id
         @ManyToOne
         var item: Item,
 
         @OneToMany(mappedBy = "conversation")
         var messages: MutableList<Message>
 )
-
-data class ConversationId(
-        var interestedUser: Long,
-        var item: Long
-) : Serializable
-
 @Entity
 @Table(name = "messages")
 data class Message(
@@ -61,7 +54,7 @@ data class Message(
         @get:Size(max = MESSAGE_CONTENT_MAX_LENGTH, message = MESSAGE_TOO_LONG_MSG)
         var textContent: String,
 
-        @OneToOne
+        @OneToOne(mappedBy = "message")
         var offer: Offer,
 
         @Id

@@ -1,7 +1,7 @@
 package kplich.backend.repositories.items
 
 import kplich.backend.entities.Item
-import org.springframework.data.repository.CrudRepository
+import org.springframework.data.jpa.repository.JpaRepository
 
-interface ItemRepository: CrudRepository<Item, Long>
+interface ItemRepository : JpaRepository<Item, Long>
 

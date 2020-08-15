@@ -4,7 +4,7 @@ import kplich.backend.payloads.requests.items.ItemAddRequest
 import kplich.backend.payloads.requests.items.ItemFilteringCriteria
 import kplich.backend.payloads.requests.items.ItemUpdateRequest
 import kplich.backend.payloads.responses.items.ItemResponse
-import kplich.backend.services.ItemService
+import kplich.backend.services.items.ItemService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller

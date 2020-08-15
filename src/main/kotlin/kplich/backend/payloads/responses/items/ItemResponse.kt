@@ -1,6 +1,7 @@
 package kplich.backend.payloads.responses.items
 
 import kplich.backend.entities.UsedStatus
+import kplich.backend.payloads.responses.authentication.SimpleUserResponse
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
@@ -9,16 +10,10 @@ data class ItemResponse(
         val title: String,
         val description: String,
         val price: BigDecimal,
-        val addedBy: ItemAddedByResponse,
+        val addedBy: SimpleUserResponse,
         val addedOn: LocalDateTime,
         val category: CategoryResponse,
         val usedStatus: UsedStatus,
         val photoUrls: List<String>,
         val closedOn: LocalDateTime?
-) {
-
-    data class ItemAddedByResponse(
-            val id: Long,
-            val username: String
-    )
-}
+)

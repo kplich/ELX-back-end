@@ -1,6 +1,6 @@
 package kplich.backend.repositories.items
 
 import kplich.backend.entities.ItemPhoto
-import org.springframework.data.repository.CrudRepository
+import org.springframework.data.jpa.repository.JpaRepository
 
-interface PhotoRepository: CrudRepository<ItemPhoto, Long>
+interface PhotoRepository : JpaRepository<ItemPhoto, Long>
