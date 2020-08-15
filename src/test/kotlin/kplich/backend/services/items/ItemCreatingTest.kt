@@ -1,20 +1,21 @@
 package kplich.backend.services.items
 
+import kplich.backend.configurations.security.WithMockIdUser
 import kplich.backend.entities.UsedStatus
 import kplich.backend.exceptions.BadEditItemRequestException
 import kplich.backend.exceptions.UnauthorizedItemAddingRequestException
+import kplich.backend.exceptions.UserIdNotFoundException
 import kplich.backend.payloads.requests.items.ItemAddRequest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.springframework.security.test.context.support.WithMockUser
 import java.math.BigDecimal
 import javax.validation.ValidationException
 
 class ItemCreatingTest : ItemTest() {
 
     @Test
-    @WithMockUser(username = "kplich")
+    @WithMockIdUser(id = 1, username = "kplich")
     fun `item can be created`() {
         val request = ItemAddRequest(
                 title = "Title for newly added item",
@@ -53,7 +54,7 @@ class ItemCreatingTest : ItemTest() {
     }
 
     @Test
-    @WithMockUser(username = "doesnt_exist")
+    @WithMockIdUser(id = 1000, username = "doesnt_exist")
     fun `item cannot be created by user that doesn't exist`() {
         val request = ItemAddRequest(
                 title = "Title for newly added item",
@@ -65,13 +66,13 @@ class ItemCreatingTest : ItemTest() {
         )
 
 
-        assertThrows<UnauthorizedItemAddingRequestException> {
+        assertThrows<UserIdNotFoundException> {
             this.itemService.addItem(request)
         }
     }
 
     @Test
-    @WithMockUser(username = "kplich")
+    @WithMockIdUser(id = 1, username = "kplich")
     fun `item cannot be created with wrong price`() {
         val wrongPrices = arrayOf(
                 BigDecimal("-0.235"),
@@ -96,7 +97,7 @@ class ItemCreatingTest : ItemTest() {
     }
 
     @Test
-    @WithMockUser(username = "kplich")
+    @WithMockIdUser(id = 1, username = "kplich")
     fun `item cannot be created with non-existent category`() {
         val request = ItemAddRequest(
                 title = "Title for newly added item",

@@ -25,7 +25,7 @@ class ItemService(
         private val userRepository: ApplicationUserRepository,
         private val categoryRepository: CategoryRepository,
         private val photoRepository: PhotoRepository,
-        private val userService: UserDetailsServiceImpl
+        private val userService: UserService
 ) {
 
     fun getCategories(): List<CategoryResponse> {
@@ -101,8 +101,6 @@ class ItemService(
 
         val loggedInId = try {
             userService.getCurrentlyLoggedId()
-        } catch (e: UsernameNotFoundException) {
-            throw UnauthorizedItemAddingRequestException()
         } catch (e: NoUserLoggedInException) {
             throw UnauthorizedItemAddingRequestException()
         }

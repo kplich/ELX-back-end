@@ -1,6 +1,6 @@
 package kplich.backend.configurations.security
 
-import kplich.backend.services.UserDetailsServiceImpl
+import kplich.backend.services.UserService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -24,7 +24,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 class WebSecurity(
-        private val userDetailsService: UserDetailsServiceImpl,
+        private val userService: UserService,
         private val jwtAuthorizationFilter: JwtAuthorizationFilter,
         private val jwtAuthenticationFilter: JwtAuthenticationFilter) : WebSecurityConfigurerAdapter() {
 
@@ -33,7 +33,7 @@ class WebSecurity(
 
     @Throws(Exception::class)
     public override fun configure(authenticationManagerBuilder: AuthenticationManagerBuilder) {
-        authenticationManagerBuilder.userDetailsService<UserDetailsService>(userDetailsService).passwordEncoder(bCryptPasswordEncoder())
+        authenticationManagerBuilder.userDetailsService<UserDetailsService>(userService).passwordEncoder(bCryptPasswordEncoder())
     }
 
     @Bean

@@ -3,12 +3,11 @@ package kplich.backend.controllers.authentication
 import com.fasterxml.jackson.databind.ObjectMapper
 import kplich.backend.configurations.errorhandling.RestExceptionHandler.Companion.VALIDATION_ERROR_MESSAGE
 import kplich.backend.configurations.security.JwtUtil
-import kplich.backend.controllers.AuthenticationController
 import kplich.backend.entities.Role
 import kplich.backend.exceptions.RoleNotFoundException
 import kplich.backend.exceptions.UserAlreadyExistsException
 import kplich.backend.payloads.requests.authentication.SignUpRequest
-import kplich.backend.services.UserDetailsServiceImpl
+import kplich.backend.services.UserService
 import org.hamcrest.core.StringContains.containsString
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.given
@@ -29,7 +28,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 class SignUpTest {
 
     @MockBean
-    private lateinit var userService: UserDetailsServiceImpl
+    private lateinit var userService: UserService
 
     @Autowired
     private lateinit var mockMvc: MockMvc

@@ -25,11 +25,11 @@ import org.springframework.transaction.annotation.Transactional
 // Lazy annotations required due to beans created in WebSecurity configuration that depends on UserDetailsService
 
 @Service
-class UserDetailsServiceImpl(
+class UserService(
         private val userRepository: ApplicationUserRepository,
         private val roleRepository: RoleRepository,
         @Lazy private val passwordEncoder: PasswordEncoder
-): UserDetailsService {
+) : UserDetailsService {
 
     @Transactional(readOnly = true)
     @Throws(UsernameNotFoundException::class)
@@ -38,9 +38,14 @@ class UserDetailsServiceImpl(
         return User(appUser.username, appUser.password, getAuthoritiesFromRoles(appUser.roles))
     }
 
+    @Throws(UsernameNotFoundException::class)
+    fun getIdOfUsername(username: String): Long {
+        return userRepository.findByUsername(username)?.id ?: throw UsernameNotFoundException(username)
+    }
+
     @Throws(UserAlreadyExistsException::class, RoleNotFoundException::class)
     fun saveNewUser(signUpRequest: SignUpRequest) {
-        if(userRepository.existsByUsername(signUpRequest.username)) {
+        if (userRepository.existsByUsername(signUpRequest.username)) {
             throw UserAlreadyExistsException(signUpRequest.username)
         }
 
@@ -78,11 +83,11 @@ class UserDetailsServiceImpl(
     }
 
     @Throws(
-            NoUserLoggedInException::class,
-            UsernameNotFoundException::class
+            NoUserLoggedInException::class
     )
     fun getCurrentlyLoggedId(): Long {
-        val loggedUsersName = SecurityContextHolder.getContext().authentication?.name ?: throw NoUserLoggedInException()
-        return userRepository.findByUsername(loggedUsersName)?.id ?: throw UsernameNotFoundException(loggedUsersName)
+        return SecurityContextHolder.getContext()
+                ?.authentication
+                ?.details as? Long ?: throw NoUserLoggedInException()
     }
 }

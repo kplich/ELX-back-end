@@ -1,8 +1,8 @@
-package kplich.backend.controllers
+package kplich.backend.controllers.authentication
 
 import kplich.backend.payloads.requests.authentication.PasswordChangeRequest
 import kplich.backend.payloads.requests.authentication.SignUpRequest
-import kplich.backend.services.UserDetailsServiceImpl
+import kplich.backend.services.UserService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -11,7 +11,7 @@ import javax.validation.Valid
 @RestController
 @CrossOrigin
 @RequestMapping("/auth")
-class AuthenticationController(private val userService: UserDetailsServiceImpl) {
+class AuthenticationController(private val userService: UserService) {
 
     @PostMapping("/sign-up")
     @ResponseStatus(HttpStatus.CREATED)

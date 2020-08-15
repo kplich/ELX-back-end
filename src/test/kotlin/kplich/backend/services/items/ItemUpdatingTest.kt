@@ -1,5 +1,6 @@
 package kplich.backend.services.items
 
+import kplich.backend.configurations.security.WithMockIdUser
 import kplich.backend.entities.UsedStatus
 import kplich.backend.exceptions.BadEditItemRequestException
 import kplich.backend.exceptions.ClosedItemUpdateException
@@ -9,7 +10,6 @@ import kplich.backend.payloads.requests.items.ItemUpdateRequest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.transaction.TransactionSystemException
 import java.math.BigDecimal
 
@@ -19,7 +19,7 @@ import java.math.BigDecimal
 class ItemUpdatingTest : ItemTest() {
 
     @Test
-    @WithMockUser(username = "kplich3")
+    @WithMockIdUser(id = 3, username = "kplich3")
     fun `item can be updated`() {
         val request = ItemUpdateRequest(
                 id = 3,
@@ -60,7 +60,7 @@ class ItemUpdatingTest : ItemTest() {
     }
 
     @Test
-    @WithMockUser(username = "kplich2")
+    @WithMockIdUser(id = 2, username = "kplich2")
     fun `item cannot be updated by user that didn't create it`() {
         val request = ItemUpdateRequest(
                 id = 3,
@@ -78,7 +78,7 @@ class ItemUpdatingTest : ItemTest() {
     }
 
     @Test
-    @WithMockUser(username = "doesnt_exist")
+    @WithMockIdUser(username = "doesnt_exist")
     fun `item cannot be updated by user that doesn't exist`() {
         val request = ItemUpdateRequest(
                 id = 3,
@@ -96,7 +96,7 @@ class ItemUpdatingTest : ItemTest() {
     }
 
     @Test
-    @WithMockUser(username = "kplich3")
+    @WithMockIdUser(id = 3, username = "kplich3")
     fun `item cannot be updated with wrong price`() {
         val wrongPrices = arrayOf(
                 BigDecimal("-0.235"),
@@ -124,7 +124,7 @@ class ItemUpdatingTest : ItemTest() {
     }
 
     @Test
-    @WithMockUser(username = "kplich3")
+    @WithMockIdUser(id = 3, username = "kplich3")
     fun `item cannot be updated with non-existent category`() {
         val request = ItemUpdateRequest(
                 id = 3,
@@ -142,7 +142,7 @@ class ItemUpdatingTest : ItemTest() {
     }
 
     @Test
-    @WithMockUser(username = "kplich2")
+    @WithMockIdUser(id = 2, username = "kplich2")
     fun `item cannot be updated after it's been closed`() {
         val request = ItemUpdateRequest(
                 id = 2,
@@ -160,7 +160,7 @@ class ItemUpdatingTest : ItemTest() {
     }
 
     @Test
-    @WithMockUser(username = "kplich2")
+    @WithMockIdUser(id = 2, username = "kplich2")
     fun `non-existent item cannot be updated`() {
         val request = ItemUpdateRequest(
                 id = 10000000,

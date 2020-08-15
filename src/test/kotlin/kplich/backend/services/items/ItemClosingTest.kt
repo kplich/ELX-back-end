@@ -1,12 +1,12 @@
 package kplich.backend.services.items
 
+import kplich.backend.configurations.security.WithMockIdUser
 import kplich.backend.exceptions.ItemAlreadyClosedException
 import kplich.backend.exceptions.ItemNotFoundException
 import kplich.backend.exceptions.UnauthorizedItemUpdateRequestException
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.springframework.security.test.context.support.WithMockUser
 
 /**
  * Item with id=1 is closed here.
@@ -21,13 +21,13 @@ class ItemClosingTest : ItemTest() {
     }
 
     @Test
-    @WithMockUser(username = "kplich")
+    @WithMockIdUser(id = 1, username = "kplich")
     fun `open item can be closed correctly`() {
         assertThat(this.itemService.closeItem(1).closedOn).isNotNull()
     }
 
     @Test
-    @WithMockUser(username = "kplich2")
+    @WithMockIdUser(id = 2, username = "kplich2")
     fun `closed item cannot be closed`() {
         assertThrows<ItemAlreadyClosedException> {
             this.itemService.closeItem(2)
@@ -35,7 +35,7 @@ class ItemClosingTest : ItemTest() {
     }
 
     @Test
-    @WithMockUser(username = "kplich")
+    @WithMockIdUser(id = 1, username = "kplich")
     fun `non-existing item cannot be closed`() {
         assertThrows<ItemNotFoundException> {
             this.itemService.closeItem(1000)
@@ -43,7 +43,7 @@ class ItemClosingTest : ItemTest() {
     }
 
     @Test
-    @WithMockUser(username = "kplich2")
+    @WithMockIdUser(id = 2, username = "kplich2")
     fun `no one but creator of the item can close it`() {
         assertThrows<UnauthorizedItemUpdateRequestException> {
             this.itemService.closeItem(1)

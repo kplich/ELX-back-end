@@ -2,9 +2,8 @@ package kplich.backend.controllers.authentication
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import kplich.backend.configurations.security.JwtUtil
-import kplich.backend.controllers.AuthenticationController
 import kplich.backend.payloads.requests.authentication.PasswordChangeRequest
-import kplich.backend.services.UserDetailsServiceImpl
+import kplich.backend.services.UserService
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.not
 import org.hamcrest.core.StringContains.containsString
@@ -23,7 +22,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 class ChangePasswordTest {
 
     @MockBean
-    private lateinit var userService: UserDetailsServiceImpl
+    private lateinit var userService: UserService
 
     @Autowired
     private lateinit var jwtUtil: JwtUtil
@@ -93,10 +92,11 @@ class ChangePasswordTest {
     }
 
     private fun getTokenHeader(): String {
-        return "$BEARER ${jwtUtil.generateJwt(USERNAME)}"
+        return "$BEARER ${jwtUtil.generateJwt(ID, USERNAME)}"
     }
 
     companion object {
+        private const val ID = 1000L
         private const val USERNAME = "testing_user"
 
         private const val AUTHORIZATION = "Authorization"

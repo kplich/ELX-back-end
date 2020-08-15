@@ -1,9 +1,8 @@
-package kplich.backend.controllers
+package kplich.backend.controllers.items
 
 import kplich.backend.payloads.requests.items.ItemAddRequest
 import kplich.backend.payloads.requests.items.ItemFilteringCriteria
 import kplich.backend.payloads.requests.items.ItemUpdateRequest
-import kplich.backend.payloads.responses.items.CategoryResponse
 import kplich.backend.payloads.responses.items.ItemResponse
 import kplich.backend.services.ItemService
 import org.springframework.http.HttpStatus
@@ -45,17 +44,5 @@ class ItemController(
     @ResponseStatus(HttpStatus.CREATED)
     fun addItem(@RequestBody @Valid itemAddRequest: ItemAddRequest): ResponseEntity<ItemResponse> {
         return ResponseEntity.status(HttpStatus.CREATED).body(itemService.addItem(itemAddRequest))
-    }
-}
-
-@Controller
-@RequestMapping("/categories")
-class CategoryController(
-        private val itemService: ItemService
-) {
-    @GetMapping("")
-    @ResponseStatus(HttpStatus.OK)
-    fun getCategories(): ResponseEntity<List<CategoryResponse>> {
-        return ResponseEntity.ok(itemService.getCategories())
     }
 }

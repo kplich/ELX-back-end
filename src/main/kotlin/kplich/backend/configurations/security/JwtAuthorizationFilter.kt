@@ -1,6 +1,7 @@
 package kplich.backend.configurations.security
 
 import kplich.backend.configurations.security.JwtUtil.Companion.CLAIM_SUBJECT_KEY
+import kplich.backend.configurations.security.JwtUtil.Companion.CLAIM_USERNAME_KEY
 import kplich.backend.configurations.security.SecurityConstants.AUTHORIZATION
 import kplich.backend.configurations.security.SecurityConstants.BEARER
 import org.springframework.context.annotation.Lazy
@@ -42,10 +43,13 @@ class JwtAuthorizationFilter(
     private fun getAuthentication(header: String): Authentication? {
         return try {
             val claims = jwtUtil.parseJwtClaims(header.replace(BEARER, "").trim())
-            val username = claims[CLAIM_SUBJECT_KEY] as String
+            val id = (claims[CLAIM_SUBJECT_KEY] as String).toLong()
+            val username = claims[CLAIM_USERNAME_KEY] as String
 
             UsernamePasswordAuthenticationToken(
-                    username, null, emptyList())
+                    username, null, emptyList()).apply {
+                details = id
+            }
         } catch (e: Exception) {
             logger.error("Error while parsing JWT claims.", e)
             null
