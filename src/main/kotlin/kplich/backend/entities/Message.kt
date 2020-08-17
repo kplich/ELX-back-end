@@ -3,6 +3,7 @@ package kplich.backend.entities
 import kplich.backend.configurations.PricePrecisionConstants.ADVANCE_REQUIRED_MSG
 import kplich.backend.configurations.PricePrecisionConstants.ADVANCE_TOO_HIGH_MSG
 import kplich.backend.configurations.PricePrecisionConstants.ADVANCE_TOO_LOW_MSG
+import kplich.backend.configurations.PricePrecisionConstants.ADVANCE_TOO_PRECISE_MSG
 import kplich.backend.configurations.PricePrecisionConstants.PRICE_DECIMAL_PART
 import kplich.backend.configurations.PricePrecisionConstants.PRICE_INTEGER_PART
 import kplich.backend.configurations.PricePrecisionConstants.PRICE_MAXIMUM_STRING
@@ -24,9 +25,6 @@ import kotlin.reflect.KClass
 @Entity
 @Table(name = "conversations", indexes = [Index(columnList = "interested_user_id, item_id", unique = true)])
 data class Conversation(
-        @Id
-        var id: Long,
-
         @OneToOne
         var interestedUser: ApplicationUser,
 
@@ -34,7 +32,11 @@ data class Conversation(
         var item: Item,
 
         @OneToMany(mappedBy = "conversation")
-        var messages: MutableList<Message>
+        var messages: MutableList<Message>,
+
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        var id: Long = 0
 )
 @Entity
 @Table(name = "messages")
@@ -44,7 +46,7 @@ data class Message(
         var conversation: Conversation,
 
         @OneToOne
-        var sendingUser: ApplicationUser,
+        var sender: ApplicationUser,
 
         @get:NotNull
         @get:PastOrPresent
@@ -52,13 +54,13 @@ data class Message(
 
         @get:NotBlank
         @get:Size(max = MESSAGE_CONTENT_MAX_LENGTH, message = MESSAGE_TOO_LONG_MSG)
-        var textContent: String,
+        var content: String,
 
-        @OneToOne(mappedBy = "message")
-        var offer: Offer,
+        @OneToOne
+        var offer: Offer? = null,
 
         @Id
-        @GeneratedValue
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
         var id: Long = 0
 ) {
     companion object {
@@ -71,7 +73,8 @@ data class Message(
 @Entity
 @Table(name = "offers")
 data class Offer(
-        @OneToOne
+
+        @OneToOne(mappedBy = "offer")
         var message: Message,
 
         @Enumerated(EnumType.STRING)
@@ -86,13 +89,13 @@ data class Offer(
         @get:NotNull(message = ADVANCE_REQUIRED_MSG)
         @get:DecimalMin(value = PRICE_MINIMUM_STRING, inclusive = true, message = ADVANCE_TOO_LOW_MSG)
         @get:DecimalMax(value = PRICE_MAXIMUM_STRING, inclusive = true, message = ADVANCE_TOO_HIGH_MSG)
-        @get:Digits(integer = PRICE_INTEGER_PART, fraction = PRICE_DECIMAL_PART, message = PRICE_TOO_PRECISE_MSG)
+        @get:Digits(integer = PRICE_INTEGER_PART, fraction = PRICE_DECIMAL_PART, message = ADVANCE_TOO_PRECISE_MSG)
         var advance: BigDecimal,
 
         @Enumerated(EnumType.STRING)
-        var offerStatus: OfferStatus,
+        var offerStatus: OfferStatus = OfferStatus.AWAITING,
 
-        var contractAddress: String?,
+        var contractAddress: String? = null,
 
         @Id
         @GeneratedValue
@@ -106,7 +109,11 @@ data class Offer(
 @Suppress("unused") // parameters required by constraint validation?
 @Constraint(validatedBy = [AdvanceNoGreaterThanPriceValidator::class])
 @Target(AnnotationTarget.CLASS)
-annotation class AdvanceNoGreaterThanPrice(val message: String = "", val groups: Array<KClass<*>> = [], val payload: Array<KClass<out Payload>> = [])
+annotation class AdvanceNoGreaterThanPrice(
+        val message: String = "",
+        val groups: Array<KClass<*>> = [],
+        val payload: Array<KClass<out Payload>> = []
+)
 
 class AdvanceNoGreaterThanPriceValidator : ConstraintValidator<AdvanceNoGreaterThanPrice, Offer> {
     override fun isValid(value: Offer, context: ConstraintValidatorContext): Boolean {

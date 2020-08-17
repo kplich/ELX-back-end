@@ -15,7 +15,7 @@ import kplich.backend.repositories.findByIdOrThrow
 import kplich.backend.repositories.items.CategoryRepository
 import kplich.backend.repositories.items.ItemRepository
 import kplich.backend.repositories.items.PhotoRepository
-import kplich.backend.services.ResponseService
+import kplich.backend.services.ResponseConverter
 import kplich.backend.services.UserService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
@@ -27,8 +27,7 @@ class ItemService(
         private val itemRepository: ItemRepository,
         private val userRepository: ApplicationUserRepository,
         private val categoryRepository: CategoryRepository,
-        private val photoRepository: PhotoRepository,
-        private val responseService: ResponseService
+        private val photoRepository: PhotoRepository
 ) {
 
     fun getCategories(): List<CategoryResponse> {
@@ -91,13 +90,13 @@ class ItemService(
         }
     }
 
-    private fun Category.toResponse(): CategoryResponse = responseService.categoryToResponse(this)
+    private fun Category.toResponse(): CategoryResponse = ResponseConverter.categoryToResponse(this)
 
-    private fun Item.toResponse(): ItemResponse = responseService.itemToResponse(this)
+    private fun Item.toResponse(): ItemResponse = ResponseConverter.itemToResponse(this)
 
     @Throws(
             UnauthorizedItemAddingRequestException::class,
-            UserIdNotFoundException::class,
+            UserWithIdNotFoundException::class,
             CategoryNotFoundException::class
     )
     private fun ItemAddRequest.mapToItem(): Item {
@@ -112,7 +111,7 @@ class ItemService(
             throw UnauthorizedItemAddingRequestException()
         }
 
-        val addedBy = userRepository.findByIdOrThrow(loggedInId, ::UserIdNotFoundException)
+        val addedBy = userRepository.findByIdOrThrow(loggedInId, ::UserWithIdNotFoundException)
         val category = categoryRepository.findByIdOrThrow(this.category, ::CategoryNotFoundException)
         val usedStatus = this.usedStatus
 
