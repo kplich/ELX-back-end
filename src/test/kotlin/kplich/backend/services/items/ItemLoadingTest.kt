@@ -28,7 +28,7 @@ class ItemLoadingTest : ItemTest() {
 
         val foundItems = this.itemService.getAllOpenItems(null).toTypedArray()
 
-        assertThat(foundItems).containsExactlyInAnyOrderElementsOf(expectedItems)
+        assertThat(foundItems).containsAll(expectedItems)
     }
 
     @Test

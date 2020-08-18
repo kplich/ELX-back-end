@@ -10,5 +10,5 @@ data class OfferResponse(
         val price: BigDecimal,
         val advance: BigDecimal,
         val offerStatus: OfferStatus,
-        val contractAddress: String?
+        val contractAddress: String? = null
 )

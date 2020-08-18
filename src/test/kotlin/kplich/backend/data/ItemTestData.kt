@@ -1,6 +1,7 @@
 package kplich.backend.data
 
 import kplich.backend.entities.UsedStatus
+import kplich.backend.payloads.responses.authentication.SimpleUserResponse
 import kplich.backend.payloads.responses.items.CategoryResponse
 import kplich.backend.payloads.responses.items.ItemResponse
 import java.math.BigDecimal
@@ -15,10 +16,10 @@ abstract class ItemTestData {
         )
 
     private val users
-        get(): Map<Int, ItemResponse.ItemAddedByResponse> = mapOf(
-                1 to ItemResponse.ItemAddedByResponse(1, "kplich"),
-                2 to ItemResponse.ItemAddedByResponse(2, "kplich2"),
-                3 to ItemResponse.ItemAddedByResponse(3, "kplich3")
+        get(): Map<Int, SimpleUserResponse> = mapOf(
+                1 to SimpleUserResponse(1, "kplich"),
+                2 to SimpleUserResponse(2, "kplich2"),
+                3 to SimpleUserResponse(3, "kplich3")
         )
 
     protected val items

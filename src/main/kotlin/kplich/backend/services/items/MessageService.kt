@@ -93,7 +93,7 @@ class MessageService(
     fun declineOffer(offerId: Long) {
         val offer = offerRepository.findByIdOrThrow(offerId, ::NoOfferFoundException)
 
-        if (offer.offerStatus != OfferStatus.AWAITING) {
+        if (!offer.awaiting) {
             throw OfferNotAwaitingAnswerException(offerId)
         }
 
@@ -104,7 +104,7 @@ class MessageService(
     fun acceptOffer(offerId: Long, request: AcceptOfferRequest) {
         val acceptedOffer = offerRepository.findByIdOrThrow(offerId, ::NoOfferFoundException)
 
-        if (acceptedOffer.offerStatus != OfferStatus.AWAITING) {
+        if (!acceptedOffer.awaiting) {
             throw OfferNotAwaitingAnswerException(offerId)
         }
 
@@ -113,15 +113,12 @@ class MessageService(
                 .flatMap { conversation -> conversation.messages.stream() }
                 .filter { message -> message.offer != null }
                 .map { message -> message.offer }
-                .filter { offer -> offer!!.id != acceptedOffer.id && offer.offerStatus != OfferStatus.AWAITING }
+                .filter { offer -> offer!!.id != acceptedOffer.id && offer.awaiting }
                 .forEach { offer ->
-                    offerRepository.save(offer!!.apply { offer.offerStatus = OfferStatus.DECLINED })
+                    offerRepository.save(offer!!.decline())
                 }
 
-        offerRepository.save(acceptedOffer.apply {
-            offerStatus = OfferStatus.ACCEPTED
-            contractAddress = request.contractAddress
-        })
+        offerRepository.save(acceptedOffer.accept(request.contractAddress))
     }
 
 

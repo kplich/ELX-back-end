@@ -101,6 +101,40 @@ data class Offer(
         @GeneratedValue
         var id: Long = 0
 ) {
+
+    @get:Transient
+    val accepted
+        get(): Boolean = this.offerStatus == OfferStatus.ACCEPTED
+
+    @get:Transient
+    val declined
+        get(): Boolean = this.offerStatus == OfferStatus.DECLINED
+
+    @get:Transient
+    val awaiting
+        get(): Boolean = this.offerStatus == OfferStatus.AWAITING
+
+    fun accept(contractAddress: String): Offer {
+        if (awaiting) {
+            this.contractAddress = contractAddress
+            this.offerStatus = OfferStatus.ACCEPTED
+        } else {
+            throw IllegalStateException("Cannot accept accepted/denied offer")
+        }
+
+        return this
+    }
+
+    fun decline(): Offer {
+        if (awaiting) {
+            this.offerStatus = OfferStatus.DECLINED
+        } else {
+            throw IllegalStateException("Cannot decline accepted/denied offer")
+        }
+
+        return this
+    }
+
     companion object {
         const val ADVANCE_GREATER_THAN_PRICE = "Advance cannot be greater than price."
     }
