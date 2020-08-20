@@ -27,9 +27,9 @@ abstract class MessageTestData {
         get(): Map<Long, ItemResponse> = mapOf(
                 4L to ItemResponse(
                         id = 4L,
-                        title = "First item for testing conversations, item 4",
-                        description = "Testing conversations, item 4",
-                        price = BigDecimal("1.01"),
+                        description = "First item for testing conversations, item 4",
+                        title = "Testing conversations, item 4",
+                        price = BigDecimal("1.0100"),
                         addedBy = users[1] ?: error("user not found"),
                         addedOn = LocalDateTime.parse("2020-05-05T21:40:10.096853"),
                         category = categories[1] ?: error("category not found"),
@@ -39,9 +39,9 @@ abstract class MessageTestData {
                 ),
                 5L to ItemResponse(
                         id = 5L,
-                        title = "Second item for testing conversations, item 5",
-                        description = "Testing conversations, item 5",
-                        price = BigDecimal("1.01"),
+                        description = "Second item for testing conversations, item 5",
+                        title = "Testing conversations, item 5",
+                        price = BigDecimal("1.0100"),
                         addedBy = users[1] ?: error("user not found"),
                         addedOn = LocalDateTime.parse("2020-05-05T21:40:10.096853"),
                         category = categories[1] ?: error("category not found"),
@@ -51,9 +51,9 @@ abstract class MessageTestData {
                 ),
                 6L to ItemResponse(
                         id = 6L,
-                        title = "Third item for testing conversations, item 6",
-                        description = "Testing conversations, item 6",
-                        price = BigDecimal("1.01"),
+                        description = "Third item for testing conversations, item 6",
+                        title = "Testing conversations, item 6",
+                        price = BigDecimal("1.0100"),
                         addedBy = users[1] ?: error("user not found"),
                         addedOn = LocalDateTime.parse("2020-05-05T21:40:10.096853"),
                         category = categories[1] ?: error("category not found"),
@@ -63,9 +63,9 @@ abstract class MessageTestData {
                 ),
                 7L to ItemResponse(
                         id = 7L,
-                        title = "Fourth item for testing conversations, item 7",
-                        description = "Testing conversations, item 7",
-                        price = BigDecimal("1.01"),
+                        description = "Fourth item for testing conversations, item 7",
+                        title = "Testing conversations, item 7",
+                        price = BigDecimal("1.0100"),
                         addedBy = users[1] ?: error("user not found"),
                         addedOn = LocalDateTime.parse("2020-05-05T21:40:10.096853"),
                         category = categories[1] ?: error("category not found"),
@@ -80,22 +80,22 @@ abstract class MessageTestData {
                 1L to OfferResponse(
                         id = 1L,
                         type = OfferType.PLAIN_ADVANCE,
-                        advance = BigDecimal("0.5"),
-                        price = BigDecimal("1.0"),
+                        advance = BigDecimal("0.5000"),
+                        price = BigDecimal("1.0000"),
                         offerStatus = OfferStatus.AWAITING
                 ),
                 2L to OfferResponse(
                         id = 2L,
                         type = OfferType.PLAIN_ADVANCE,
-                        advance = BigDecimal("0.67"),
-                        price = BigDecimal("1.0"),
+                        advance = BigDecimal("0.6700"),
+                        price = BigDecimal("1.0000"),
                         offerStatus = OfferStatus.AWAITING
                 ),
                 3L to OfferResponse(
                         id = 3L,
                         type = OfferType.PLAIN_ADVANCE,
-                        advance = BigDecimal("1.0"),
-                        price = BigDecimal("1.5"),
+                        advance = BigDecimal("1.0000"),
+                        price = BigDecimal("1.5000"),
                         offerStatus = OfferStatus.AWAITING
                 ),
         )
