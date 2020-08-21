@@ -61,10 +61,11 @@ class MessageService(
     @Transactional
     @Throws(
             ItemNotFoundException::class,
+            IllegalConversationAccessException::class,
             MessageToAClosedItemException::class,
-            UserWithIdNotFoundException::class
+            UserWithIdNotFoundException::class,
     )
-    fun sendMessage(itemId: Long, newMessageRequest: NewMessageRequest, subjectId: Long?): ConversationResponse {
+    fun sendMessage(itemId: Long, newMessageRequest: NewMessageRequest, subjectId: Long? = null): ConversationResponse {
         val item = itemRepository.findByIdOrThrow(itemId, ::ItemNotFoundException)
 
         if (item.closed) {
@@ -79,9 +80,18 @@ class MessageService(
         // if it's the owner, we need to know who are they talking to
         // if it's the buyer, we don't need to know anything more
         val subjectIdNN =
+                // if it's the owner, we need to know who are they talking to
                 if (item.addedBy.id == currentlyLoggedId)
                     subjectId ?: throw NoUserIdProvidedException()
-                else currentlyLoggedId
+                // if it's the buyer, we don't need to know anything more
+                else {
+                    // the buyer shouldn't ask for someone else's conversation !
+                    if (subjectId != null) {
+                        throw IllegalConversationAccessException(currentlyLoggedId)
+                    } else {
+                        currentlyLoggedId
+                    }
+                }
 
         val subject = userRepository
                 .findByIdOrThrow(subjectIdNN, ::UserWithIdNotFoundException)
@@ -99,36 +109,83 @@ class MessageService(
 
     @Transactional
     fun declineOffer(offerId: Long) {
-        val offer = offerRepository.findByIdOrThrow(offerId, ::NoOfferFoundException)
+        val offerToDecline = offerRepository.findByIdOrThrow(offerId, ::NoOfferFoundException)
 
-        if (!offer.awaiting) {
+        val loggedInId = UserService.getCurrentlyLoggedId()
+        val itemOwner = offerToDecline.item.addedBy
+        val interestedUser = offerToDecline.conversation.interestedUser
+
+        // if the same user who sent the offer
+        // or someone not related to the conversation
+        // wants to decline the offer,
+        // throw an exception
+        if((offerToDecline.sender == itemOwner && loggedInId == itemOwner.id)
+                || (offerToDecline.sender == interestedUser && loggedInId == interestedUser.id)
+                || (loggedInId != itemOwner.id || loggedInId != interestedUser.id)) {
+            throw UnauthorizedOfferModificationException(offerId, loggedInId)
+        }
+
+        if (!offerToDecline.awaiting) {
             throw OfferNotAwaitingAnswerException(offerId)
         }
 
-        offerRepository.save(offer.apply { this.offerStatus = OfferStatus.DECLINED })
+        offerRepository.save(offerToDecline.decline())
     }
 
     @Transactional
     fun acceptOffer(offerId: Long, request: AcceptOfferRequest) {
-        val acceptedOffer = offerRepository.findByIdOrThrow(offerId, ::NoOfferFoundException)
+        val offerToAccept = offerRepository.findByIdOrThrow(offerId, ::NoOfferFoundException)
 
-        if (!acceptedOffer.awaiting) {
+        val loggedInId = UserService.getCurrentlyLoggedId()
+        val itemOwner = offerToAccept.item.addedBy
+        val interestedUser = offerToAccept.conversation.interestedUser
+
+        // if the same user who sent the offer
+        // or someone not related to the conversation
+        // wants to accept the offer,
+        // throw an exception
+        if((offerToAccept.sender == itemOwner && loggedInId == itemOwner.id)
+                || (offerToAccept.sender == interestedUser && loggedInId == interestedUser.id)
+                || (loggedInId != itemOwner.id || loggedInId != interestedUser.id)) {
+            throw UnauthorizedOfferModificationException(offerId, loggedInId)
+        }
+
+        if (!offerToAccept.awaiting) {
             throw OfferNotAwaitingAnswerException(offerId)
         }
 
-        conversationRepository.findAllByItemId(acceptedOffer.message.conversation.item.id)
+        // get all offers regarding the item
+        // and decline them
+        conversationRepository.findAllByItemId(offerToAccept.item.id)
                 .stream()
                 .flatMap { conversation -> conversation.messages.stream() }
                 .filter { message -> message.offer != null }
                 .map { message -> message.offer }
-                .filter { offer -> offer!!.id != acceptedOffer.id && offer.awaiting }
+                .filter { offer -> offer!!.id != offerToAccept.id && offer.awaiting }
                 .forEach { offer ->
                     offerRepository.save(offer!!.decline())
                 }
 
-        offerRepository.save(acceptedOffer.accept(request.contractAddress))
+        offerRepository.save(offerToAccept.accept(request.contractAddress))
+        itemRepository.save(offerToAccept.item.close())
     }
 
+    @Transactional
+    fun cancelOffer(offerId: Long) {
+        val offerToCancel = offerRepository.findByIdOrThrow(offerId, ::NoOfferFoundException)
+
+        val loggedInId = UserService.getCurrentlyLoggedId()
+
+        if(loggedInId != offerToCancel.sender.id) {
+            throw UnauthorizedOfferModificationException(offerId, loggedInId)
+        }
+
+        if(!offerToCancel.awaiting) {
+            throw OfferNotAwaitingAnswerException(offerId)
+        }
+
+        offerRepository.save(offerToCancel.cancel())
+    }
 
     private fun Conversation.toResponse() = ResponseConverter.conversationToResponse(this)
 

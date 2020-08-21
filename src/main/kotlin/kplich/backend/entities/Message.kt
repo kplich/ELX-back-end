@@ -111,15 +111,41 @@ data class Offer(
         get(): Boolean = this.offerStatus == OfferStatus.DECLINED
 
     @get:Transient
+    val cancelled
+        get(): Boolean = this.offerStatus == OfferStatus.CANCELLED
+
+    @get:Transient
     val awaiting
         get(): Boolean = this.offerStatus == OfferStatus.AWAITING
+
+    @get:Transient
+    val sender
+        get(): ApplicationUser = this.message.sender
+
+    @get:Transient
+    val conversation
+        get(): Conversation = this.message.conversation
+
+    @get:Transient
+    val item
+        get(): Item = this.conversation.item
+
+    fun cancel(): Offer {
+        if(awaiting) {
+            this.offerStatus = OfferStatus.CANCELLED
+        } else {
+            throw IllegalStateException("Cannot cancel accepted/denied/cancelled offer")
+        }
+
+        return this
+    }
 
     fun accept(contractAddress: String): Offer {
         if (awaiting) {
             this.contractAddress = contractAddress
             this.offerStatus = OfferStatus.ACCEPTED
         } else {
-            throw IllegalStateException("Cannot accept accepted/denied offer")
+            throw IllegalStateException("Cannot accept accepted/denied/cancelled offer")
         }
 
         return this
@@ -129,7 +155,7 @@ data class Offer(
         if (awaiting) {
             this.offerStatus = OfferStatus.DECLINED
         } else {
-            throw IllegalStateException("Cannot decline accepted/denied offer")
+            throw IllegalStateException("Cannot decline accepted/denied/cancelled offer")
         }
 
         return this
@@ -157,7 +183,7 @@ class AdvanceNoGreaterThanPriceValidator : ConstraintValidator<AdvanceNoGreaterT
 }
 
 enum class OfferStatus {
-    AWAITING, ACCEPTED, DECLINED
+    AWAITING, CANCELLED, ACCEPTED, DECLINED
 }
 
 enum class OfferType {

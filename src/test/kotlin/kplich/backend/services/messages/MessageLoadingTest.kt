@@ -2,6 +2,8 @@ package kplich.backend.services.messages
 
 import kplich.backend.configurations.security.WithMockIdUser
 import kplich.backend.exceptions.items.IllegalConversationAccessException
+import kplich.backend.exceptions.items.NoConversationFoundException
+import kplich.backend.payloads.requests.items.NewMessageRequest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -32,6 +34,14 @@ class MessageLoadingTest : MessageTest() {
 
         assertThrows<IllegalConversationAccessException> {
             messageService.getConversation(4, 2)
+        }
+    }
+
+    @Test
+    @WithMockIdUser(id = 2, username = "kplich2")
+    fun `conversation that doesn't exist can't be loaded`() {
+        assertThrows<NoConversationFoundException> {
+            messageService.getConversation(5)
         }
     }
 }

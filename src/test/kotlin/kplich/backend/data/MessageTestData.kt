@@ -16,7 +16,7 @@ abstract class MessageTestData {
                 3 to CategoryResponse(3, "Fashion")
         )
 
-    private val users
+    protected val users
         get(): Map<Int, SimpleUserResponse> = mapOf(
                 1 to SimpleUserResponse(1, "kplich"),
                 2 to SimpleUserResponse(2, "kplich2"),

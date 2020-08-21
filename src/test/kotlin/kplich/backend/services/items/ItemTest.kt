@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 
 /**
- * Data for test are loaded from script resources/data-h2.sql.
+ * Data for test are loaded from script resources/data.sql.
  */
 @SpringBootTest
 abstract class ItemTest : ItemTestData() {
