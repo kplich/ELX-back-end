@@ -4,6 +4,7 @@ import kplich.backend.configurations.security.WithMockIdUser
 import kplich.backend.entities.OfferStatus
 import kplich.backend.entities.OfferType
 import kplich.backend.exceptions.items.IllegalConversationAccessException
+import kplich.backend.exceptions.items.MessageToAClosedItemException
 import kplich.backend.exceptions.items.NoUserIdProvidedException
 import kplich.backend.payloads.requests.items.NewMessageRequest
 import kplich.backend.payloads.requests.items.NewOfferRequest
@@ -90,6 +91,14 @@ class ConversationMessageSendingTest: ConversationTest() {
         assertThat(offer.offerStatus).isEqualTo(OfferStatus.AWAITING)
         assertThat(offer.price).isEqualTo(offerRequest.price)
         assertThat(offer.advance).isEqualTo(offerRequest.advance)
+    }
+
+    @Test
+    @WithMockIdUser(id = 2, username = "kplich2")
+    fun `interested user cannot send a message to a closed item`() {
+        assertThrows<MessageToAClosedItemException> {
+            messageService.sendMessage(8, NewMessageRequest("any content"))
+        }
     }
 
 }

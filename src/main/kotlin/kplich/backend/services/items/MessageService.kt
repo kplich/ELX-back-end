@@ -117,8 +117,7 @@ class MessageService(
         // or someone not related to the conversation
         // wants to decline the offer,
         // throw an exception
-        if((offerToDecline.sender == itemOwner && loggedInId == itemOwner.id)
-                || (offerToDecline.sender == interestedUser && loggedInId == interestedUser.id)
+        if((offerToDecline.sender.id == loggedInId)
                 || (loggedInId != itemOwner.id && loggedInId != interestedUser.id)) {
             throw UnauthorizedOfferModificationException(offerId, loggedInId)
         }
@@ -142,8 +141,7 @@ class MessageService(
         // or someone not related to the conversation
         // wants to accept the offer,
         // throw an exception
-        if((offerToAccept.sender == itemOwner && loggedInId == itemOwner.id)
-                || (offerToAccept.sender == interestedUser && loggedInId == interestedUser.id)
+        if((offerToAccept.sender.id == loggedInId)
                 || (loggedInId != itemOwner.id && loggedInId != interestedUser.id)) {
             throw UnauthorizedOfferModificationException(offerId, loggedInId)
         }

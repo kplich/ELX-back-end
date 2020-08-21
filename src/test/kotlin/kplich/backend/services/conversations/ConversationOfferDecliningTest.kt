@@ -2,6 +2,7 @@ package kplich.backend.services.conversations
 
 import kplich.backend.configurations.security.WithMockIdUser
 import kplich.backend.entities.OfferStatus
+import kplich.backend.exceptions.items.OfferNotAwaitingAnswerException
 import kplich.backend.exceptions.items.UnauthorizedOfferModificationException
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.assertThrows
@@ -53,5 +54,29 @@ class ConversationOfferDecliningTest : ConversationTest() {
 
         val foundOffer = foundOffers[0]
         assertThat(foundOffer.offerStatus).isEqualTo(OfferStatus.DECLINED)
+    }
+
+    @Test
+    @WithMockIdUser(id = 3, username = "kplich3")
+    fun `user not taking part in a conversation cannot cancel offer`() {
+        assertThrows<UnauthorizedOfferModificationException> {
+            messageService.cancelOffer(1)
+        }
+    }
+
+    @Test
+    @WithMockIdUser(id = 3, username = "kplich3")
+    fun `user not taking part in a conversation cannot decline offer`() {
+        assertThrows<UnauthorizedOfferModificationException> {
+            messageService.declineOffer(1)
+        }
+    }
+
+    @Test
+    @WithMockIdUser(id = 2, username = "kplich2")
+    fun `offer sender cannot cancel a rejected offer`() {
+        assertThrows<OfferNotAwaitingAnswerException> {
+            messageService.cancelOffer(5)
+        }
     }
 }
