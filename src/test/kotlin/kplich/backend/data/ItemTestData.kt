@@ -7,21 +7,7 @@ import kplich.backend.payloads.responses.items.ItemResponse
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
-abstract class ItemTestData {
-    protected val categories
-        get(): Map<Int, CategoryResponse> = mapOf(
-                1 to CategoryResponse(1, "House and Garden"),
-                2 to CategoryResponse(2, "Electronics"),
-                3 to CategoryResponse(3, "Fashion")
-        )
-
-    private val users
-        get(): Map<Int, SimpleUserResponse> = mapOf(
-                1 to SimpleUserResponse(1, "kplich"),
-                2 to SimpleUserResponse(2, "kplich2"),
-                3 to SimpleUserResponse(3, "kplich3")
-        )
-
+abstract class ItemTestData : BaseTestData() {
     protected val items
         get(): Map<Long, ItemResponse> = mapOf(
                 1L to ItemResponse(

@@ -34,8 +34,7 @@ class MessageService(
 
         // conversation with whom?
         // depends who's asking - owner of the item or a possible buyer
-
-        val conversationSubjectId: Long =
+        val subjectIdNN: Long =
                 // if it's the owner, we need to know who are they talking to
                 if (item.addedBy.id == currentlyLoggedId)
                     subjectId ?: throw NoUserIdProvidedException()
@@ -49,13 +48,9 @@ class MessageService(
                     }
                 }
 
-        val conversationSubject = userRepository
-                .findByIdOrThrow(conversationSubjectId, ::UserWithIdNotFoundException)
-
-        return conversationRepository
-                .findByInterestedUserAndItem(conversationSubject, item)
+        return item.conversations.find { it.interestedUser.id == subjectIdNN }
                 ?.toResponse()
-                ?: throw NoConversationFoundException(itemId, conversationSubjectId)
+                ?: throw NoConversationFoundException(itemId, subjectIdNN)
     }
 
     @Transactional
@@ -65,6 +60,7 @@ class MessageService(
             MessageToAClosedItemException::class,
             UserWithIdNotFoundException::class,
     )
+    // TODO: item owner cannot start a conversation
     fun sendMessage(itemId: Long, newMessageRequest: NewMessageRequest, subjectId: Long? = null): ConversationResponse {
         val item = itemRepository.findByIdOrThrow(itemId, ::ItemNotFoundException)
 
@@ -96,12 +92,14 @@ class MessageService(
         val subject = userRepository
                 .findByIdOrThrow(subjectIdNN, ::UserWithIdNotFoundException)
 
-        val conversation = conversationRepository
-                .findByInterestedUserAndItem(subject, item)
-                ?: Conversation(subject, item, mutableListOf())
+        val conversation = item.conversations.find { it.interestedUser.id == subjectIdNN }
+                ?: if(currentlyLoggedId == item.addedBy.id) {
+                    throw NoConversationFoundException(itemId, subjectIdNN)
+                } else {
+                    conversationRepository.save(Conversation(subject, item, mutableListOf()))
+                }
 
-        val newMessage = messageRepository.save(newMessageRequest.mapToMessage(conversation, sender))
-        conversation.messages.add(newMessage)
+        conversation.messages.add(newMessageRequest.mapToMessage(conversation, sender))
 
         val savedConversation = conversationRepository.save(conversation)
         return savedConversation.toResponse()
@@ -121,7 +119,7 @@ class MessageService(
         // throw an exception
         if((offerToDecline.sender == itemOwner && loggedInId == itemOwner.id)
                 || (offerToDecline.sender == interestedUser && loggedInId == interestedUser.id)
-                || (loggedInId != itemOwner.id || loggedInId != interestedUser.id)) {
+                || (loggedInId != itemOwner.id && loggedInId != interestedUser.id)) {
             throw UnauthorizedOfferModificationException(offerId, loggedInId)
         }
 
@@ -146,7 +144,7 @@ class MessageService(
         // throw an exception
         if((offerToAccept.sender == itemOwner && loggedInId == itemOwner.id)
                 || (offerToAccept.sender == interestedUser && loggedInId == interestedUser.id)
-                || (loggedInId != itemOwner.id || loggedInId != interestedUser.id)) {
+                || (loggedInId != itemOwner.id && loggedInId != interestedUser.id)) {
             throw UnauthorizedOfferModificationException(offerId, loggedInId)
         }
 
@@ -190,19 +188,19 @@ class MessageService(
     private fun Conversation.toResponse() = ResponseConverter.conversationToResponse(this)
 
     private fun NewMessageRequest.mapToMessage(conversation: Conversation, sender: ApplicationUser): Message {
-        val message = Message(
+        val message = messageRepository.save(Message(
                 conversation = conversation,
                 sender = sender,
                 sentOn = LocalDateTime.now(),
                 content = content
-        )
+        ))
 
         val offer = offer?.mapToOffer(message)
 
-        return message.apply {
-            this.offer = offer
-        }
+        message.offer = offer
+        return message
     }
 
-    private fun NewOfferRequest.mapToOffer(message: Message): Offer = Offer(message, type, price, advance)
+    private fun NewOfferRequest.mapToOffer(message: Message): Offer =
+            offerRepository.save(Offer(message, type, price, advance))
 }

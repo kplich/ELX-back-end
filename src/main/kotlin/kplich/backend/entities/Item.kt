@@ -68,6 +68,10 @@ data class Item(
         var id: Long = 0
         ) {
 
+    @get:NotNull
+    @OneToMany(mappedBy = "item")
+    var conversations: MutableList<Conversation> = mutableListOf()
+
     @get:Transient
     val closed get(): Boolean = closedOn != null
 

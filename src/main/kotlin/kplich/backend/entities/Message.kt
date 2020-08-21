@@ -98,7 +98,7 @@ data class Offer(
         var contractAddress: String? = null,
 
         @Id
-        @GeneratedValue
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
         var id: Long = 0
 ) {
 
