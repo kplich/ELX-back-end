@@ -18,5 +18,8 @@ class MessageToAClosedItemException(itemId: Long)
 class NoOfferFoundException(offerId: Long)
     : ElxResponseException(HttpStatus.NOT_FOUND, "No offer found with id $offerId")
 
+class UnauthorizedOfferModificationException(offerId: Long, loggedInId: Long)
+    : ElxResponseException(HttpStatus.FORBIDDEN, "User with id $loggedInId cannot modify offer with id $offerId")
+
 class OfferNotAwaitingAnswerException(offerId: Long)
     : ElxResponseException(HttpStatus.CONFLICT, "Offer with id $offerId has already been answered")

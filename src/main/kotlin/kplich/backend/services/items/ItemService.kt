@@ -73,9 +73,7 @@ class ItemService(
         if (item.cannotBeUpdatedByCurrentlyLoggedUser()) throw UnauthorizedItemUpdateRequestException(id)
         if (item.closed) throw ItemAlreadyClosedException(id)
 
-        return itemRepository.save(item.apply {
-            closedOn = LocalDateTime.now()
-        }).toResponse()
+        return itemRepository.save(item.close()).toResponse()
     }
 
     @Transactional(readOnly = true)

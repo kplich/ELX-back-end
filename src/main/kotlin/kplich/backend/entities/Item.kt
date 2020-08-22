@@ -68,8 +68,23 @@ data class Item(
         var id: Long = 0
         ) {
 
+    @get:NotNull
+    @OneToMany(mappedBy = "item")
+    var conversations: MutableList<Conversation> = mutableListOf()
+
     @get:Transient
     val closed get(): Boolean = closedOn != null
+
+    fun close(): Item {
+        if(closed) {
+            throw IllegalStateException("Cannot close an already closed item")
+        }
+        else {
+            closedOn = LocalDateTime.now()
+        }
+
+        return this
+    }
 
     companion object {
         const val TITLE_REQURIED_MSG = "Title is required."
