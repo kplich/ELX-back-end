@@ -1,8 +1,8 @@
 package kplich.backend.data
 
-import kplich.backend.entities.OfferStatus
-import kplich.backend.entities.OfferType
-import kplich.backend.entities.UsedStatus
+import kplich.backend.entities.conversation.OfferStatus
+import kplich.backend.entities.conversation.OfferType
+import kplich.backend.entities.items.UsedStatus
 import kplich.backend.payloads.responses.items.*
 import java.math.BigDecimal
 import java.time.LocalDateTime

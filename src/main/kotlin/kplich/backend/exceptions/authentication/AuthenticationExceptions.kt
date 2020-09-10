@@ -1,6 +1,6 @@
 package kplich.backend.exceptions.authentication
 
-import kplich.backend.entities.Role
+import kplich.backend.entities.authentication.Role
 import kplich.backend.exceptions.ElxResponseException
 import org.springframework.http.HttpStatus
 

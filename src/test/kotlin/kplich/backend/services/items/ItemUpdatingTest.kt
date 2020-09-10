@@ -1,7 +1,7 @@
 package kplich.backend.services.items
 
 import kplich.backend.configurations.security.WithMockIdUser
-import kplich.backend.entities.UsedStatus
+import kplich.backend.entities.items.UsedStatus
 import kplich.backend.exceptions.items.BadEditItemRequestException
 import kplich.backend.exceptions.items.ClosedItemUpdateException
 import kplich.backend.exceptions.items.ItemNotFoundException

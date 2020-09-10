@@ -1,8 +1,8 @@
 package kplich.backend.services.conversations
 
 import kplich.backend.configurations.security.WithMockIdUser
-import kplich.backend.entities.OfferStatus
-import kplich.backend.entities.OfferType
+import kplich.backend.entities.conversation.OfferStatus
+import kplich.backend.entities.conversation.OfferType
 import kplich.backend.exceptions.items.IllegalConversationAccessException
 import kplich.backend.exceptions.items.MessageToAClosedItemException
 import kplich.backend.exceptions.items.NoUserIdProvidedException

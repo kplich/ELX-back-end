@@ -1,8 +1,6 @@
 package kplich.backend.data
 
-import kplich.backend.entities.UsedStatus
-import kplich.backend.payloads.responses.authentication.SimpleUserResponse
-import kplich.backend.payloads.responses.items.CategoryResponse
+import kplich.backend.entities.items.UsedStatus
 import kplich.backend.payloads.responses.items.ItemResponse
 import java.math.BigDecimal
 import java.time.LocalDateTime

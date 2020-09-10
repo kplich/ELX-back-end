@@ -1,6 +1,11 @@
 package kplich.backend.services
 
-import kplich.backend.entities.*
+import kplich.backend.entities.authentication.ApplicationUser
+import kplich.backend.entities.conversation.Conversation
+import kplich.backend.entities.conversation.Message
+import kplich.backend.entities.conversation.Offer
+import kplich.backend.entities.items.Category
+import kplich.backend.entities.items.Item
 import kplich.backend.payloads.responses.authentication.SimpleUserResponse
 import kplich.backend.payloads.responses.items.*
 

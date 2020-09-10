@@ -1,8 +1,8 @@
 package kplich.backend.services.items
 
-import kplich.backend.entities.Category
-import kplich.backend.entities.Item
-import kplich.backend.entities.ItemPhoto
+import kplich.backend.entities.items.Category
+import kplich.backend.entities.items.Item
+import kplich.backend.entities.items.ItemPhoto
 import kplich.backend.exceptions.authentication.NoUserLoggedInException
 import kplich.backend.exceptions.items.*
 import kplich.backend.payloads.requests.items.ItemAddRequest
@@ -20,7 +20,6 @@ import kplich.backend.services.UserService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDateTime
 
 @Service
 class ItemService(

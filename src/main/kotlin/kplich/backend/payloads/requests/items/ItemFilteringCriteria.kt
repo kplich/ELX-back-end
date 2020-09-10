@@ -7,8 +7,8 @@ import kplich.backend.configurations.PricePrecisionConstants.PRICE_MINIMUM_STRIN
 import kplich.backend.configurations.PricePrecisionConstants.PRICE_TOO_HIGH_MSG
 import kplich.backend.configurations.PricePrecisionConstants.PRICE_TOO_LOW_MSG
 import kplich.backend.configurations.PricePrecisionConstants.PRICE_TOO_PRECISE_MSG
-import kplich.backend.entities.Item
-import kplich.backend.entities.UsedStatus
+import kplich.backend.entities.items.Item
+import kplich.backend.entities.items.UsedStatus
 import java.math.BigDecimal
 import java.util.function.Predicate
 import java.util.regex.Pattern

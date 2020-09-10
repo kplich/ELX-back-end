@@ -12,7 +12,7 @@ import kplich.backend.configurations.PricePrecisionConstants.PRICE_REQUIRED_MSG
 import kplich.backend.configurations.PricePrecisionConstants.PRICE_TOO_HIGH_MSG
 import kplich.backend.configurations.PricePrecisionConstants.PRICE_TOO_LOW_MSG
 import kplich.backend.configurations.PricePrecisionConstants.PRICE_TOO_PRECISE_MSG
-import kplich.backend.entities.OfferType
+import kplich.backend.entities.conversation.OfferType
 import java.math.BigDecimal
 import javax.persistence.EnumType
 import javax.persistence.Enumerated

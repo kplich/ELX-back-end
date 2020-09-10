@@ -1,4 +1,4 @@
-package kplich.backend.entities
+package kplich.backend.entities.items
 
 import com.fasterxml.jackson.annotation.JsonBackReference
 import com.fasterxml.jackson.annotation.JsonManagedReference
@@ -10,6 +10,8 @@ import kplich.backend.configurations.PricePrecisionConstants.PRICE_REQUIRED_MSG
 import kplich.backend.configurations.PricePrecisionConstants.PRICE_TOO_HIGH_MSG
 import kplich.backend.configurations.PricePrecisionConstants.PRICE_TOO_LOW_MSG
 import kplich.backend.configurations.PricePrecisionConstants.PRICE_TOO_PRECISE_MSG
+import kplich.backend.entities.authentication.ApplicationUser
+import kplich.backend.entities.conversation.Conversation
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import javax.persistence.*

@@ -1,7 +1,7 @@
 package kplich.backend.payloads.responses.items
 
-import kplich.backend.entities.OfferStatus
-import kplich.backend.entities.OfferType
+import kplich.backend.entities.conversation.OfferStatus
+import kplich.backend.entities.conversation.OfferType
 import java.math.BigDecimal
 
 data class OfferResponse(

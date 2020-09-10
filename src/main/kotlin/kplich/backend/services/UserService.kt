@@ -1,8 +1,8 @@
 package kplich.backend.services
 
 import kplich.backend.configurations.security.getAuthoritiesFromRoles
-import kplich.backend.entities.ApplicationUser
-import kplich.backend.entities.Role
+import kplich.backend.entities.authentication.ApplicationUser
+import kplich.backend.entities.authentication.Role
 import kplich.backend.exceptions.authentication.NoUserLoggedInException
 import kplich.backend.exceptions.authentication.RoleNotFoundException
 import kplich.backend.exceptions.authentication.UserAlreadyExistsException

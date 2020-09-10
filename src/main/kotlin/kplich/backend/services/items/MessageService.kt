@@ -1,6 +1,9 @@
 package kplich.backend.services.items
 
-import kplich.backend.entities.*
+import kplich.backend.entities.authentication.ApplicationUser
+import kplich.backend.entities.conversation.Conversation
+import kplich.backend.entities.conversation.Message
+import kplich.backend.entities.conversation.Offer
 import kplich.backend.exceptions.items.*
 import kplich.backend.payloads.requests.items.AcceptOfferRequest
 import kplich.backend.payloads.requests.items.NewMessageRequest
@@ -60,6 +63,7 @@ class MessageService(
             MessageToAClosedItemException::class,
             UserWithIdNotFoundException::class,
     )
+
     // TODO: item owner cannot start a conversation
     fun sendMessage(itemId: Long, newMessageRequest: NewMessageRequest, subjectId: Long? = null): ConversationResponse {
         val item = itemRepository.findByIdOrThrow(itemId, ::ItemNotFoundException)
@@ -99,10 +103,9 @@ class MessageService(
                     conversationRepository.save(Conversation(subject, item, mutableListOf()))
                 }
 
-        conversation.messages.add(newMessageRequest.mapToMessage(conversation, sender))
+        newMessageRequest.mapToMessage(conversation, sender)
 
-        val savedConversation = conversationRepository.save(conversation)
-        return savedConversation.toResponse()
+        return conversation.toResponse()
     }
 
     @Transactional
