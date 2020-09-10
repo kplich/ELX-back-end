@@ -106,7 +106,7 @@ class MessageService(
     }
 
     @Transactional
-    fun declineOffer(offerId: Long) {
+    fun declineOffer(offerId: Long): ConversationResponse {
         val offerToDecline = offerRepository.findByIdOrThrow(offerId, ::NoOfferFoundException)
 
         val loggedInId = UserService.getCurrentlyLoggedId()
@@ -127,10 +127,11 @@ class MessageService(
         }
 
         offerRepository.save(offerToDecline.decline())
+        return offerToDecline.conversation.toResponse()
     }
 
     @Transactional
-    fun acceptOffer(offerId: Long, request: AcceptOfferRequest) {
+    fun acceptOffer(offerId: Long, request: AcceptOfferRequest): ConversationResponse {
         val offerToAccept = offerRepository.findByIdOrThrow(offerId, ::NoOfferFoundException)
 
         val loggedInId = UserService.getCurrentlyLoggedId()
@@ -164,10 +165,12 @@ class MessageService(
 
         offerRepository.save(offerToAccept.accept(request.contractAddress))
         itemRepository.save(offerToAccept.item.close())
+
+        return offerToAccept.conversation.toResponse()
     }
 
     @Transactional
-    fun cancelOffer(offerId: Long) {
+    fun cancelOffer(offerId: Long): ConversationResponse {
         val offerToCancel = offerRepository.findByIdOrThrow(offerId, ::NoOfferFoundException)
 
         val loggedInId = UserService.getCurrentlyLoggedId()
@@ -181,6 +184,8 @@ class MessageService(
         }
 
         offerRepository.save(offerToCancel.cancel())
+
+        return offerToCancel.conversation.toResponse()
     }
 
     private fun Conversation.toResponse() = ResponseConverter.conversationToResponse(this)

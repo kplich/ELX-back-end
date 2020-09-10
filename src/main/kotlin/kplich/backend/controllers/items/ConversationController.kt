@@ -28,13 +28,25 @@ class ConversationController(
         return ResponseEntity.ok(messageService.sendMessage(itemId, newMessageRequest, subjectId))
     }
 
+    @PutMapping("/{offerId}/cancel")
+    fun cancelOffer(
+            @PathVariable offerId: Long
+    ): ResponseEntity<ConversationResponse> {
+        return ResponseEntity.ok(messageService.cancelOffer(offerId))
+    }
+
     @PutMapping("/{offerId}/decline")
-    fun declineOffer(@PathVariable offerId: Long) {
-        messageService.declineOffer(offerId)
+    fun declineOffer(
+            @PathVariable offerId: Long
+    ): ResponseEntity<ConversationResponse> {
+        return ResponseEntity.ok(messageService.declineOffer(offerId))
     }
 
     @PutMapping("/{offerId}/accept")
-    fun acceptOffer(@PathVariable offerId: Long, @RequestBody offerAcceptanceRequest: AcceptOfferRequest) {
-        messageService.acceptOffer(offerId, offerAcceptanceRequest)
+    fun acceptOffer(
+            @PathVariable offerId: Long,
+            @RequestBody offerAcceptanceRequest: AcceptOfferRequest
+    ): ResponseEntity<ConversationResponse> {
+        return ResponseEntity.ok(messageService.acceptOffer(offerId, offerAcceptanceRequest))
     }
 }
