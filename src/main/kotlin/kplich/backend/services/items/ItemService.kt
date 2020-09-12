@@ -102,11 +102,8 @@ class ItemService(
         val description = this.description
         val price = this.price
 
-        val loggedInId = try {
-            UserService.getCurrentlyLoggedId()
-        } catch (e: NoUserLoggedInException) {
-            throw UnauthorizedItemAddingRequestException()
-        }
+        val loggedInId = UserService.getCurrentlyLoggedId()
+                ?: throw UnauthorizedItemAddingRequestException()
 
         val addedBy = userRepository.findByIdOrThrow(loggedInId, ::UserWithIdNotFoundException)
         val category = categoryRepository.findByIdOrThrow(this.category, ::CategoryNotFoundException)
@@ -147,13 +144,7 @@ class ItemService(
     }
 
     private fun Item.cannotBeUpdatedByCurrentlyLoggedUser(): Boolean {
-        return try {
-            val loggedInId = UserService.getCurrentlyLoggedId()
-            this.addedBy.id != loggedInId
-        } catch (e: NoUserLoggedInException) {
-            true
-        } catch (e: UsernameNotFoundException) {
-            true
-        }
+        val loggedInId = UserService.getCurrentlyLoggedId()
+        return loggedInId != null && this.addedBy.id != loggedInId
     }
 }

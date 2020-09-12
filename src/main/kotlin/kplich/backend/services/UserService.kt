@@ -83,11 +83,10 @@ class UserService(
     }
 
     companion object {
-        @Throws(NoUserLoggedInException::class)
-        fun getCurrentlyLoggedId(): Long {
+        fun getCurrentlyLoggedId(): Long? {
             return SecurityContextHolder.getContext()
                     ?.authentication
-                    ?.details as? Long ?: throw NoUserLoggedInException()
+                    ?.details as Long
         }
     }
 }

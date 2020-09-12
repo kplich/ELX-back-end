@@ -4,6 +4,7 @@ import kplich.backend.entities.authentication.ApplicationUser
 import kplich.backend.entities.conversation.Conversation
 import kplich.backend.entities.conversation.Message
 import kplich.backend.entities.conversation.Offer
+import kplich.backend.exceptions.authentication.NoUserLoggedInException
 import kplich.backend.exceptions.items.*
 import kplich.backend.payloads.requests.items.AcceptOfferRequest
 import kplich.backend.payloads.requests.items.NewMessageRequest
@@ -33,19 +34,21 @@ class MessageService(
     @Transactional
     @Throws(
             ItemNotFoundException::class,
+            NoUserLoggedInException::class,
             IllegalConversationAccessException::class,
             ConversationNotFoundException::class
     )
     fun getConversation(itemId: Long, subjectId: Long): ConversationResponse {
         val item = itemRepository.findByIdOrThrow(itemId, ::ItemNotFoundException)
 
-        val currentlyLoggedId = UserService.getCurrentlyLoggedId()
+        val loggedInId = UserService.getCurrentlyLoggedId()
+                ?: throw NoUserLoggedInException()
 
-        if (item.addedBy.id != currentlyLoggedId) {
-            throw IllegalConversationAccessException(currentlyLoggedId)
+        if (item.addedBy.id != loggedInId) {
+            throw IllegalConversationAccessException(loggedInId)
         }
 
-        if (subjectId == currentlyLoggedId) {
+        if (subjectId == loggedInId) {
             throw ConversationWithSelfException()
         }
 
@@ -57,27 +60,30 @@ class MessageService(
     @Transactional
     @Throws(
             ItemNotFoundException::class,
+            NoUserLoggedInException::class,
             NoUserIdProvidedException::class,
             ConversationNotFoundException::class
     )
     fun getConversation(itemId: Long): ConversationResponse {
         val item = itemRepository.findByIdOrThrow(itemId, ::ItemNotFoundException)
 
-        val currentlyLoggedId = UserService.getCurrentlyLoggedId()
+        val loggedInId = UserService.getCurrentlyLoggedId()
+                ?: throw NoUserLoggedInException()
 
-        if (item.addedBy.id == currentlyLoggedId) {
+        if (item.addedBy.id == loggedInId) {
             throw NoUserIdProvidedException()
         }
 
-        return item.conversations.find { it.interestedUser.id == currentlyLoggedId }
+        return item.conversations.find { it.interestedUser.id == loggedInId }
                 ?.toResponse()
-                ?: throw ConversationNotFoundException(itemId, currentlyLoggedId)
+                ?: throw ConversationNotFoundException(itemId, loggedInId)
     }
 
     @Transactional
     @Throws(
             ItemNotFoundException::class,
             MessageToAClosedItemException::class,
+            NoUserLoggedInException::class,
             ConversationWithSelfException::class
     )
     fun sendMessage(itemId: Long, newMessageRequest: NewMessageRequest): ConversationResponse {
@@ -87,12 +93,13 @@ class MessageService(
             throw MessageToAClosedItemException(itemId)
         }
 
-        val currentlyLoggedId = UserService.getCurrentlyLoggedId()
-        if(item.addedBy.id == currentlyLoggedId) {
+        val loggedInId = UserService.getCurrentlyLoggedId()
+                ?: throw NoUserLoggedInException()
+        if(item.addedBy.id == loggedInId) {
             throw ConversationWithSelfException() // item owners cannot use this method
         }
 
-        val sender = userRepository.findByIdOrThrow(currentlyLoggedId, ::UserWithIdNotFoundException)
+        val sender = userRepository.findByIdOrThrow(loggedInId, ::UserWithIdNotFoundException)
 
         // if there's no conversation yet, create a new one
         val conversation = item.conversations.find { it.interestedUser == sender }
@@ -107,6 +114,7 @@ class MessageService(
     @Throws(
             ItemNotFoundException::class,
             MessageToAClosedItemException::class,
+            NoUserLoggedInException::class,
             IllegalConversationAccessException::class,
             ConversationNotFoundException::class
     )
@@ -116,9 +124,10 @@ class MessageService(
             throw MessageToAClosedItemException(itemId)
         }
 
-        val currentlyLoggedId = UserService.getCurrentlyLoggedId()
-        if(item.addedBy.id != currentlyLoggedId) {
-            throw IllegalConversationAccessException(currentlyLoggedId) // only item owner can send messages this way
+        val loggedInId = UserService.getCurrentlyLoggedId()
+                ?: throw NoUserLoggedInException()
+        if(item.addedBy.id != loggedInId) {
+            throw IllegalConversationAccessException(loggedInId) // only item owner can send messages this way
         }
 
         val sender = item.addedBy
@@ -135,6 +144,7 @@ class MessageService(
     @Transactional
     @Throws(
             OfferNotFoundException::class,
+            NoUserLoggedInException::class,
             UnauthorizedOfferModificationException::class,
             OfferNotAwaitingAnswerException::class
     )
@@ -142,6 +152,7 @@ class MessageService(
         val offerToDecline = offerRepository.findByIdOrThrow(offerId, ::OfferNotFoundException)
 
         val loggedInId = UserService.getCurrentlyLoggedId()
+                ?: throw NoUserLoggedInException()
         val itemOwner = offerToDecline.item.addedBy
         val interestedUser = offerToDecline.conversation.interestedUser
 
@@ -163,6 +174,7 @@ class MessageService(
     @Transactional
     @Throws(
             OfferNotFoundException::class,
+            NoUserLoggedInException::class,
             UnauthorizedOfferModificationException::class,
             OfferNotAwaitingAnswerException::class
     )
@@ -170,6 +182,7 @@ class MessageService(
         val offerToAccept = offerRepository.findByIdOrThrow(offerId, ::OfferNotFoundException)
 
         val loggedInId = UserService.getCurrentlyLoggedId()
+                ?: throw NoUserLoggedInException()
         val itemOwner = offerToAccept.item.addedBy
         val interestedUser = offerToAccept.conversation.interestedUser
 
@@ -207,6 +220,7 @@ class MessageService(
     @Transactional
     @Throws(
             OfferNotFoundException::class,
+            NoUserLoggedInException::class,
             UnauthorizedOfferModificationException::class,
             OfferNotAwaitingAnswerException::class
     )
@@ -214,6 +228,7 @@ class MessageService(
         val offerToCancel = offerRepository.findByIdOrThrow(offerId, ::OfferNotFoundException)
 
         val loggedInId = UserService.getCurrentlyLoggedId()
+                ?: throw NoUserLoggedInException()
 
         if(loggedInId != offerToCancel.sender.id) {
             throw UnauthorizedOfferModificationException(offerId, loggedInId)
