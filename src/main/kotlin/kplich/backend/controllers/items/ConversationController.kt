@@ -16,7 +16,11 @@ class ConversationController(
 
     @GetMapping("/{itemId}/conversation")
     fun getConversation(@PathVariable itemId: Long, @RequestParam(name = "subjectId", required = false) subjectId: Long?): ResponseEntity<ConversationResponse> {
-        return ResponseEntity.ok(messageService.getConversation(itemId, subjectId))
+        return if(subjectId != null) {
+            ResponseEntity.ok(messageService.getConversation(itemId, subjectId))
+        } else {
+            ResponseEntity.ok(messageService.getConversation(itemId))
+        }
     }
 
     @PostMapping("/{itemId}/conversation")

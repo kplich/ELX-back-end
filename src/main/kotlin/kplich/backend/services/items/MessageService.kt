@@ -29,31 +29,49 @@ class MessageService(
         val messageRepository: MessageRepository,
         val offerRepository: OfferRepository
 ) {
+
     @Transactional
-    fun getConversation(itemId: Long, subjectId: Long? = null): ConversationResponse {
+    @Throws(
+            ItemNotFoundException::class,
+            IllegalConversationAccessException::class,
+            NoConversationFoundException::class
+    )
+    fun getConversation(itemId: Long, subjectId: Long): ConversationResponse {
         val item = itemRepository.findByIdOrThrow(itemId, ::ItemNotFoundException)
 
         val currentlyLoggedId = UserService.getCurrentlyLoggedId()
 
-        // conversation with whom?
-        // depends who's asking - owner of the item or a possible buyer
-        val subjectIdNN: Long =
-                // if it's the owner, we need to know who are they talking to
-                if (item.addedBy.id == currentlyLoggedId)
-                    subjectId ?: throw NoUserIdProvidedException()
-                // if it's the buyer, we don't need to know anything more
-                else {
-                    // the buyer shouldn't ask for someone else's conversation !
-                    if (subjectId != null) {
-                        throw IllegalConversationAccessException(currentlyLoggedId)
-                    } else {
-                        currentlyLoggedId
-                    }
-                }
+        if (item.addedBy.id != currentlyLoggedId) {
+            throw IllegalConversationAccessException(currentlyLoggedId)
+        }
 
-        return item.conversations.find { it.interestedUser.id == subjectIdNN }
+        if (subjectId == currentlyLoggedId) {
+            throw NoConversationWithSelfException()
+        }
+
+        return item.conversations.find { it.interestedUser.id == subjectId }
                 ?.toResponse()
-                ?: throw NoConversationFoundException(itemId, subjectIdNN)
+                ?: throw NoConversationFoundException(itemId, subjectId)
+    }
+
+    @Transactional
+    @Throws(
+            ItemNotFoundException::class,
+            NoUserIdProvidedException::class,
+            NoConversationFoundException::class
+    )
+    fun getConversation(itemId: Long): ConversationResponse {
+        val item = itemRepository.findByIdOrThrow(itemId, ::ItemNotFoundException)
+
+        val currentlyLoggedId = UserService.getCurrentlyLoggedId()
+
+        if (item.addedBy.id == currentlyLoggedId) {
+            throw NoUserIdProvidedException()
+        }
+
+        return item.conversations.find { it.interestedUser.id == currentlyLoggedId }
+                ?.toResponse()
+                ?: throw NoConversationFoundException(itemId, currentlyLoggedId)
     }
 
     @Transactional

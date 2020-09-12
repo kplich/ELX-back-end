@@ -12,6 +12,9 @@ class NoUserIdProvidedException : ElxResponseException(HttpStatus.BAD_REQUEST, "
 class NoConversationFoundException(itemId: Long, userId: Long) :
         ElxResponseException(HttpStatus.NOT_FOUND, "No conversation about item $itemId with user $userId")
 
+class NoConversationWithSelfException :
+        ElxResponseException(HttpStatus.BAD_REQUEST, "User cannot have a conversation with self")
+
 class MessageToAClosedItemException(itemId: Long)
     : ElxResponseException(HttpStatus.CONFLICT, "Can't send a message to a closed item with id $itemId")
 
