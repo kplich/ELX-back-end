@@ -29,7 +29,11 @@ class ConversationController(
             @RequestBody newMessageRequest: NewMessageRequest,
             @RequestParam(name = "subjectId", required = false) subjectId: Long?
     ): ResponseEntity<ConversationResponse> {
-        return ResponseEntity.ok(messageService.sendMessage(itemId, newMessageRequest, subjectId))
+        return if(subjectId != null) {
+            ResponseEntity.ok(messageService.sendMessage(itemId, newMessageRequest, subjectId))
+        } else {
+            ResponseEntity.ok(messageService.sendMessage(itemId, newMessageRequest))
+        }
     }
 
     @PutMapping("/{offerId}/cancel")
