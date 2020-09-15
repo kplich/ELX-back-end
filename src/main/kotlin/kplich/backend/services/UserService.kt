@@ -3,7 +3,6 @@ package kplich.backend.services
 import kplich.backend.configurations.security.getAuthoritiesFromRoles
 import kplich.backend.entities.authentication.ApplicationUser
 import kplich.backend.entities.authentication.Role
-import kplich.backend.exceptions.authentication.NoUserLoggedInException
 import kplich.backend.exceptions.authentication.RoleNotFoundException
 import kplich.backend.exceptions.authentication.UserAlreadyExistsException
 import kplich.backend.payloads.requests.authentication.PasswordChangeRequest
@@ -86,7 +85,7 @@ class UserService(
         fun getCurrentlyLoggedId(): Long? {
             return SecurityContextHolder.getContext()
                     ?.authentication
-                    ?.details as Long
+                    ?.details as? Long
         }
     }
 }

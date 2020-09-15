@@ -278,27 +278,45 @@ VALUES ('https://firebasestorage.googleapis.com/v0/b/elx-front-end.appspot.com/o
 
 -- conversations
 INSERT INTO public.conversations (interested_user_id, item_id)
-VALUES
-       (2, 1),
+VALUES (2, 1),
        (1, 10);
 
 -- offers
-INSERT INTO public.offers (id, advance, contract_address, offer_status, price, type) VALUES (1, 3.4500, null, 'CANCELLED', 5.5430, 'PLAIN_ADVANCE');
-INSERT INTO public.offers (id, advance, contract_address, offer_status, price, type) VALUES (2, 5.0000, null, 'DECLINED', 6.2300, 'PLAIN_ADVANCE');
-INSERT INTO public.offers (id, advance, contract_address, offer_status, price, type) VALUES (3, 1.2345, null, 'AWAITING', 2.3456, 'PLAIN_ADVANCE');
-INSERT INTO public.offers (id, advance, contract_address, offer_status, price, type) VALUES (4, 2.3456, null, 'AWAITING', 3.4567, 'PLAIN_ADVANCE');
+INSERT INTO public.offers (advance, contract_address, offer_status, price, type)
+VALUES (3.4500, null, 'CANCELLED', 5.5430, 'PLAIN_ADVANCE');
+INSERT INTO public.offers (advance, contract_address, offer_status, price, type)
+VALUES (5.0000, null, 'DECLINED', 6.2300, 'PLAIN_ADVANCE');
+INSERT INTO public.offers (advance, contract_address, offer_status, price, type)
+VALUES (1.2345, null, 'AWAITING', 2.3456, 'PLAIN_ADVANCE');
+INSERT INTO public.offers (advance, contract_address, offer_status, price, type)
+VALUES (2.3456, null, 'AWAITING', 3.4567, 'PLAIN_ADVANCE');
 
 -- messages
-INSERT INTO public.messages (id, content, sent_on, conversation_id, offer_id, sender_id) VALUES (1, 'Hello world!', '2020-08-15 15:23:16.000000', 1, null, 2);
-INSERT INTO public.messages (id, content, sent_on, conversation_id, offer_id, sender_id) VALUES (2, 'What up?', '2020-08-15 15:25:34.000000', 1, null, 2);
-INSERT INTO public.messages (id, content, sent_on, conversation_id, offer_id, sender_id) VALUES (3, 'Good evening, how can I help?', '2020-08-15 16:19:17.000000', 1, null, 1);
-INSERT INTO public.messages (id, content, sent_on, conversation_id, offer_id, sender_id) VALUES (4, 'Test message!', '2020-08-25 14:06:36.000000', 2, null, 1);
-INSERT INTO public.messages (id, content, sent_on, conversation_id, offer_id, sender_id) VALUES (5, 'Text message from item''s owner!', '2020-08-25 14:25:00.000000', 2, null, 3);
-INSERT INTO public.messages (id, content, sent_on, conversation_id, offer_id, sender_id) VALUES (6, 'Even longer message from the interested user, who clearly is too eager and is talking too much.', '2020-08-25 14:26:20.000000', 2, null, 1);
-INSERT INTO public.messages (id, content, sent_on, conversation_id, offer_id, sender_id) VALUES (7, 'You thought this is a long message? Boii, were you wrong, you don''t even know how much. Now this is going to be a long one. Tremendously long. Complex, nuanced and sophisticated, and what''s most important: LONG AS HELLLLLLLLLLL.', '2020-08-25 14:30:50.000000', 2, null, 3);
-INSERT INTO public.messages (id, content, sent_on, conversation_id, offer_id, sender_id) VALUES (8, 'And here''s an offer for ya!', '2020-08-25 14:35:47.000000', 2, 1, 1);
-INSERT INTO public.messages (id, content, sent_on, conversation_id, offer_id, sender_id) VALUES (9, 'Meh, that''s a pretty weak offer, dude.', '2020-08-28 12:25:26.000000', 2, null, 3);
-INSERT INTO public.messages (id, content, sent_on, conversation_id, offer_id, sender_id) VALUES (10, 'How about this one?', '2020-08-28 12:44:45.000000', 2, 2, 3);
-INSERT INTO public.messages (id, content, sent_on, conversation_id, offer_id, sender_id) VALUES (11, 'Nope.', '2020-08-28 13:00:46.000000', 2, null, 1);
-INSERT INTO public.messages (id, content, sent_on, conversation_id, offer_id, sender_id) VALUES (12, 'Ugh.', '2020-08-28 13:01:11.000000', 2, 3, 3);
-INSERT INTO public.messages (id, content, sent_on, conversation_id, offer_id, sender_id) VALUES (13, '  ', '2020-08-28 13:01:27.000000', 2, 4, 1);
+INSERT INTO public.messages (content, sent_on, conversation_id, offer_id, sender_id)
+VALUES ('Hello world!', '2020-08-15 15:23:16.000000', 1, null, 2);
+INSERT INTO public.messages (content, sent_on, conversation_id, offer_id, sender_id)
+VALUES ('What up?', '2020-08-15 15:25:34.000000', 1, null, 2);
+INSERT INTO public.messages (content, sent_on, conversation_id, offer_id, sender_id)
+VALUES ('Good evening, how can I help?', '2020-08-15 16:19:17.000000', 1, null, 1);
+INSERT INTO public.messages (content, sent_on, conversation_id, offer_id, sender_id)
+VALUES ('Test message!', '2020-08-25 14:06:36.000000', 2, null, 1);
+INSERT INTO public.messages (content, sent_on, conversation_id, offer_id, sender_id)
+VALUES ('Text message from item''s owner!', '2020-08-25 14:25:00.000000', 2, null, 3);
+INSERT INTO public.messages (content, sent_on, conversation_id, offer_id, sender_id)
+VALUES ('Even longer message from the interested user, who clearly is too eager and is talking too much.',
+        '2020-08-25 14:26:20.000000', 2, null, 1);
+INSERT INTO public.messages (content, sent_on, conversation_id, offer_id, sender_id)
+VALUES ('You thought this is a long message? Boii, were you wrong, you don''t even know how much. Now this is going to be a long one. Tremendously long. Complex, nuanced and sophisticated, and what''s most important: LONG AS HELLLLLLLLLLL.',
+        '2020-08-25 14:30:50.000000', 2, null, 3);
+INSERT INTO public.messages (content, sent_on, conversation_id, offer_id, sender_id)
+VALUES ('And here''s an offer for ya!', '2020-08-25 14:35:47.000000', 2, 1, 1);
+INSERT INTO public.messages (content, sent_on, conversation_id, offer_id, sender_id)
+VALUES ('Meh, that''s a pretty weak offer, dude.', '2020-08-28 12:25:26.000000', 2, null, 3);
+INSERT INTO public.messages (content, sent_on, conversation_id, offer_id, sender_id)
+VALUES ('How about this one?', '2020-08-28 12:44:45.000000', 2, 2, 3);
+INSERT INTO public.messages (content, sent_on, conversation_id, offer_id, sender_id)
+VALUES ('Nope.', '2020-08-28 13:00:46.000000', 2, null, 1);
+INSERT INTO public.messages (content, sent_on, conversation_id, offer_id, sender_id)
+VALUES ('Ugh.', '2020-08-28 13:01:11.000000', 2, 3, 3);
+INSERT INTO public.messages (content, sent_on, conversation_id, offer_id, sender_id)
+VALUES (null, '2020-08-28 13:01:27.000000', 2, 4, 1);

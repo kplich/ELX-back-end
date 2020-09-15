@@ -78,24 +78,6 @@ class ItemUpdatingTest : ItemTest() {
     }
 
     @Test
-    @WithMockIdUser(username = "doesnt_exist")
-    fun `item cannot be updated by user that doesn't exist`() {
-        val request = ItemUpdateRequest(
-                id = 3,
-                title = "Title for newly added item",
-                description = "Description for newly added item",
-                price = BigDecimal("999.999"),
-                category = 3,
-                usedStatus = UsedStatus.NEW,
-                photos = listOf("photo1", "photo2")
-        )
-
-        assertThrows<UnauthorizedItemUpdateRequestException> {
-            this.itemService.updateItem(request)
-        }
-    }
-
-    @Test
     @WithMockIdUser(id = 3, username = "kplich3")
     fun `item cannot be updated with wrong price`() {
         val wrongPrices = arrayOf(

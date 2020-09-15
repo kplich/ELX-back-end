@@ -95,7 +95,7 @@ class MessageService(
 
         val loggedInId = UserService.getCurrentlyLoggedId()
                 ?: throw NoUserLoggedInException()
-        if(item.addedBy.id == loggedInId) {
+        if (item.addedBy.id == loggedInId) {
             throw ConversationWithSelfException() // item owners cannot use this method
         }
 
@@ -103,9 +103,13 @@ class MessageService(
 
         // if there's no conversation yet, create a new one
         val conversation = item.conversations.find { it.interestedUser == sender }
-                ?: conversationRepository.save(Conversation(sender, item, mutableListOf()))
+                ?: conversationRepository.saveAndFlush(Conversation(sender, item, mutableListOf()))
 
-        newMessageRequest.mapToMessage(conversation, sender)
+        val message = newMessageRequest.mapToMessage(conversation, sender)
+
+        if (conversation.messages.size == 0) { // HACK: not sure why is this necessary
+            conversation.messages.add(message)
+        }
 
         return conversation.toResponse()
     }
@@ -246,7 +250,7 @@ class MessageService(
     private fun Conversation.toResponse() = ResponseConverter.conversationToResponse(this)
 
     private fun NewMessageRequest.mapToMessage(conversation: Conversation, sender: ApplicationUser): Message {
-        val message = messageRepository.save(Message(
+        val message = messageRepository.saveAndFlush(Message(
                 conversation = conversation,
                 sender = sender,
                 sentOn = LocalDateTime.now(),

@@ -3,7 +3,6 @@ package kplich.backend.services.items
 import kplich.backend.entities.items.Category
 import kplich.backend.entities.items.Item
 import kplich.backend.entities.items.ItemPhoto
-import kplich.backend.exceptions.authentication.NoUserLoggedInException
 import kplich.backend.exceptions.items.*
 import kplich.backend.payloads.requests.items.ItemAddRequest
 import kplich.backend.payloads.requests.items.ItemFilteringCriteria
@@ -17,7 +16,6 @@ import kplich.backend.repositories.items.ItemRepository
 import kplich.backend.repositories.items.PhotoRepository
 import kplich.backend.services.ResponseConverter
 import kplich.backend.services.UserService
-import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -145,6 +143,6 @@ class ItemService(
 
     private fun Item.cannotBeUpdatedByCurrentlyLoggedUser(): Boolean {
         val loggedInId = UserService.getCurrentlyLoggedId()
-        return loggedInId != null && this.addedBy.id != loggedInId
+        return loggedInId == null || this.addedBy.id != loggedInId
     }
 }

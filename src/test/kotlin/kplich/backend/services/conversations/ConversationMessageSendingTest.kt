@@ -3,13 +3,12 @@ package kplich.backend.services.conversations
 import kplich.backend.configurations.security.WithMockIdUser
 import kplich.backend.entities.conversation.OfferStatus
 import kplich.backend.entities.conversation.OfferType
+import kplich.backend.exceptions.items.ConversationWithSelfException
 import kplich.backend.exceptions.items.IllegalConversationAccessException
 import kplich.backend.exceptions.items.MessageToAClosedItemException
-import kplich.backend.exceptions.items.NoUserIdProvidedException
 import kplich.backend.payloads.requests.items.NewMessageRequest
 import kplich.backend.payloads.requests.items.NewOfferRequest
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.math.BigDecimal
@@ -37,7 +36,7 @@ class ConversationMessageSendingTest: ConversationTest() {
 
         val messageRequest = NewMessageRequest(messageContent)
 
-        assertThrows<NoUserIdProvidedException> {
+        assertThrows<ConversationWithSelfException> {
             messageService.sendMessage(4, messageRequest)
         }
     }
@@ -69,7 +68,6 @@ class ConversationMessageSendingTest: ConversationTest() {
     }
 
     @Test
-    @Disabled("for some reason the offer is added twice, not once :(")
     @WithMockIdUser(id = 2, username = "kplich2")
     fun `interested user can send an offer to the conversation`() {
         val messageContent = "New message from user 2"
