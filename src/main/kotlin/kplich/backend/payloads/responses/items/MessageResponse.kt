@@ -7,6 +7,6 @@ data class MessageResponse(
         val id: Long,
         val sendingUser: SimpleUserResponse,
         val sentOn: LocalDateTime,
-        val textContent: String,
+        val textContent: String?,
         val offer: OfferResponse? = null
 )
