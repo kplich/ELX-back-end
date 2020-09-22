@@ -1,5 +1,6 @@
 package kplich.backend.payloads.requests.authentication
 
+import kplich.backend.entities.authentication.ApplicationUser.Companion.ETHEREUM_ADDRESS_LENGTH
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.Pattern
 import javax.validation.constraints.Size
@@ -18,7 +19,11 @@ data class SignUpRequest(
             Pattern(regexp = ".*\\d+.*", message = PASSWORD_MUST_HAVE_DIGIT),
             Pattern(regexp = ".*[\\W_]+.*", message = PASSWORD_MUST_HAVE_SPECIAL_CHARACTER)
         ])
-        val password: String
+        val password: String,
+
+        @get:Size(min = ETHEREUM_ADDRESS_LENGTH, max = ETHEREUM_ADDRESS_LENGTH)
+        // TODO: ethereum address validation
+        val ethereumAddress: String? = null
 ) {
     companion object {
         const val USERNAME_REQUIRED = "Username is required."

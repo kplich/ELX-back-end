@@ -29,8 +29,8 @@ object ResponseConverter {
         CategoryResponse(this.id, this.name)
     }
 
-    private fun userToSimpleResponse(user: ApplicationUser): SimpleUserResponse = with(user) {
-        SimpleUserResponse(this.id, this.username)
+    fun userToSimpleResponse(user: ApplicationUser): SimpleUserResponse = with(user) {
+        SimpleUserResponse(this.id, this.ethereumAddress, this.username)
     }
 
     fun conversationToResponse(conversation: Conversation): ConversationResponse = with(conversation) {

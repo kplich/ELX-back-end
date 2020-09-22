@@ -3,12 +3,14 @@ package kplich.backend.services
 import kplich.backend.configurations.security.getAuthoritiesFromRoles
 import kplich.backend.entities.authentication.ApplicationUser
 import kplich.backend.entities.authentication.Role
-import kplich.backend.exceptions.authentication.RoleNotFoundException
-import kplich.backend.exceptions.authentication.UserAlreadyExistsException
+import kplich.backend.exceptions.authentication.*
 import kplich.backend.payloads.requests.authentication.PasswordChangeRequest
+import kplich.backend.payloads.requests.authentication.SetEthereumAddressRequest
 import kplich.backend.payloads.requests.authentication.SignUpRequest
+import kplich.backend.payloads.responses.authentication.SimpleUserResponse
 import kplich.backend.repositories.ApplicationUserRepository
 import kplich.backend.repositories.RoleRepository
+import kplich.backend.repositories.findByIdOrThrow
 import org.springframework.context.annotation.Lazy
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException
 import org.springframework.security.authentication.BadCredentialsException
@@ -42,6 +44,10 @@ class UserService(
         return userRepository.findByUsername(username)?.id ?: throw UsernameNotFoundException(username)
     }
 
+    fun getUser(id: Long): SimpleUserResponse {
+        return userRepository.findByIdOrThrow(id, ::UserWithIdNotFoundException).toResponse()
+    }
+
     @Throws(UserAlreadyExistsException::class, RoleNotFoundException::class)
     fun saveNewUser(signUpRequest: SignUpRequest) {
         if (userRepository.existsByUsername(signUpRequest.username)) {
@@ -49,12 +55,29 @@ class UserService(
         }
 
         println(passwordEncoder.hashCode())
-        val user = ApplicationUser(signUpRequest.username, passwordEncoder.encode(signUpRequest.password))
+        val user = ApplicationUser(signUpRequest.username, passwordEncoder.encode(signUpRequest.password), signUpRequest.ethereumAddress)
         val roles = mutableSetOf<Role>()
         roles.add(roleRepository.findByName(Role.RoleEnum.ROLE_USER) ?: throw RoleNotFoundException(Role.RoleEnum.ROLE_USER))
         user.roles = roles
 
         userRepository.save(user)
+    }
+
+    @Throws(
+            NoUserLoggedInException::class,
+            UserWithIdNotFoundException::class,
+            EthereumAddressAlreadySetException::class)
+    // TODO: test this
+    fun setEthereumAddress(setEthereumAddressRequest: SetEthereumAddressRequest) {
+        val loggedInId = getCurrentlyLoggedId() ?: throw NoUserLoggedInException()
+
+        val user = userRepository.findByIdOrThrow(loggedInId, ::UserWithIdNotFoundException)
+
+        if(user.ethereumAddress != null) {
+            throw EthereumAddressAlreadySetException(loggedInId)
+        }
+
+        user.ethereumAddress = setEthereumAddressRequest.ethereumAddress
     }
 
     @Throws(RoleNotFoundException::class, AuthenticationCredentialsNotFoundException::class, BadCredentialsException::class)
@@ -88,4 +111,6 @@ class UserService(
                     ?.details as? Long
         }
     }
+
+    private fun ApplicationUser.toResponse(): SimpleUserResponse = ResponseConverter.userToSimpleResponse(this)
 }

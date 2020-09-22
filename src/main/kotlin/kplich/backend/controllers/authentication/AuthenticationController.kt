@@ -1,6 +1,7 @@
 package kplich.backend.controllers.authentication
 
 import kplich.backend.payloads.requests.authentication.PasswordChangeRequest
+import kplich.backend.payloads.requests.authentication.SetEthereumAddressRequest
 import kplich.backend.payloads.requests.authentication.SignUpRequest
 import kplich.backend.services.UserService
 import org.springframework.http.HttpStatus
@@ -22,8 +23,15 @@ class AuthenticationController(private val userService: UserService) {
 
     @PostMapping("/change-password")
     @ResponseStatus(HttpStatus.OK)
-    fun changePassword(@RequestBody @Valid passwordChangeRequest: PasswordChangeRequest): ResponseEntity<Unit> {
+    fun changePassword(@Valid @RequestBody passwordChangeRequest: PasswordChangeRequest): ResponseEntity<Unit> {
         userService.changePassword(passwordChangeRequest)
+        return ResponseEntity.ok(Unit)
+    }
+
+    @PutMapping("/set-ethereum-address")
+    @ResponseStatus(HttpStatus.OK)
+    fun setEthereumAddress(@Valid @RequestBody setEthereumAddressRequest: SetEthereumAddressRequest): ResponseEntity<Unit> {
+        userService.setEthereumAddress(setEthereumAddressRequest)
         return ResponseEntity.ok(Unit)
     }
 }

@@ -2,14 +2,16 @@ INSERT INTO roles (id, name)
 VALUES (1, 'ROLE_USER');
 
 -- users
-INSERT INTO public.users (id, joined, password, username)
+INSERT INTO public.users (id, ethereum_address, joined, password, username)
 VALUES
     -- kplich/P@ssw0rd2
-    (1, '2020-02-02 21:34:57.010243', '$2a$10$8AB9GaDXq7Cwq34l8qIp3OpZRAV.3IAYSy13yZ8KNhoL/H9FNusoW', 'kplich'),
+    (1, '0xc1912fee45d61c87cc5ea59dae31190fffff232d', '2020-02-02 21:34:57.010243', '$2a$10$8AB9GaDXq7Cwq34l8qIp3OpZRAV.3IAYSy13yZ8KNhoL/H9FNusoW', 'kplich'),
     -- kplich2/P@ssw0rd2
-    (2, '2020-03-03 21:43:20.213819', '$2a$10$5p4ymMhRnReLXe5qxBx6letQ8AGatuN2QSBiCNU2sC7TAHCypYUWW', 'kplich2'),
+    (2, '0x06012c8cf97bead5deae237070f9587f8e7a266d', '2020-03-03 21:43:20.213819', '$2a$10$5p4ymMhRnReLXe5qxBx6letQ8AGatuN2QSBiCNU2sC7TAHCypYUWW', 'kplich2'),
     -- kplich3/P@ssw0rd3
-    (3, '2020-04-04 21:35:30.082832', '$2a$10$oCE.MaPe3SnqURnAHqUuq.Sl/U7/OSXLEQo3olfOaoW4MvTwIbqn6', 'kplich3');
+    (3, '0x5e97870f263700f46aa00d967821199b9bc5a120', '2020-04-04 21:35:30.082832', '$2a$10$oCE.MaPe3SnqURnAHqUuq.Sl/U7/OSXLEQo3olfOaoW4MvTwIbqn6', 'kplich3'),
+    -- kplich4/P@sswo0rd4; no ethereum address provided!
+    (4, null, '2020-05-05 00:00:00', '$2a$10$oCE.MaPe3SnqURnAHqUuq.Sl/U7/OSXLEQo3olfOaoW4MvTwIbqn6', 'kplich4');
 
 -- user roles
 INSERT INTO public.user_roles (user_id, role_id)

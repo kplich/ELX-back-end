@@ -13,8 +13,9 @@ abstract class BaseTestData {
 
     protected val users
         get(): Map<Int, SimpleUserResponse> = mapOf(
-                1 to SimpleUserResponse(1, "kplich"),
-                2 to SimpleUserResponse(2, "kplich2"),
-                3 to SimpleUserResponse(3, "kplich3")
+                1 to SimpleUserResponse(1, "0xc1912fee45d61c87cc5ea59dae31190fffff232d", "kplich"),
+                2 to SimpleUserResponse(2, "0x06012c8cf97bead5deae237070f9587f8e7a266d", "kplich2"),
+                3 to SimpleUserResponse(3, "0x5e97870f263700f46aa00d967821199b9bc5a120", "kplich3"),
+                4 to SimpleUserResponse(4, null, "kplich4")
         )
 }

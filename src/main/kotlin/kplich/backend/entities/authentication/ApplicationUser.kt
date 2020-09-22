@@ -16,6 +16,10 @@ data class ApplicationUser(
         @Size(min = 8, max = 40)
         var password: String,
 
+        @Size(min = ETHEREUM_ADDRESS_LENGTH, max = ETHEREUM_ADDRESS_LENGTH)
+        // TODO: address validation through regex (or even checksum)
+        var ethereumAddress: String? = null,
+
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         var id: Long = -1,
@@ -28,4 +32,8 @@ data class ApplicationUser(
                 joinColumns = [JoinColumn(name = "user_id")],
                 inverseJoinColumns = [JoinColumn(name = "role_id")])
         var roles: MutableSet<Role> = hashSetOf()
-)
+) {
+    companion object {
+        const val ETHEREUM_ADDRESS_LENGTH = 42
+    }
+}
