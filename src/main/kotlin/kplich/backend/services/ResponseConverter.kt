@@ -3,10 +3,17 @@ package kplich.backend.services
 import kplich.backend.entities.authentication.ApplicationUser
 import kplich.backend.entities.conversation.Conversation
 import kplich.backend.entities.conversation.Message
-import kplich.backend.entities.conversation.Offer
+import kplich.backend.entities.conversation.offer.DoubleAdvanceOffer
+import kplich.backend.entities.conversation.offer.Offer
+import kplich.backend.entities.conversation.offer.PlainAdvanceOffer
 import kplich.backend.entities.items.Category
 import kplich.backend.entities.items.Item
 import kplich.backend.payloads.responses.authentication.SimpleUserResponse
+import kplich.backend.payloads.responses.conversation.ConversationResponse
+import kplich.backend.payloads.responses.conversation.MessageResponse
+import kplich.backend.payloads.responses.conversation.offer.DoubleAdvanceOfferResponse
+import kplich.backend.payloads.responses.conversation.offer.OfferResponse
+import kplich.backend.payloads.responses.conversation.offer.PlainAdvanceOfferResponse
 import kplich.backend.payloads.responses.items.*
 
 object ResponseConverter {
@@ -52,14 +59,22 @@ object ResponseConverter {
         )
     }
 
-    private fun offerToResponse(offer: Offer): OfferResponse = with(offer) {
-        OfferResponse(
-                id,
-                type,
-                price,
-                advance,
-                offerStatus,
-                contractAddress
-        )
+    private fun offerToResponse(offer: Offer): OfferResponse {
+        return when(offer) {
+            is PlainAdvanceOffer -> PlainAdvanceOfferResponse(
+                    advance = offer.advance,
+                    id = offer.id,
+                    price = offer.price,
+                    offerStatus = offer.offerStatus,
+                    contractAddress = offer.contractAddress
+            )
+            is DoubleAdvanceOffer -> DoubleAdvanceOfferResponse(
+                    id = offer.id,
+                    price = offer.price,
+                    offerStatus = offer.offerStatus,
+                    contractAddress = offer.contractAddress
+            )
+            else -> throw IllegalArgumentException("Cannot turn into offer response")
+        }
     }
 }

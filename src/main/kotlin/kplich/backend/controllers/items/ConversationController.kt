@@ -1,8 +1,8 @@
 package kplich.backend.controllers.items
 
-import kplich.backend.payloads.requests.items.AcceptOfferRequest
-import kplich.backend.payloads.requests.items.NewMessageRequest
-import kplich.backend.payloads.responses.items.ConversationResponse
+import kplich.backend.payloads.requests.conversation.AcceptOfferRequest
+import kplich.backend.payloads.requests.conversation.NewMessageRequest
+import kplich.backend.payloads.responses.conversation.ConversationResponse
 import kplich.backend.services.items.MessageService
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller

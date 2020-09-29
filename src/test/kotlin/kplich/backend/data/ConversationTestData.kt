@@ -1,8 +1,11 @@
 package kplich.backend.data
 
-import kplich.backend.entities.conversation.OfferStatus
-import kplich.backend.entities.conversation.OfferType
+import kplich.backend.entities.conversation.offer.OfferStatus
 import kplich.backend.entities.items.UsedStatus
+import kplich.backend.payloads.responses.conversation.ConversationResponse
+import kplich.backend.payloads.responses.conversation.MessageResponse
+import kplich.backend.payloads.responses.conversation.offer.OfferResponse
+import kplich.backend.payloads.responses.conversation.offer.PlainAdvanceOfferResponse
 import kplich.backend.payloads.responses.items.*
 import java.math.BigDecimal
 import java.time.LocalDateTime
@@ -63,23 +66,20 @@ abstract class ConversationTestData : BaseTestData() {
 
     protected val offers
         get(): Map<Long, OfferResponse> = mapOf(
-                1L to OfferResponse(
+                1L to PlainAdvanceOfferResponse(
                         id = 1L,
-                        type = OfferType.PLAIN_ADVANCE,
                         advance = BigDecimal("0.5000"),
                         price = BigDecimal("1.0000"),
                         offerStatus = OfferStatus.AWAITING
                 ),
-                2L to OfferResponse(
+                2L to PlainAdvanceOfferResponse(
                         id = 2L,
-                        type = OfferType.PLAIN_ADVANCE,
                         advance = BigDecimal("0.6700"),
                         price = BigDecimal("1.0000"),
                         offerStatus = OfferStatus.AWAITING
                 ),
-                3L to OfferResponse(
+                3L to PlainAdvanceOfferResponse(
                         id = 3L,
-                        type = OfferType.PLAIN_ADVANCE,
                         advance = BigDecimal("1.0000"),
                         price = BigDecimal("1.5000"),
                         offerStatus = OfferStatus.AWAITING

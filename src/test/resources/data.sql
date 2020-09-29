@@ -14,7 +14,7 @@ VALUES
     (4, null, '2020-05-05 00:00:00', '$2a$10$oCE.MaPe3SnqURnAHqUuq.Sl/U7/OSXLEQo3olfOaoW4MvTwIbqn6', 'kplich4');
 
 -- user roles
-INSERT INTO public.user_roles (user_id, role_id)
+INSERT INTO user_roles (user_id, role_id)
 VALUES (1, 1),
        (2, 1),
        (3, 1);
@@ -24,7 +24,7 @@ VALUES (1, 'House and Garden'),
        (2, 'Electronics'),
        (3, 'Fashion');
 
-INSERT INTO public.items (id, added_on, closed_on, description, price, title, used_status, added_by_id, category_id)
+INSERT INTO items (id, added_on, closed_on, description, price, title, used_status, added_by_id, category_id)
 VALUES (1, '2020-05-05 21:40:10.096853', null, '1 Quick description of an open item in category House and Garden',
         1.2345, '1 Quick title that will have more than 10 characters', 'NEW', 1, 1),
        (2, '2020-06-06 21:40:10.096853', '2020-06-07 21:37:00.420069',
@@ -34,7 +34,7 @@ VALUES (1, '2020-05-05 21:40:10.096853', null, '1 Quick description of an open i
         3.3333, '3 Quick title that will have more than 10 characters', 'NOT_APPLICABLE', 3, 3);
 
 -- items for conversation tests, added by user with id 1 (kplich1)
-INSERT INTO public.items (id, added_on, closed_on, description, price, title, used_status, added_by_id, category_id)
+INSERT INTO items (id, added_on, closed_on, description, price, title, used_status, added_by_id, category_id)
 VALUES (4, '2020-05-05 21:40:10.096853', null, 'First item for testing conversations, item 4',
         1.01, 'Testing conversations, item 4', 'NEW', 1, 1),
        (5, '2020-05-05 21:40:10.096853', null, 'Second item for testing conversations, item 5',
@@ -50,7 +50,7 @@ VALUES (4, '2020-05-05 21:40:10.096853', null, 'First item for testing conversat
 
 
 -- conversation for tests, most with user with id 2 (kplich2)
-INSERT INTO public.conversations (id, interested_user_id, item_id)
+INSERT INTO conversations (id, interested_user_id, item_id)
 VALUES (1, 2, 4),
        (2, 2, 6),
        (3, 2, 7),
@@ -59,42 +59,46 @@ VALUES (1, 2, 4),
        (6, 2, 9);
 
 -- conversation about first item
-INSERT INTO public.messages (id, conversation_id, content, sender_id, sent_on, offer_id)
+INSERT INTO messages (id, conversation_id, content, sender_id, sent_on, offer_id)
 VALUES (1, 1, 'First message', 2, '2020-05-05 23:40:10.096853', null),
        (2, 1, 'First reply', 1, '2020-05-05 23:45:10.096853', null),
        (3, 1, 'Another message', 2, '2020-05-05 23:50:10.096853', null);
 
 -- conversation about third item
-INSERT INTO public.messages (id, conversation_id, content, sender_id, sent_on, offer_id)
+INSERT INTO messages (id, conversation_id, content, sender_id, sent_on, offer_id)
 VALUES (4, 2, 'Can I send an offer?', 2, '2020-05-05 23:40:10.096853', null),
        (5, 2, 'Sure thing!', 1, '2020-05-05 23:45:10.096853', null);
 
-INSERT INTO public.offers (id, advance, price, type, offer_status, contract_address)
-VALUES (1, 0.50, 1.0, 'PLAIN_ADVANCE', 'AWAITING', null);
+INSERT INTO offers (id, price, offer_status, contract_address) VALUES (1, 1.0, 'AWAITING', null);
+INSERT INTO plain_advance_offers (advance, id) VALUES (0.50, 1);
 
-INSERT INTO public.messages (id, conversation_id, content, sender_id, sent_on, offer_id)
+INSERT INTO messages (id, conversation_id, content, sender_id, sent_on, offer_id)
 VALUES (6, 2, 'There I go!', 2, '2020-05-05 23:40:10.096853', 1);
 
 -- conversations about fourth item
-INSERT INTO public.offers (id, advance, price, type, offer_status, contract_address)
-VALUES (2, 0.67, 1.0, 'PLAIN_ADVANCE', 'AWAITING', null),
-       (3, 1.0, 1.5, 'PLAIN_ADVANCE', 'AWAITING', null);
+INSERT INTO offers (id, price, offer_status, contract_address) VALUES (2, 1.0, 'AWAITING', null);
+INSERT INTO plain_advance_offers(advance, id) VALUES (0.67, 2);
 
-INSERT INTO public.messages (id, conversation_id, content, sender_id, sent_on, offer_id)
+INSERT INTO offers (id, price, offer_status, contract_address) VALUES (3, 1.5, 'AWAITING', null);
+INSERT INTO plain_advance_offers (advance, id) VALUES (1.0, 3);
+
+INSERT INTO messages (id, conversation_id, content, sender_id, sent_on, offer_id)
 VALUES (7, 3, 'My offer', 2, '2020-05-05 23:40:10.096853', 2),
        (8, 4, 'I''m sure mine''s better :P', 3, '2020-05-05 23:45:10.096853', 3);
 
 -- conversation about fifth item
-INSERT INTO public.messages (id, conversation_id, content, sender_id, sent_on, offer_id)
+INSERT INTO messages (id, conversation_id, content, sender_id, sent_on, offer_id)
 VALUES (9, 5, 'Message to a closed item', 2, '2020-05-05 21:42:10.096853', null);
 
 -- conversation about sixth item
-INSERT INTO public.offers (id, advance, price, type, offer_status, contract_address)
-VALUES (4, 0.67, 1.0, 'PLAIN_ADVANCE', 'CANCELLED', null),
-       (5, 1.0, 1.5, 'PLAIN_ADVANCE', 'DECLINED', null);
+INSERT INTO offers (id, price, offer_status, contract_address) VALUES (4, 1.0, 'CANCELLED', null);
+INSERT INTO plain_advance_offers(advance, id) VALUES (0.67, 4);
+
+INSERT INTO offers (id, price, offer_status, contract_address) VALUES (5, 1.5, 'DECLINED', null);
+INSERT INTO plain_advance_offers(advance, id) VALUES (1.0, 5);
 
 -- conversation about sixth item
-INSERT INTO public.messages (id, conversation_id, content, sender_id, sent_on, offer_id)
+INSERT INTO messages (id, conversation_id, content, sender_id, sent_on, offer_id)
 VALUES (10, 6, 'A cancelled offer', 2, '2020-05-05 21:42:10.096853', 4),
        (11, 6, 'A declined offer', 2, '2020-05-05 21:43:10.096853', 5)
 

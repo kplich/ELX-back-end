@@ -3,13 +3,17 @@ package kplich.backend.services.items
 import kplich.backend.entities.authentication.ApplicationUser
 import kplich.backend.entities.conversation.Conversation
 import kplich.backend.entities.conversation.Message
-import kplich.backend.entities.conversation.Offer
+import kplich.backend.entities.conversation.offer.DoubleAdvanceOffer
+import kplich.backend.entities.conversation.offer.Offer
+import kplich.backend.entities.conversation.offer.PlainAdvanceOffer
 import kplich.backend.exceptions.authentication.NoUserLoggedInException
 import kplich.backend.exceptions.items.*
-import kplich.backend.payloads.requests.items.AcceptOfferRequest
-import kplich.backend.payloads.requests.items.NewMessageRequest
-import kplich.backend.payloads.requests.items.NewOfferRequest
-import kplich.backend.payloads.responses.items.ConversationResponse
+import kplich.backend.payloads.requests.conversation.AcceptOfferRequest
+import kplich.backend.payloads.requests.conversation.NewMessageRequest
+import kplich.backend.payloads.requests.conversation.offer.NewDoubleAdvanceOfferRequest
+import kplich.backend.payloads.requests.conversation.offer.NewOfferRequest
+import kplich.backend.payloads.requests.conversation.offer.NewPlainAdvanceOfferRequest
+import kplich.backend.payloads.responses.conversation.ConversationResponse
 import kplich.backend.repositories.ApplicationUserRepository
 import kplich.backend.repositories.findByIdOrThrow
 import kplich.backend.repositories.items.ConversationRepository
@@ -264,5 +268,9 @@ class MessageService(
     }
 
     private fun NewOfferRequest.mapToOffer(message: Message): Offer =
-            offerRepository.save(Offer(message, type, price, advance))
+            when(this) {
+                is NewPlainAdvanceOfferRequest -> offerRepository.save(PlainAdvanceOffer(advance, message, price))
+                is NewDoubleAdvanceOfferRequest -> offerRepository.save(DoubleAdvanceOffer(message, price))
+                else -> throw IllegalArgumentException("Can't map to offer!")
+            }
 }

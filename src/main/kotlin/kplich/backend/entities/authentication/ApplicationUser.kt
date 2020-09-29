@@ -6,7 +6,7 @@ import javax.validation.constraints.NotBlank
 import javax.validation.constraints.Size
 
 @Entity
-@Table(name = "users")
+@Table(name = "users", indexes = [Index(columnList = "username", unique = true)])
 data class ApplicationUser(
         @NotBlank
         @Size(min = 3, max = 20)

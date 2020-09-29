@@ -1,6 +1,7 @@
-package kplich.backend.payloads.requests.items
+package kplich.backend.payloads.requests.conversation
 
 import kplich.backend.entities.conversation.Message
+import kplich.backend.payloads.requests.conversation.offer.NewOfferRequest
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.Size
 

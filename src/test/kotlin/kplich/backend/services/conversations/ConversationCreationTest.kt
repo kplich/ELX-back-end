@@ -2,7 +2,7 @@ package kplich.backend.services.conversations
 
 import kplich.backend.configurations.security.WithMockIdUser
 import kplich.backend.exceptions.items.ConversationNotFoundException
-import kplich.backend.payloads.requests.items.NewMessageRequest
+import kplich.backend.payloads.requests.conversation.NewMessageRequest
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows

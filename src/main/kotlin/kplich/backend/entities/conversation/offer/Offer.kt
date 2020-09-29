@@ -1,7 +1,9 @@
-package kplich.backend.entities.conversation
+package kplich.backend.entities.conversation.offer
 
 import kplich.backend.configurations.PricePrecisionConstants
 import kplich.backend.entities.authentication.ApplicationUser
+import kplich.backend.entities.conversation.Conversation
+import kplich.backend.entities.conversation.Message
 import kplich.backend.entities.items.Item
 import java.math.BigDecimal
 import javax.persistence.*
@@ -15,28 +17,19 @@ import javax.validation.constraints.Digits
 import javax.validation.constraints.NotNull
 import kotlin.reflect.KClass
 
-@AdvanceNoGreaterThanPrice(message = Offer.ADVANCE_GREATER_THAN_PRICE)
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "offers")
-data class Offer(
+abstract class Offer(
 
         @OneToOne(mappedBy = "offer")
         var message: Message,
-
-        @Enumerated(EnumType.STRING)
-        var type: OfferType,
 
         @get:NotNull(message = PricePrecisionConstants.PRICE_REQUIRED_MSG)
         @get:DecimalMin(value = PricePrecisionConstants.PRICE_MINIMUM_STRING, inclusive = true, message = PricePrecisionConstants.PRICE_TOO_LOW_MSG)
         @get:DecimalMax(value = PricePrecisionConstants.PRICE_MAXIMUM_STRING, inclusive = true, message = PricePrecisionConstants.PRICE_TOO_HIGH_MSG)
         @get:Digits(integer = PricePrecisionConstants.PRICE_INTEGER_PART, fraction = PricePrecisionConstants.PRICE_DECIMAL_PART, message = PricePrecisionConstants.PRICE_TOO_PRECISE_MSG)
         var price: BigDecimal,
-
-        @get:NotNull(message = PricePrecisionConstants.ADVANCE_REQUIRED_MSG)
-        @get:DecimalMin(value = PricePrecisionConstants.PRICE_MINIMUM_STRING, inclusive = true, message = PricePrecisionConstants.ADVANCE_TOO_LOW_MSG)
-        @get:DecimalMax(value = PricePrecisionConstants.PRICE_MAXIMUM_STRING, inclusive = true, message = PricePrecisionConstants.ADVANCE_TOO_HIGH_MSG)
-        @get:Digits(integer = PricePrecisionConstants.PRICE_INTEGER_PART, fraction = PricePrecisionConstants.PRICE_DECIMAL_PART, message = PricePrecisionConstants.ADVANCE_TOO_PRECISE_MSG)
-        var advance: BigDecimal,
 
         @Enumerated(EnumType.STRING)
         var offerStatus: OfferStatus = OfferStatus.AWAITING,
@@ -106,31 +99,8 @@ data class Offer(
 
         return this
     }
-
-    companion object {
-        const val ADVANCE_GREATER_THAN_PRICE = "Advance cannot be greater than price."
-    }
-}
-
-@Suppress("unused") // parameters required by constraint validation?
-@Constraint(validatedBy = [AdvanceNoGreaterThanPriceValidator::class])
-@Target(AnnotationTarget.CLASS)
-annotation class AdvanceNoGreaterThanPrice(
-        val message: String = "",
-        val groups: Array<KClass<*>> = [],
-        val payload: Array<KClass<out Payload>> = []
-)
-
-class AdvanceNoGreaterThanPriceValidator : ConstraintValidator<AdvanceNoGreaterThanPrice, Offer> {
-    override fun isValid(value: Offer, context: ConstraintValidatorContext): Boolean {
-        return value.advance <= value.price
-    }
 }
 
 enum class OfferStatus {
     AWAITING, CANCELLED, ACCEPTED, DECLINED
-}
-
-enum class OfferType {
-    PLAIN_ADVANCE
 }

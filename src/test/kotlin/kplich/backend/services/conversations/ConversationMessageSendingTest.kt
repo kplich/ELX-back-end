@@ -1,13 +1,13 @@
 package kplich.backend.services.conversations
 
 import kplich.backend.configurations.security.WithMockIdUser
-import kplich.backend.entities.conversation.OfferStatus
-import kplich.backend.entities.conversation.OfferType
+import kplich.backend.entities.conversation.offer.OfferStatus
 import kplich.backend.exceptions.items.ConversationWithSelfException
 import kplich.backend.exceptions.items.IllegalConversationAccessException
 import kplich.backend.exceptions.items.MessageToAClosedItemException
-import kplich.backend.payloads.requests.items.NewMessageRequest
-import kplich.backend.payloads.requests.items.NewOfferRequest
+import kplich.backend.payloads.requests.conversation.NewMessageRequest
+import kplich.backend.payloads.requests.conversation.offer.NewPlainAdvanceOfferRequest
+import kplich.backend.payloads.responses.conversation.offer.PlainAdvanceOfferResponse
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -72,8 +72,7 @@ class ConversationMessageSendingTest: ConversationTest() {
     fun `interested user can send an offer to the conversation`() {
         val messageContent = "New message from user 2"
 
-        val offerRequest = NewOfferRequest(
-                type = OfferType.PLAIN_ADVANCE,
+        val offerRequest = NewPlainAdvanceOfferRequest(
                 price = BigDecimal("1.234"),
                 advance = BigDecimal("0.123"))
 
@@ -85,10 +84,9 @@ class ConversationMessageSendingTest: ConversationTest() {
         assertThat(offers.size).isEqualTo(1)
 
         val offer = offers[0]
-        assertThat(offer.type).isEqualTo(offerRequest.type)
         assertThat(offer.offerStatus).isEqualTo(OfferStatus.AWAITING)
         assertThat(offer.price).isEqualTo(offerRequest.price)
-        assertThat(offer.advance).isEqualTo(offerRequest.advance)
+        assertThat((offer as PlainAdvanceOfferResponse).advance).isEqualTo(offerRequest.advance)
     }
 
     @Test
@@ -98,5 +96,4 @@ class ConversationMessageSendingTest: ConversationTest() {
             messageService.sendMessage(8, NewMessageRequest("any content"))
         }
     }
-
 }
