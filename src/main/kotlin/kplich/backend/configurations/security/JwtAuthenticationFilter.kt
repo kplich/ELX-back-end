@@ -47,8 +47,11 @@ class JwtAuthenticationFilter(
             response: HttpServletResponse,
             chain: FilterChain,
             auth: Authentication) {
+
         val id = auth.details as Long
-        val token = jwtUtil.generateJwt(id, auth.name)
+        val ethereumAddress = userService.getUser(id).ethereumAddress
+
+        val token = jwtUtil.generateJwt(id, auth.name, ethereumAddress)
 
         response.addHeader(HttpHeaders.AUTHORIZATION, "$BEARER $token")
     }

@@ -2,7 +2,7 @@ package kplich.backend.services.conversations
 
 import kplich.backend.configurations.security.WithMockIdUser
 import kplich.backend.exceptions.items.IllegalConversationAccessException
-import kplich.backend.exceptions.items.NoConversationFoundException
+import kplich.backend.exceptions.items.ConversationNotFoundException
 import kplich.backend.exceptions.items.NoUserIdProvidedException
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -47,7 +47,7 @@ class ConversationLoadingTest : ConversationTest() {
     @Test
     @WithMockIdUser(id = 2, username = "kplich2")
     fun `interested user cannot load a conversation he hasn't started`() {
-        assertThrows<NoConversationFoundException> {
+        assertThrows<ConversationNotFoundException> {
             messageService.getConversation(5)
         }
     }
@@ -55,7 +55,7 @@ class ConversationLoadingTest : ConversationTest() {
     @Test
     @WithMockIdUser(id = 1, username = "kplich1")
     fun `item owner cannot load a conversation that hasn't been started`() {
-        assertThrows<NoConversationFoundException> {
+        assertThrows<ConversationNotFoundException> {
             messageService.getConversation(5, 2)
         }
     }

@@ -9,13 +9,16 @@ class IllegalConversationAccessException(violatingUserId: Long) :
 
 class NoUserIdProvidedException : ElxResponseException(HttpStatus.BAD_REQUEST, "User id is required for this request")
 
-class NoConversationFoundException(itemId: Long, userId: Long) :
-        ElxResponseException(HttpStatus.NOT_FOUND, "No conversation about item $itemId with user $userId")
+class ConversationNotFoundException(itemId: Long, subjectId: Long) :
+        ElxResponseException(HttpStatus.NOT_FOUND, "No conversation about item $itemId with user $subjectId")
+
+class ConversationWithSelfException :
+        ElxResponseException(HttpStatus.BAD_REQUEST, "User cannot have a conversation with self")
 
 class MessageToAClosedItemException(itemId: Long)
     : ElxResponseException(HttpStatus.CONFLICT, "Can't send a message to a closed item with id $itemId")
 
-class NoOfferFoundException(offerId: Long)
+class OfferNotFoundException(offerId: Long)
     : ElxResponseException(HttpStatus.NOT_FOUND, "No offer found with id $offerId")
 
 class UnauthorizedOfferModificationException(offerId: Long, loggedInId: Long)

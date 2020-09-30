@@ -1,8 +1,8 @@
 package kplich.backend.services.conversations
 
 import kplich.backend.configurations.security.WithMockIdUser
-import kplich.backend.exceptions.items.NoConversationFoundException
-import kplich.backend.payloads.requests.items.NewMessageRequest
+import kplich.backend.exceptions.items.ConversationNotFoundException
+import kplich.backend.payloads.requests.conversation.NewMessageRequest
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -13,7 +13,7 @@ class ConversationCreationTest : ConversationTest() {
     @Test
     @WithMockIdUser(id = 2, username = "kplich2")
     fun `interested user can create a conversation`() {
-        assertThrows<NoConversationFoundException> {
+        assertThrows<ConversationNotFoundException> {
             messageService.getConversation(5)
         }
 
@@ -31,7 +31,7 @@ class ConversationCreationTest : ConversationTest() {
     @Test
     @WithMockIdUser(id = 1, username = "kplich1")
     fun `item owner cannot start a conversation`() {
-        assertThrows<NoConversationFoundException> {
+        assertThrows<ConversationNotFoundException> {
             messageService.getConversation(5, 2)
         }
 
@@ -39,7 +39,7 @@ class ConversationCreationTest : ConversationTest() {
 
         val messageRequest = NewMessageRequest(messageContent)
 
-        assertThrows<NoConversationFoundException> {
+        assertThrows<ConversationNotFoundException> {
             messageService.sendMessage(5, messageRequest, 2)
         }
     }

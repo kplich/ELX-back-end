@@ -92,12 +92,13 @@ class ChangePasswordTest {
     }
 
     private fun getTokenHeader(): String {
-        return "$BEARER ${jwtUtil.generateJwt(ID, USERNAME)}"
+        return "$BEARER ${jwtUtil.generateJwt(ID, USERNAME, ETHEREUM_ADDRESS)}"
     }
 
     companion object {
         private const val ID = 1000L
         private const val USERNAME = "testing_user"
+        private const val ETHEREUM_ADDRESS = "0xc1912fee45d61c87cc5ea59dae31190fffff232d"
 
         private const val AUTHORIZATION = "Authorization"
         private const val BEARER = "Bearer"

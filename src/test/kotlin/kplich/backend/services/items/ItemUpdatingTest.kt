@@ -1,7 +1,7 @@
 package kplich.backend.services.items
 
 import kplich.backend.configurations.security.WithMockIdUser
-import kplich.backend.entities.UsedStatus
+import kplich.backend.entities.items.UsedStatus
 import kplich.backend.exceptions.items.BadEditItemRequestException
 import kplich.backend.exceptions.items.ClosedItemUpdateException
 import kplich.backend.exceptions.items.ItemNotFoundException
@@ -62,24 +62,6 @@ class ItemUpdatingTest : ItemTest() {
     @Test
     @WithMockIdUser(id = 2, username = "kplich2")
     fun `item cannot be updated by user that didn't create it`() {
-        val request = ItemUpdateRequest(
-                id = 3,
-                title = "Title for newly added item",
-                description = "Description for newly added item",
-                price = BigDecimal("999.999"),
-                category = 3,
-                usedStatus = UsedStatus.NEW,
-                photos = listOf("photo1", "photo2")
-        )
-
-        assertThrows<UnauthorizedItemUpdateRequestException> {
-            this.itemService.updateItem(request)
-        }
-    }
-
-    @Test
-    @WithMockIdUser(username = "doesnt_exist")
-    fun `item cannot be updated by user that doesn't exist`() {
         val request = ItemUpdateRequest(
                 id = 3,
                 title = "Title for newly added item",

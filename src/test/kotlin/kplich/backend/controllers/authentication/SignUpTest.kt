@@ -3,7 +3,7 @@ package kplich.backend.controllers.authentication
 import com.fasterxml.jackson.databind.ObjectMapper
 import kplich.backend.configurations.errorhandling.RestExceptionHandler.Companion.VALIDATION_ERROR_MESSAGE
 import kplich.backend.configurations.security.JwtUtil
-import kplich.backend.entities.Role
+import kplich.backend.entities.authentication.Role
 import kplich.backend.exceptions.authentication.RoleNotFoundException
 import kplich.backend.exceptions.authentication.UserAlreadyExistsException
 import kplich.backend.payloads.requests.authentication.SignUpRequest

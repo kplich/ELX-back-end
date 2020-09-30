@@ -1,9 +1,8 @@
 package kplich.backend.services.items
 
-import kplich.backend.entities.Category
-import kplich.backend.entities.Item
-import kplich.backend.entities.ItemPhoto
-import kplich.backend.exceptions.authentication.NoUserLoggedInException
+import kplich.backend.entities.items.Category
+import kplich.backend.entities.items.Item
+import kplich.backend.entities.items.ItemPhoto
 import kplich.backend.exceptions.items.*
 import kplich.backend.payloads.requests.items.ItemAddRequest
 import kplich.backend.payloads.requests.items.ItemFilteringCriteria
@@ -17,10 +16,8 @@ import kplich.backend.repositories.items.ItemRepository
 import kplich.backend.repositories.items.PhotoRepository
 import kplich.backend.services.ResponseConverter
 import kplich.backend.services.UserService
-import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDateTime
 
 @Service
 class ItemService(
@@ -103,11 +100,8 @@ class ItemService(
         val description = this.description
         val price = this.price
 
-        val loggedInId = try {
-            UserService.getCurrentlyLoggedId()
-        } catch (e: NoUserLoggedInException) {
-            throw UnauthorizedItemAddingRequestException()
-        }
+        val loggedInId = UserService.getCurrentlyLoggedId()
+                ?: throw UnauthorizedItemAddingRequestException()
 
         val addedBy = userRepository.findByIdOrThrow(loggedInId, ::UserWithIdNotFoundException)
         val category = categoryRepository.findByIdOrThrow(this.category, ::CategoryNotFoundException)
@@ -148,13 +142,7 @@ class ItemService(
     }
 
     private fun Item.cannotBeUpdatedByCurrentlyLoggedUser(): Boolean {
-        return try {
-            val loggedInId = UserService.getCurrentlyLoggedId()
-            this.addedBy.id != loggedInId
-        } catch (e: NoUserLoggedInException) {
-            true
-        } catch (e: UsernameNotFoundException) {
-            true
-        }
+        val loggedInId = UserService.getCurrentlyLoggedId()
+        return loggedInId == null || this.addedBy.id != loggedInId
     }
 }

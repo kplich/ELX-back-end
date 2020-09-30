@@ -1,7 +1,7 @@
 package kplich.backend.services.conversations
 
 import kplich.backend.configurations.security.WithMockIdUser
-import kplich.backend.entities.OfferStatus
+import kplich.backend.entities.conversation.offer.OfferStatus
 import kplich.backend.exceptions.items.OfferNotAwaitingAnswerException
 import kplich.backend.exceptions.items.UnauthorizedOfferModificationException
 import org.assertj.core.api.Assertions.assertThat

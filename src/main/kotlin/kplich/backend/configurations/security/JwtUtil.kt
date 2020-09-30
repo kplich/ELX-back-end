@@ -13,12 +13,13 @@ class JwtUtil(
         @Value("\${jwt.secret}") private val jwtSecret: String
 ) : Serializable {
 
-    fun generateJwt(id: Long, username: String): String {
+    fun generateJwt(id: Long, username: String, ethereumAddress: String?): String {
         val key = Keys.hmacShaKeyFor(jwtSecret.toByteArray())
 
         return Jwts.builder()
                 .setSubject(id.toString())
                 .claim(CLAIM_USERNAME_KEY, username)
+                .claim(CLAIM_ETH_ADDRESS_KEY, ethereumAddress)
                 .setIssuedAt(Date())
                 .signWith(key)
                 .compact()
@@ -32,5 +33,6 @@ class JwtUtil(
     companion object {
         const val CLAIM_SUBJECT_KEY = "sub"
         const val CLAIM_USERNAME_KEY = "username"
+        const val CLAIM_ETH_ADDRESS_KEY = "eth_address"
     }
 }

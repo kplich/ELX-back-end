@@ -1,4 +1,4 @@
-package kplich.backend.entities
+package kplich.backend.entities.authentication
 
 import javax.persistence.*
 
