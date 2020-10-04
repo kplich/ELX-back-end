@@ -1,6 +1,6 @@
 package kplich.backend.data
 
-import kplich.backend.payloads.responses.authentication.SimpleUserResponse
+import kplich.backend.payloads.responses.user.SimpleUserResponse
 import kplich.backend.payloads.responses.items.CategoryResponse
 
 abstract class BaseTestData {

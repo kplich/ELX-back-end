@@ -1,6 +1,6 @@
-package kplich.backend.payloads.responses.conversation
+package kplich.backend.payloads.responses.conversation.message
 
-import kplich.backend.payloads.responses.authentication.SimpleUserResponse
+import kplich.backend.payloads.responses.user.SimpleUserResponse
 import kplich.backend.payloads.responses.conversation.offer.OfferResponse
 import java.time.LocalDateTime
 

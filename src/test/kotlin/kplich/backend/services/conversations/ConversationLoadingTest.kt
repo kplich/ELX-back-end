@@ -1,9 +1,9 @@
 package kplich.backend.services.conversations
 
 import kplich.backend.configurations.security.WithMockIdUser
-import kplich.backend.exceptions.items.IllegalConversationAccessException
-import kplich.backend.exceptions.items.ConversationNotFoundException
-import kplich.backend.exceptions.items.NoUserIdProvidedException
+import kplich.backend.exceptions.IllegalConversationAccessException
+import kplich.backend.exceptions.ConversationNotFoundException
+import kplich.backend.exceptions.NoUserIdProvidedException
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows

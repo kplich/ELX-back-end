@@ -3,19 +3,19 @@ package kplich.backend.services.items
 import kplich.backend.entities.items.Category
 import kplich.backend.entities.items.Item
 import kplich.backend.entities.items.ItemPhoto
-import kplich.backend.exceptions.items.*
+import kplich.backend.exceptions.*
 import kplich.backend.payloads.requests.items.ItemAddRequest
 import kplich.backend.payloads.requests.items.ItemFilteringCriteria
 import kplich.backend.payloads.requests.items.ItemUpdateRequest
 import kplich.backend.payloads.responses.items.CategoryResponse
-import kplich.backend.payloads.responses.items.ItemResponse
-import kplich.backend.repositories.ApplicationUserRepository
+import kplich.backend.payloads.responses.items.item.ItemResponse
+import kplich.backend.repositories.user.ApplicationUserRepository
 import kplich.backend.repositories.findByIdOrThrow
 import kplich.backend.repositories.items.CategoryRepository
 import kplich.backend.repositories.items.ItemRepository
 import kplich.backend.repositories.items.PhotoRepository
 import kplich.backend.services.ResponseConverter
-import kplich.backend.services.UserService
+import kplich.backend.services.user.UserService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 

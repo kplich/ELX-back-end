@@ -1,11 +1,10 @@
-package kplich.backend.exceptions.items
+package kplich.backend.exceptions
 
-import kplich.backend.exceptions.ElxResponseException
 import org.springframework.http.HttpStatus
 
 abstract class BadEditItemRequestException(override val message: String) : ElxResponseException(HttpStatus.BAD_REQUEST, message)
 
-class UserWithIdNotFoundException(id: Long) : BadEditItemRequestException("No user with ID $id found.")
+// class UserWithIdNotFoundException(id: Long) : BadEditItemRequestException("No user with ID $id found.")
 
 class CategoryNotFoundException(id: Int) : BadEditItemRequestException("No category with ID $id found")
 

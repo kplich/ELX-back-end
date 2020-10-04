@@ -3,7 +3,7 @@ package kplich.backend.configurations.security
 import com.fasterxml.jackson.databind.ObjectMapper
 import kplich.backend.configurations.security.SecurityConstants.BEARER
 import kplich.backend.payloads.requests.authentication.LoginRequest
-import kplich.backend.services.UserService
+import kplich.backend.services.user.UserService
 import org.springframework.context.annotation.Lazy
 import org.springframework.http.HttpHeaders
 import org.springframework.security.authentication.AuthenticationManager

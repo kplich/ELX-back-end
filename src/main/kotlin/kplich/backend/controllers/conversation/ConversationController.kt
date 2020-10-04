@@ -1,9 +1,9 @@
-package kplich.backend.controllers.items
+package kplich.backend.controllers.conversation
 
 import kplich.backend.payloads.requests.conversation.AcceptOfferRequest
 import kplich.backend.payloads.requests.conversation.NewMessageRequest
-import kplich.backend.payloads.responses.conversation.ConversationResponse
-import kplich.backend.services.items.MessageService
+import kplich.backend.payloads.responses.conversation.conversation.ConversationResponse
+import kplich.backend.services.conversation.MessageService
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*

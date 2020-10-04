@@ -3,7 +3,7 @@ package kplich.backend.controllers.items
 import kplich.backend.payloads.requests.items.ItemAddRequest
 import kplich.backend.payloads.requests.items.ItemFilteringCriteria
 import kplich.backend.payloads.requests.items.ItemUpdateRequest
-import kplich.backend.payloads.responses.items.ItemResponse
+import kplich.backend.payloads.responses.items.item.ItemResponse
 import kplich.backend.services.items.ItemService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity

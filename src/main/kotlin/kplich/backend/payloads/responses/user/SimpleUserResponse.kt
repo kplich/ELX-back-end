@@ -1,4 +1,4 @@
-package kplich.backend.payloads.responses.authentication
+package kplich.backend.payloads.responses.user
 
 data class SimpleUserResponse(
         val id: Long,

@@ -1,6 +1,6 @@
 package kplich.backend.entities.conversation
 
-import kplich.backend.entities.authentication.ApplicationUser
+import kplich.backend.entities.user.ApplicationUser
 import kplich.backend.entities.conversation.Message.Companion.CONTENT_AND_OFFER_NULL_MESSAGE
 import kplich.backend.entities.conversation.offer.Offer
 import java.time.LocalDateTime

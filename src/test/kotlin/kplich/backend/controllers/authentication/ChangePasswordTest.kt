@@ -3,7 +3,7 @@ package kplich.backend.controllers.authentication
 import com.fasterxml.jackson.databind.ObjectMapper
 import kplich.backend.configurations.security.JwtUtil
 import kplich.backend.payloads.requests.authentication.PasswordChangeRequest
-import kplich.backend.services.UserService
+import kplich.backend.services.user.UserService
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.not
 import org.hamcrest.core.StringContains.containsString
