@@ -1,6 +1,6 @@
-package kplich.backend.repositories
+package kplich.backend.repositories.user
 
-import kplich.backend.entities.authentication.ApplicationUser
+import kplich.backend.entities.user.ApplicationUser
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface ApplicationUserRepository : JpaRepository<ApplicationUser, Long> {

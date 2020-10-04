@@ -2,8 +2,8 @@ package kplich.backend.services.conversations
 
 import kplich.backend.configurations.security.WithMockIdUser
 import kplich.backend.entities.conversation.offer.OfferStatus
-import kplich.backend.exceptions.items.OfferNotAwaitingAnswerException
-import kplich.backend.exceptions.items.UnauthorizedOfferModificationException
+import kplich.backend.exceptions.OfferNotAwaitingAnswerException
+import kplich.backend.exceptions.UnauthorizedOfferModificationException
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.Test

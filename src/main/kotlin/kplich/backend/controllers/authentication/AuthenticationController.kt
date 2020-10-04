@@ -3,7 +3,7 @@ package kplich.backend.controllers.authentication
 import kplich.backend.payloads.requests.authentication.PasswordChangeRequest
 import kplich.backend.payloads.requests.authentication.SetEthereumAddressRequest
 import kplich.backend.payloads.requests.authentication.SignUpRequest
-import kplich.backend.services.UserService
+import kplich.backend.services.user.UserService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*

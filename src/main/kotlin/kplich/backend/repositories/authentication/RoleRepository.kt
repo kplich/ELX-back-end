@@ -1,4 +1,4 @@
-package kplich.backend.repositories
+package kplich.backend.repositories.authentication
 
 import kplich.backend.entities.authentication.Role
 import org.springframework.data.jpa.repository.JpaRepository

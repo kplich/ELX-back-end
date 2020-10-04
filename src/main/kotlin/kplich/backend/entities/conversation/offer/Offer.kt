@@ -1,21 +1,16 @@
 package kplich.backend.entities.conversation.offer
 
 import kplich.backend.configurations.PricePrecisionConstants
-import kplich.backend.entities.authentication.ApplicationUser
+import kplich.backend.entities.user.ApplicationUser
 import kplich.backend.entities.conversation.Conversation
 import kplich.backend.entities.conversation.Message
 import kplich.backend.entities.items.Item
 import java.math.BigDecimal
 import javax.persistence.*
-import javax.validation.Constraint
-import javax.validation.ConstraintValidator
-import javax.validation.ConstraintValidatorContext
-import javax.validation.Payload
 import javax.validation.constraints.DecimalMax
 import javax.validation.constraints.DecimalMin
 import javax.validation.constraints.Digits
 import javax.validation.constraints.NotNull
-import kotlin.reflect.KClass
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)

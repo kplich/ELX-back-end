@@ -1,5 +1,6 @@
-package kplich.backend.entities.authentication
+package kplich.backend.entities.user
 
+import kplich.backend.entities.authentication.Role
 import java.time.LocalDateTime
 import javax.persistence.*
 import javax.validation.constraints.NotBlank

@@ -4,10 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import kplich.backend.configurations.errorhandling.RestExceptionHandler.Companion.VALIDATION_ERROR_MESSAGE
 import kplich.backend.configurations.security.JwtUtil
 import kplich.backend.entities.authentication.Role
-import kplich.backend.exceptions.authentication.RoleNotFoundException
-import kplich.backend.exceptions.authentication.UserAlreadyExistsException
+import kplich.backend.exceptions.RoleNotFoundException
+import kplich.backend.exceptions.UserAlreadyExistsException
 import kplich.backend.payloads.requests.authentication.SignUpRequest
-import kplich.backend.services.UserService
+import kplich.backend.services.user.UserService
 import org.hamcrest.core.StringContains.containsString
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.given

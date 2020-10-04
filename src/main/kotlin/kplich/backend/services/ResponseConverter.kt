@@ -1,6 +1,6 @@
 package kplich.backend.services
 
-import kplich.backend.entities.authentication.ApplicationUser
+import kplich.backend.entities.user.ApplicationUser
 import kplich.backend.entities.conversation.Conversation
 import kplich.backend.entities.conversation.Message
 import kplich.backend.entities.conversation.offer.DoubleAdvanceOffer
@@ -8,13 +8,14 @@ import kplich.backend.entities.conversation.offer.Offer
 import kplich.backend.entities.conversation.offer.PlainAdvanceOffer
 import kplich.backend.entities.items.Category
 import kplich.backend.entities.items.Item
-import kplich.backend.payloads.responses.authentication.SimpleUserResponse
-import kplich.backend.payloads.responses.conversation.ConversationResponse
-import kplich.backend.payloads.responses.conversation.MessageResponse
+import kplich.backend.payloads.responses.user.SimpleUserResponse
+import kplich.backend.payloads.responses.conversation.conversation.ConversationResponse
+import kplich.backend.payloads.responses.conversation.message.MessageResponse
 import kplich.backend.payloads.responses.conversation.offer.DoubleAdvanceOfferResponse
 import kplich.backend.payloads.responses.conversation.offer.OfferResponse
 import kplich.backend.payloads.responses.conversation.offer.PlainAdvanceOfferResponse
 import kplich.backend.payloads.responses.items.*
+import kplich.backend.payloads.responses.items.item.ItemResponse
 
 object ResponseConverter {
     fun itemToResponse(item: Item): ItemResponse = with(item) {
@@ -59,7 +60,7 @@ object ResponseConverter {
         )
     }
 
-    private fun offerToResponse(offer: Offer): OfferResponse {
+    fun offerToResponse(offer: Offer): OfferResponse {
         return when(offer) {
             is PlainAdvanceOffer -> PlainAdvanceOfferResponse(
                     advance = offer.advance,

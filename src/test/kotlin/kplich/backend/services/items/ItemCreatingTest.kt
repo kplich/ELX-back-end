@@ -2,9 +2,9 @@ package kplich.backend.services.items
 
 import kplich.backend.configurations.security.WithMockIdUser
 import kplich.backend.entities.items.UsedStatus
-import kplich.backend.exceptions.items.BadEditItemRequestException
-import kplich.backend.exceptions.items.UnauthorizedItemAddingRequestException
-import kplich.backend.exceptions.items.UserWithIdNotFoundException
+import kplich.backend.exceptions.BadEditItemRequestException
+import kplich.backend.exceptions.UnauthorizedItemAddingRequestException
+import kplich.backend.exceptions.UserWithIdNotFoundException
 import kplich.backend.payloads.requests.items.ItemAddRequest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test

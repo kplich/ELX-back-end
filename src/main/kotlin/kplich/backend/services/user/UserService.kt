@@ -1,16 +1,17 @@
-package kplich.backend.services
+package kplich.backend.services.user
 
 import kplich.backend.configurations.security.getAuthoritiesFromRoles
-import kplich.backend.entities.authentication.ApplicationUser
+import kplich.backend.entities.user.ApplicationUser
 import kplich.backend.entities.authentication.Role
-import kplich.backend.exceptions.authentication.*
+import kplich.backend.exceptions.*
 import kplich.backend.payloads.requests.authentication.PasswordChangeRequest
 import kplich.backend.payloads.requests.authentication.SetEthereumAddressRequest
 import kplich.backend.payloads.requests.authentication.SignUpRequest
-import kplich.backend.payloads.responses.authentication.SimpleUserResponse
-import kplich.backend.repositories.ApplicationUserRepository
-import kplich.backend.repositories.RoleRepository
+import kplich.backend.payloads.responses.user.SimpleUserResponse
+import kplich.backend.repositories.user.ApplicationUserRepository
+import kplich.backend.repositories.authentication.RoleRepository
 import kplich.backend.repositories.findByIdOrThrow
+import kplich.backend.services.ResponseConverter
 import org.springframework.context.annotation.Lazy
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException
 import org.springframework.security.authentication.BadCredentialsException
@@ -45,7 +46,7 @@ class UserService(
     }
 
     fun getUser(id: Long): SimpleUserResponse {
-        return userRepository.findByIdOrThrow(id, ::UserWithIdNotFoundException).toResponse()
+        return userRepository.findByIdOrThrow(id, ::UserWithIdNotFoundException).toSimpleResponse()
     }
 
     @Throws(UserAlreadyExistsException::class, RoleNotFoundException::class)
@@ -112,5 +113,5 @@ class UserService(
         }
     }
 
-    private fun ApplicationUser.toResponse(): SimpleUserResponse = ResponseConverter.userToSimpleResponse(this)
+    private fun ApplicationUser.toSimpleResponse(): SimpleUserResponse = ResponseConverter.userToSimpleResponse(this)
 }

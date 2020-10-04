@@ -1,4 +1,4 @@
-package kplich.backend.exceptions.items
+package kplich.backend.exceptions
 
 import kplich.backend.exceptions.ElxResponseException
 import org.springframework.http.HttpStatus

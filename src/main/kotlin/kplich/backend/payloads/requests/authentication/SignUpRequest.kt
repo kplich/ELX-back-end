@@ -1,6 +1,6 @@
 package kplich.backend.payloads.requests.authentication
 
-import kplich.backend.entities.authentication.ApplicationUser.Companion.ETHEREUM_ADDRESS_LENGTH
+import kplich.backend.entities.user.ApplicationUser.Companion.ETHEREUM_ADDRESS_LENGTH
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.Pattern
 import javax.validation.constraints.Size

@@ -1,6 +1,6 @@
 package kplich.backend.entities.conversation
 
-import kplich.backend.entities.authentication.ApplicationUser
+import kplich.backend.entities.user.ApplicationUser
 import kplich.backend.entities.items.Item
 import javax.persistence.*
 

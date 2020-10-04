@@ -2,10 +2,10 @@ package kplich.backend.services.items
 
 import kplich.backend.configurations.security.WithMockIdUser
 import kplich.backend.entities.items.UsedStatus
-import kplich.backend.exceptions.items.BadEditItemRequestException
-import kplich.backend.exceptions.items.ClosedItemUpdateException
-import kplich.backend.exceptions.items.ItemNotFoundException
-import kplich.backend.exceptions.items.UnauthorizedItemUpdateRequestException
+import kplich.backend.exceptions.BadEditItemRequestException
+import kplich.backend.exceptions.ClosedItemUpdateException
+import kplich.backend.exceptions.ItemNotFoundException
+import kplich.backend.exceptions.UnauthorizedItemUpdateRequestException
 import kplich.backend.payloads.requests.items.ItemUpdateRequest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test

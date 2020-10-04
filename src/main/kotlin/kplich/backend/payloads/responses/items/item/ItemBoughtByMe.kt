@@ -1,11 +1,13 @@
-package kplich.backend.payloads.responses.items
+package kplich.backend.payloads.responses.items.item
 
 import kplich.backend.entities.items.UsedStatus
-import kplich.backend.payloads.responses.authentication.SimpleUserResponse
+import kplich.backend.payloads.responses.conversation.offer.OfferResponse
+import kplich.backend.payloads.responses.items.CategoryResponse
+import kplich.backend.payloads.responses.user.SimpleUserResponse
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
-data class ItemResponse(
+data class ItemBoughtByMe(
         val id: Long,
         val title: String,
         val description: String,
@@ -14,6 +16,6 @@ data class ItemResponse(
         val addedOn: LocalDateTime,
         val category: CategoryResponse,
         val usedStatus: UsedStatus,
-        val photoUrls: List<String>,
-        val closedOn: LocalDateTime?
+        val photoUrl: String,
+        val offer: OfferResponse
 )

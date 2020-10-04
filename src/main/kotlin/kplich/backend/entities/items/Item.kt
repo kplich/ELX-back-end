@@ -10,7 +10,7 @@ import kplich.backend.configurations.PricePrecisionConstants.PRICE_REQUIRED_MSG
 import kplich.backend.configurations.PricePrecisionConstants.PRICE_TOO_HIGH_MSG
 import kplich.backend.configurations.PricePrecisionConstants.PRICE_TOO_LOW_MSG
 import kplich.backend.configurations.PricePrecisionConstants.PRICE_TOO_PRECISE_MSG
-import kplich.backend.entities.authentication.ApplicationUser
+import kplich.backend.entities.user.ApplicationUser
 import kplich.backend.entities.conversation.Conversation
 import java.math.BigDecimal
 import java.time.LocalDateTime

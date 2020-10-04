@@ -2,11 +2,11 @@ package kplich.backend.data
 
 import kplich.backend.entities.conversation.offer.OfferStatus
 import kplich.backend.entities.items.UsedStatus
-import kplich.backend.payloads.responses.conversation.ConversationResponse
-import kplich.backend.payloads.responses.conversation.MessageResponse
+import kplich.backend.payloads.responses.conversation.conversation.ConversationResponse
+import kplich.backend.payloads.responses.conversation.message.MessageResponse
 import kplich.backend.payloads.responses.conversation.offer.OfferResponse
 import kplich.backend.payloads.responses.conversation.offer.PlainAdvanceOfferResponse
-import kplich.backend.payloads.responses.items.*
+import kplich.backend.payloads.responses.items.item.ItemResponse
 import java.math.BigDecimal
 import java.time.LocalDateTime
 

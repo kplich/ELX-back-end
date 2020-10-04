@@ -2,9 +2,9 @@ package kplich.backend.services.conversations
 
 import kplich.backend.configurations.security.WithMockIdUser
 import kplich.backend.entities.conversation.offer.OfferStatus
-import kplich.backend.exceptions.items.ConversationWithSelfException
-import kplich.backend.exceptions.items.IllegalConversationAccessException
-import kplich.backend.exceptions.items.MessageToAClosedItemException
+import kplich.backend.exceptions.ConversationWithSelfException
+import kplich.backend.exceptions.IllegalConversationAccessException
+import kplich.backend.exceptions.MessageToAClosedItemException
 import kplich.backend.payloads.requests.conversation.NewMessageRequest
 import kplich.backend.payloads.requests.conversation.offer.NewPlainAdvanceOfferRequest
 import kplich.backend.payloads.responses.conversation.offer.PlainAdvanceOfferResponse
