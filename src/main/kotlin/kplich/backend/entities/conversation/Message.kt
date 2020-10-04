@@ -1,6 +1,7 @@
 package kplich.backend.entities.conversation
 
 import kplich.backend.entities.authentication.ApplicationUser
+import kplich.backend.entities.conversation.Message.Companion.CONTENT_AND_OFFER_NULL_MESSAGE
 import kplich.backend.entities.conversation.offer.Offer
 import java.time.LocalDateTime
 import javax.persistence.*
@@ -13,6 +14,7 @@ import kotlin.reflect.KClass
 
 @Entity
 @Table(name = "messages")
+@EitherContentOrOfferMustBeNotNull(message = CONTENT_AND_OFFER_NULL_MESSAGE)
 data class Message(
 
         @ManyToOne
@@ -26,7 +28,7 @@ data class Message(
         var sentOn: LocalDateTime,
 
         @get:Size(max = MESSAGE_CONTENT_MAX_LENGTH, message = MESSAGE_TOO_LONG_MSG)
-        var content: String,
+        var content: String? = null,
 
         @OneToOne
         var offer: Offer? = null,
@@ -38,25 +40,26 @@ data class Message(
     companion object {
         const val MESSAGE_CONTENT_MAX_LENGTH = 1000
         const val MESSAGE_TOO_LONG_MSG = "Message is too long."
-        const val MESSAGE_REQUIRED_WITHOUT_OFFER = "If message offer is not provided, message is required"
+        const val CONTENT_AND_OFFER_NULL_MESSAGE = "Either message content or offer must not be null."
     }
 }
 
-@Suppress("unused")
-@Constraint(validatedBy = [MessageRequiredWithoutOfferValidator::class])
+@Suppress("unused") // parameters required by constraint validation?
+@Constraint(validatedBy = [EitherContentOrOfferMustBeNotNullValidator::class])
 @Target(AnnotationTarget.CLASS)
-annotation class MessageRequiredWithoutOffer(
-        val message: String = Message.MESSAGE_REQUIRED_WITHOUT_OFFER,
+annotation class EitherContentOrOfferMustBeNotNull(
+        val message: String = "",
         val groups: Array<KClass<*>> = [],
         val payload: Array<KClass<out Payload>> = []
 )
 
-class MessageRequiredWithoutOfferValidator: ConstraintValidator<MessageRequiredWithoutOffer, Message> {
+class EitherContentOrOfferMustBeNotNullValidator
+    : ConstraintValidator<EitherContentOrOfferMustBeNotNull, Message> {
     override fun isValid(value: Message, context: ConstraintValidatorContext): Boolean {
-        return if(value.offer == null) {
-            value.content.isNotBlank()
-        } else {
-            true
+        println(value.content)
+        println(value.offer)
+        return with(value) {
+            !(content == null && offer == null)
         }
     }
 }

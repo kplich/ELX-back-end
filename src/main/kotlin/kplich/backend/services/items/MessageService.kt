@@ -254,17 +254,44 @@ class MessageService(
     private fun Conversation.toResponse() = ResponseConverter.conversationToResponse(this)
 
     private fun NewMessageRequest.mapToMessage(conversation: Conversation, sender: ApplicationUser): Message {
-        val message = messageRepository.saveAndFlush(Message(
-                conversation = conversation,
-                sender = sender,
-                sentOn = LocalDateTime.now(),
-                content = content
-        ))
+        val generateRandomString = content == null && offer != null
 
-        val offer = offer?.mapToOffer(message)
+        if(generateRandomString) {
+            /* HACK: when saving an offer without message, no message is saved first,
+                and validation fails
+            */
+            val charPool : List<Char> = ('a'..'z') + ('A'..'Z') + ('0'..'9')
+            val randomString = (1..15)
+                    .map { kotlin.random.Random.nextInt(0, charPool.size) }
+                    .map(charPool::get)
+                    .joinToString("")
 
-        message.offer = offer
-        return message
+            val message = messageRepository.save(Message(
+                    conversation = conversation,
+                    sender = sender,
+                    sentOn = LocalDateTime.now(),
+                    content = randomString,
+            ))
+
+            val offer = offer?.mapToOffer(message)
+
+            message.offer = offer
+            message.content = null
+            return message
+        }
+        else {
+            val message = messageRepository.save(Message(
+                    conversation = conversation,
+                    sender = sender,
+                    sentOn = LocalDateTime.now(),
+                    content = content
+            ))
+
+            val offer = offer?.mapToOffer(message)
+
+            message.offer = offer
+            return message
+        }
     }
 
     private fun NewOfferRequest.mapToOffer(message: Message): Offer =
