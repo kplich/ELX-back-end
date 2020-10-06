@@ -99,7 +99,9 @@ class UserItemsService(
     private fun ApplicationUser.toSimpleResponse(): SimpleUserResponse = userToSimpleResponse(this)
 
     private fun Conversation.toSimpleResponse(): SimpleConversationResponse {
-        val lastMessage = this.messages.maxByOrNull { it.sentOn }!!
+        val lastMessage = this.messages
+                .filter { it.content != null && it.content!!.isNotBlank() }
+                .maxByOrNull { it.sentOn }
         val lastOffer = this.messages
                 .filter { it.offer != null }
                 .maxByOrNull { it.sentOn }
@@ -108,7 +110,7 @@ class UserItemsService(
         return SimpleConversationResponse(
                 id = id,
                 interestedUser = interestedUser.toSimpleResponse(),
-                lastMessage = lastMessage.toSimpleResponse(),
+                lastMessage = lastMessage?.toSimpleResponse(),
                 lastOffer = lastOffer?.let { offerToResponse(it) }
         )
     }
