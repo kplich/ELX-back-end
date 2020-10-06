@@ -37,19 +37,19 @@ abstract class Offer(
 ) {
 
     @get:Transient
-    val accepted
+    val isAccepted
         get(): Boolean = this.offerStatus == OfferStatus.ACCEPTED
 
     @get:Transient
-    val declined
+    val isDeclined
         get(): Boolean = this.offerStatus == OfferStatus.DECLINED
 
     @get:Transient
-    val cancelled
+    val isCancelled
         get(): Boolean = this.offerStatus == OfferStatus.CANCELLED
 
     @get:Transient
-    val awaiting
+    val isAwaiting
         get(): Boolean = this.offerStatus == OfferStatus.AWAITING
 
     @get:Transient
@@ -65,7 +65,7 @@ abstract class Offer(
         get(): Item = this.conversation.item
 
     fun cancel(): Offer {
-        if(awaiting) {
+        if(isAwaiting) {
             this.offerStatus = OfferStatus.CANCELLED
         } else {
             throw IllegalStateException("Cannot cancel accepted/denied/cancelled offer")
@@ -75,7 +75,7 @@ abstract class Offer(
     }
 
     fun accept(contractAddress: String): Offer {
-        if (awaiting) {
+        if (isAwaiting) {
             this.contractAddress = contractAddress
             this.offerStatus = OfferStatus.ACCEPTED
         } else {
@@ -86,7 +86,7 @@ abstract class Offer(
     }
 
     fun decline(): Offer {
-        if (awaiting) {
+        if (isAwaiting) {
             this.offerStatus = OfferStatus.DECLINED
         } else {
             throw IllegalStateException("Cannot decline accepted/denied/cancelled offer")

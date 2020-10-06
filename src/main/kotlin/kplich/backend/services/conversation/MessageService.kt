@@ -171,7 +171,7 @@ class MessageService(
             throw UnauthorizedOfferModificationException(offerId, loggedInId)
         }
 
-        if (!offerToDecline.awaiting) {
+        if (!offerToDecline.isAwaiting) {
             throw OfferNotAwaitingAnswerException(offerId)
         }
 
@@ -203,7 +203,7 @@ class MessageService(
             throw UnauthorizedOfferModificationException(offerId, loggedInId)
         }
 
-        if (!offerToAccept.awaiting) {
+        if (!offerToAccept.isAwaiting) {
             throw OfferNotAwaitingAnswerException(offerId)
         }
 
@@ -214,7 +214,7 @@ class MessageService(
                 .flatMap { conversation -> conversation.messages.stream() }
                 .filter { message -> message.offer != null }
                 .map { message -> message.offer }
-                .filter { offer -> offer!!.id != offerToAccept.id && offer.awaiting }
+                .filter { offer -> offer!!.id != offerToAccept.id && offer.isAwaiting }
                 .forEach { offer ->
                     offerRepository.save(offer!!.decline())
                 }
@@ -242,7 +242,7 @@ class MessageService(
             throw UnauthorizedOfferModificationException(offerId, loggedInId)
         }
 
-        if(!offerToCancel.awaiting) {
+        if(!offerToCancel.isAwaiting) {
             throw OfferNotAwaitingAnswerException(offerId)
         }
 

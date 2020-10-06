@@ -7,7 +7,7 @@ import kplich.backend.payloads.responses.user.SimpleUserResponse
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
-data class ItemBoughtByMe(
+data class ItemBoughtByMeResponse(
         val id: Long,
         val title: String,
         val description: String,

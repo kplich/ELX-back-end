@@ -2,14 +2,18 @@ package kplich.backend.services.user
 
 import kplich.backend.entities.conversation.Conversation
 import kplich.backend.entities.conversation.Message
+import kplich.backend.entities.conversation.offer.Offer
 import kplich.backend.entities.items.Category
 import kplich.backend.entities.items.Item
 import kplich.backend.entities.user.ApplicationUser
+import kplich.backend.exceptions.ConversationNotFoundException
 import kplich.backend.exceptions.NoUserLoggedInException
 import kplich.backend.exceptions.UserWithIdNotFoundException
 import kplich.backend.payloads.responses.conversation.conversation.SimpleConversationResponse
 import kplich.backend.payloads.responses.conversation.message.SimpleMessageResponse
+import kplich.backend.payloads.responses.conversation.offer.OfferResponse
 import kplich.backend.payloads.responses.items.CategoryResponse
+import kplich.backend.payloads.responses.items.item.ItemBoughtByMeResponse
 import kplich.backend.payloads.responses.items.item.ItemSoldByMeResponse
 import kplich.backend.payloads.responses.items.item.ItemWantedByMeResponse
 import kplich.backend.payloads.responses.user.FullUserResponse
@@ -51,12 +55,19 @@ class UserItemsService(
             it.item.toWantedByMeResponse(this)
         }
 
+        val itemsBought = conversationRepository.findAllByInterestedUser(this)
+                .filter {conversation ->
+                    conversation.messages.any { it.offer?.isAccepted ?: false }
+                }
+                .map { it.item.toBoughtByMeResponse(this) }
+
         return FullUserResponse(
                 id = id,
                 ethereumAddress = ethereumAddress,
                 username = username,
                 itemsSold = itemsSold,
-                itemsWanted = itemsWanted
+                itemsWanted = itemsWanted,
+                itemsBought = itemsBought
         )
     }
 
@@ -94,6 +105,24 @@ class UserItemsService(
         )
     }
 
+    private fun Item.toBoughtByMeResponse(interestedUser: ApplicationUser): ItemBoughtByMeResponse {
+        return ItemBoughtByMeResponse(
+                id = id,
+                title = title,
+                description = description,
+                price = price,
+                addedBy = addedBy.toSimpleResponse(),
+                addedOn = addedOn,
+                category = category.toResponse(),
+                usedStatus = usedStatus,
+                photoUrl = photos[0].url,
+                offer = conversations.find { it.interestedUser == interestedUser }
+                        ?.messages?.find { it.offer?.isAccepted ?: false }
+                        ?.offer?.toResponse()
+                        ?: throw ConversationNotFoundException(id, interestedUser.id)
+        )
+    }
+
     private fun Category.toResponse(): CategoryResponse = categoryToResponse(this)
 
     private fun ApplicationUser.toSimpleResponse(): SimpleUserResponse = userToSimpleResponse(this)
@@ -123,4 +152,6 @@ class UserItemsService(
                 textContent = content
         )
     }
+
+    private fun Offer.toResponse(): OfferResponse = offerToResponse(this)
 }
