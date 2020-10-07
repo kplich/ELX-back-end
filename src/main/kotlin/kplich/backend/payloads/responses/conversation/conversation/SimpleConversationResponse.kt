@@ -7,6 +7,6 @@ import kplich.backend.payloads.responses.user.SimpleUserResponse
 data class SimpleConversationResponse(
         val id: Long,
         val interestedUser: SimpleUserResponse,
-        val lastMessage: SimpleMessageResponse?,
+        val lastMessage: SimpleMessageResponse,
         val lastOffer: OfferResponse?
 )
