@@ -6,16 +6,15 @@ import kplich.backend.entities.conversation.offer.Offer
 import kplich.backend.entities.items.Category
 import kplich.backend.entities.items.Item
 import kplich.backend.entities.user.ApplicationUser
-import kplich.backend.exceptions.ConversationNotFoundException
-import kplich.backend.exceptions.NoUserLoggedInException
-import kplich.backend.exceptions.UserWithIdNotFoundException
+import kplich.backend.exceptions.*
 import kplich.backend.payloads.responses.conversation.conversation.SimpleConversationResponse
 import kplich.backend.payloads.responses.conversation.message.SimpleMessageResponse
 import kplich.backend.payloads.responses.conversation.offer.OfferResponse
 import kplich.backend.payloads.responses.items.CategoryResponse
-import kplich.backend.payloads.responses.items.item.ItemBoughtByMeResponse
-import kplich.backend.payloads.responses.items.item.ItemSoldByMeResponse
-import kplich.backend.payloads.responses.items.item.ItemWantedByMeResponse
+import kplich.backend.payloads.responses.items.item.ItemBoughtResponse
+import kplich.backend.payloads.responses.items.item.ItemSoldResponse
+import kplich.backend.payloads.responses.items.item.ItemWantedToBuyResponse
+import kplich.backend.payloads.responses.items.item.ItemWantedToSellResponse
 import kplich.backend.payloads.responses.user.FullUserResponse
 import kplich.backend.payloads.responses.user.SimpleUserResponse
 import kplich.backend.repositories.conversation.ConversationRepository
@@ -47,34 +46,43 @@ class UserItemsService(
     }
 
     private fun ApplicationUser.toFullResponse(): FullUserResponse {
-        val itemsSold = itemRepository.findByAddedBy(this).map {
-            it.toSoldByMeResponse()
+        val wantedToSellAndSold = itemRepository.findByAddedBy(this).partition { item ->
+            item.conversations.none { conv ->
+                conv.messages.any { mess ->
+                    mess.offer?.isAccepted ?: false
+                }
+            }
         }
+
+        val wantedToSell = wantedToSellAndSold.first.map { it.toWantedToSellResponse() }
+
+        val sold = wantedToSellAndSold.second.map { it.toSoldResponse() }
 
         val itemsWanted = conversationRepository
                 .findAllByInterestedUser(this)
                 .filter { conversation -> conversation.messages.none { it.offer?.isAccepted ?: false } }
-                .map { it.item.toWantedByMeResponse(this) }
+                .map { it.item.toWantedToBuyResponse(this) }
 
         val itemsBought = conversationRepository.findAllByInterestedUser(this)
-                .filter {conversation ->
+                .filter { conversation ->
                     conversation.messages.any { it.offer?.isAccepted ?: false }
                 }
-                .map { it.item.toBoughtByMeResponse(this) }
+                .map { it.item.toBoughtResponse(this) }
 
         return FullUserResponse(
                 id = id,
                 ethereumAddress = ethereumAddress,
                 username = username,
-                itemsSold = itemsSold,
-                itemsWanted = itemsWanted,
+                itemsWantedToSell = wantedToSell,
+                itemsSold = sold,
+                itemsWantedToBuy = itemsWanted,
                 itemsBought = itemsBought
         )
     }
 
     // TODO: put it into Response Converter
-    private fun Item.toSoldByMeResponse(): ItemSoldByMeResponse {
-        return ItemSoldByMeResponse(
+    private fun Item.toWantedToSellResponse(): ItemWantedToSellResponse {
+        return ItemWantedToSellResponse(
                 id = id,
                 title = title,
                 description = description,
@@ -87,8 +95,31 @@ class UserItemsService(
         )
     }
 
-    private fun Item.toWantedByMeResponse(interestedUser: ApplicationUser): ItemWantedByMeResponse {
-        return ItemWantedByMeResponse(
+    private fun Item.toSoldResponse(): ItemSoldResponse {
+        val conversationWithBuyer = conversations.find {
+            it.messages.any { message -> message.offer?.isAccepted ?: false }
+        } ?: throw NoConversationWithBuyerException(id)
+
+        val messageWithAcceptedOffer = conversationWithBuyer.messages.find {
+            it.offer?.isAccepted ?: false
+        } ?: throw NoAcceptedOfferFound(id, conversationWithBuyer.id)
+
+
+        return ItemSoldResponse(
+                id = id,
+                title = title,
+                description = description,
+                price = price,
+                addedOn = addedOn,
+                category = category.toResponse(),
+                usedStatus = usedStatus,
+                photoUrl = photos[0].url,
+                offer = messageWithAcceptedOffer.offer!!.toResponse()
+        )
+    }
+
+    private fun Item.toWantedToBuyResponse(interestedUser: ApplicationUser): ItemWantedToBuyResponse {
+        return ItemWantedToBuyResponse(
                 id = id,
                 title = title,
                 description = description,
@@ -106,8 +137,8 @@ class UserItemsService(
         )
     }
 
-    private fun Item.toBoughtByMeResponse(interestedUser: ApplicationUser): ItemBoughtByMeResponse {
-        return ItemBoughtByMeResponse(
+    private fun Item.toBoughtResponse(interestedUser: ApplicationUser): ItemBoughtResponse {
+        return ItemBoughtResponse(
                 id = id,
                 title = title,
                 description = description,
