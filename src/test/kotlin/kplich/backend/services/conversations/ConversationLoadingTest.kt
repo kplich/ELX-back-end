@@ -1,9 +1,9 @@
 package kplich.backend.services.conversations
 
 import kplich.backend.configurations.security.WithMockIdUser
-import kplich.backend.exceptions.IllegalConversationAccessException
-import kplich.backend.exceptions.ConversationNotFoundException
-import kplich.backend.exceptions.NoUserIdProvidedException
+import kplich.backend.conversation.IllegalConversationAccessException
+import kplich.backend.conversation.ConversationNotFoundException
+import kplich.backend.conversation.NoUserIdProvidedException
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -14,7 +14,7 @@ class ConversationLoadingTest : ConversationTest() {
     @WithMockIdUser(id = 1, username = "kplich1")
     fun `user who added the item can see the conversation`() {
         val expectedConversation = conversations[1]
-        val conversation = messageService.getConversation(4, 2)
+        val conversation = conversationService.getConversation(4, 2)
 
         assertThat(conversation).isEqualTo(expectedConversation)
     }
@@ -23,7 +23,7 @@ class ConversationLoadingTest : ConversationTest() {
     @WithMockIdUser(id = 1, username = "kplich1")
     fun `user who added the item must give interested user's ID`() {
         assertThrows<NoUserIdProvidedException> {
-            messageService.getConversation(4)
+            conversationService.getConversation(4)
         }
     }
 
@@ -31,7 +31,7 @@ class ConversationLoadingTest : ConversationTest() {
     @WithMockIdUser(id = 2, username = "kplich2")
     fun `user who responded to the item can see the conversation`() {
         val expectedConversation = conversations[1]
-        val conversation = messageService.getConversation(4)
+        val conversation = conversationService.getConversation(4)
 
         assertThat(conversation).isEqualTo(expectedConversation)
     }
@@ -40,7 +40,7 @@ class ConversationLoadingTest : ConversationTest() {
     @WithMockIdUser(id = 3, username = "kplich3")
     fun `user not taking part in the conversation can't see it`() {
         assertThrows<IllegalConversationAccessException> {
-            messageService.getConversation(4, 2)
+            conversationService.getConversation(4, 2)
         }
     }
 
@@ -48,7 +48,7 @@ class ConversationLoadingTest : ConversationTest() {
     @WithMockIdUser(id = 2, username = "kplich2")
     fun `interested user cannot load a conversation he hasn't started`() {
         assertThrows<ConversationNotFoundException> {
-            messageService.getConversation(5)
+            conversationService.getConversation(5)
         }
     }
 
@@ -56,7 +56,7 @@ class ConversationLoadingTest : ConversationTest() {
     @WithMockIdUser(id = 1, username = "kplich1")
     fun `item owner cannot load a conversation that hasn't been started`() {
         assertThrows<ConversationNotFoundException> {
-            messageService.getConversation(5, 2)
+            conversationService.getConversation(5, 2)
         }
     }
 }

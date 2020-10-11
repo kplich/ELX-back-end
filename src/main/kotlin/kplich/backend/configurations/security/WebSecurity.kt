@@ -1,6 +1,6 @@
 package kplich.backend.configurations.security
 
-import kplich.backend.services.user.UserService
+import kplich.backend.authentication.services.UserService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

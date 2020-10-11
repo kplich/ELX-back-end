@@ -1,7 +1,7 @@
 package kplich.backend.data
 
-import kplich.backend.entities.items.UsedStatus
-import kplich.backend.payloads.responses.items.item.ItemResponse
+import kplich.backend.items.entities.UsedStatus
+import kplich.backend.items.payloads.responses.ItemResponse
 import java.math.BigDecimal
 import java.time.LocalDateTime
 

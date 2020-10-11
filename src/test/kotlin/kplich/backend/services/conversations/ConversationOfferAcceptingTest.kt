@@ -1,11 +1,11 @@
 package kplich.backend.services.conversations
 
 import kplich.backend.configurations.security.WithMockIdUser
-import kplich.backend.entities.conversation.offer.OfferStatus
-import kplich.backend.exceptions.OfferNotAwaitingAnswerException
-import kplich.backend.exceptions.UnauthorizedOfferModificationException
-import kplich.backend.payloads.requests.conversation.AcceptOfferRequest
-import kplich.backend.services.items.ItemService
+import kplich.backend.conversation.entities.offer.OfferStatus
+import kplich.backend.conversation.OfferNotAwaitingAnswerException
+import kplich.backend.conversation.UnauthorizedOfferModificationException
+import kplich.backend.conversation.payloads.requests.AcceptOfferRequest
+import kplich.backend.items.services.ItemService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -22,10 +22,10 @@ class ConversationOfferAcceptingTest : ConversationTest() {
     @WithMockIdUser(id = 1, username = "kplich1")
     fun `item owner can accept offer`() {
         val contractAddres = "for example"
-        messageService.acceptOffer(2, AcceptOfferRequest(contractAddres))
+        conversationService.acceptOffer(2, AcceptOfferRequest(contractAddres))
 
-        val conversationWithUser2 = messageService.getConversation(7, 2)
-        val conversationWithUser3 = messageService.getConversation(7, 3)
+        val conversationWithUser2 = conversationService.getConversation(7, 2)
+        val conversationWithUser3 = conversationService.getConversation(7, 3)
 
         val user2Offer = conversationWithUser2.messages.mapNotNull { it.offer }[0]
         val user3Offer = conversationWithUser3.messages.mapNotNull { it.offer }[0]
@@ -42,7 +42,7 @@ class ConversationOfferAcceptingTest : ConversationTest() {
     @WithMockIdUser(id = 2, username = "kplich2")
     fun `offer sender cannot accept offer`() {
         assertThrows<UnauthorizedOfferModificationException> {
-            messageService.acceptOffer(2, AcceptOfferRequest("anything"))
+            conversationService.acceptOffer(2, AcceptOfferRequest("anything"))
         }
     }
 
@@ -50,7 +50,7 @@ class ConversationOfferAcceptingTest : ConversationTest() {
     @WithMockIdUser(id = 1, username = "kplich1")
     fun `offer receiver cannot accept a cancelled offer`() {
         assertThrows<OfferNotAwaitingAnswerException> {
-            messageService.acceptOffer(4, AcceptOfferRequest("anything"))
+            conversationService.acceptOffer(4, AcceptOfferRequest("anything"))
         }
     }
 

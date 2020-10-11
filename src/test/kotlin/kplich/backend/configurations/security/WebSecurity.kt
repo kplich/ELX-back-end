@@ -1,6 +1,6 @@
 package kplich.backend.configurations.security
 
-import kplich.backend.services.user.UserService
+import kplich.backend.authentication.services.UserService
 import org.springframework.context.annotation.Bean
 import org.springframework.http.HttpMethod
 import org.springframework.security.authentication.AuthenticationManager

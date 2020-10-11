@@ -1,12 +1,12 @@
 package kplich.backend.data
 
-import kplich.backend.entities.conversation.offer.OfferStatus
-import kplich.backend.entities.items.UsedStatus
-import kplich.backend.payloads.responses.conversation.conversation.ConversationResponse
-import kplich.backend.payloads.responses.conversation.message.MessageResponse
-import kplich.backend.payloads.responses.conversation.offer.OfferResponse
-import kplich.backend.payloads.responses.conversation.offer.PlainAdvanceOfferResponse
-import kplich.backend.payloads.responses.items.item.ItemResponse
+import kplich.backend.conversation.entities.offer.OfferStatus
+import kplich.backend.items.entities.UsedStatus
+import kplich.backend.conversation.payloads.responses.conversation.FullConversationResponse
+import kplich.backend.conversation.payloads.responses.message.MessageResponse
+import kplich.backend.conversation.payloads.responses.offer.OfferResponse
+import kplich.backend.conversation.payloads.responses.offer.PlainAdvanceOfferResponse
+import kplich.backend.items.payloads.responses.ItemResponse
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
@@ -142,8 +142,8 @@ abstract class ConversationTestData : BaseTestData() {
         )
 
     protected val conversations
-        get(): Map<Long, ConversationResponse> = mapOf(
-                1L to ConversationResponse(
+        get(): Map<Long, FullConversationResponse> = mapOf(
+                1L to FullConversationResponse(
                         id = 1L,
                         item = items[4] ?: error("item not found"),
                         interestedUser = users[2] ?: error("item not found"),
@@ -151,7 +151,7 @@ abstract class ConversationTestData : BaseTestData() {
                             messages[it] ?: error("message not found")
                         }
                 ),
-                2L to ConversationResponse(
+                2L to FullConversationResponse(
                         id = 2L,
                         item = items[6] ?: error("item not found"),
                         interestedUser = users[2] ?: error("item not found"),
@@ -159,7 +159,7 @@ abstract class ConversationTestData : BaseTestData() {
                             messages[it] ?: error("message not found")
                         }
                 ),
-                3L to ConversationResponse(
+                3L to FullConversationResponse(
                         id = 3L,
                         item = items[7] ?: error("item not found"),
                         interestedUser = users[2] ?: error("item not found"),
@@ -167,7 +167,7 @@ abstract class ConversationTestData : BaseTestData() {
                             messages[it] ?: error("message not found")
                         }
                 ),
-                4L to ConversationResponse(
+                4L to FullConversationResponse(
                         id = 4L,
                         item = items[7] ?: error("item not found"),
                         interestedUser = users[3] ?: error("item not found"),

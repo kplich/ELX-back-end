@@ -1,13 +1,14 @@
 package kplich.backend.controllers.authentication
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import kplich.backend.authentication.AuthenticationController
 import kplich.backend.configurations.errorhandling.RestExceptionHandler.Companion.VALIDATION_ERROR_MESSAGE
 import kplich.backend.configurations.security.JwtUtil
-import kplich.backend.entities.authentication.Role
-import kplich.backend.exceptions.RoleNotFoundException
-import kplich.backend.exceptions.UserAlreadyExistsException
-import kplich.backend.payloads.requests.authentication.SignUpRequest
-import kplich.backend.services.user.UserService
+import kplich.backend.authentication.entities.Role
+import kplich.backend.authentication.RoleNotFoundException
+import kplich.backend.authentication.UserAlreadyExistsException
+import kplich.backend.authentication.payloads.requests.SignUpRequest
+import kplich.backend.authentication.services.UserService
 import org.hamcrest.core.StringContains.containsString
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.given
