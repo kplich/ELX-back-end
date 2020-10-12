@@ -1,7 +1,7 @@
 package kplich.backend.data
 
-import kplich.backend.payloads.responses.authentication.SimpleUserResponse
-import kplich.backend.payloads.responses.items.CategoryResponse
+import kplich.backend.authentication.payloads.responses.SimpleUserResponse
+import kplich.backend.items.payloads.responses.CategoryResponse
 
 abstract class BaseTestData {
     protected val categories

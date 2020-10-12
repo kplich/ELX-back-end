@@ -1,13 +1,13 @@
 package kplich.backend.services.conversations
 
 import kplich.backend.configurations.security.WithMockIdUser
-import kplich.backend.entities.conversation.offer.OfferStatus
-import kplich.backend.exceptions.items.ConversationWithSelfException
-import kplich.backend.exceptions.items.IllegalConversationAccessException
-import kplich.backend.exceptions.items.MessageToAClosedItemException
-import kplich.backend.payloads.requests.conversation.NewMessageRequest
-import kplich.backend.payloads.requests.conversation.offer.NewPlainAdvanceOfferRequest
-import kplich.backend.payloads.responses.conversation.offer.PlainAdvanceOfferResponse
+import kplich.backend.conversation.entities.offer.OfferStatus
+import kplich.backend.conversation.ConversationWithSelfException
+import kplich.backend.conversation.IllegalConversationAccessException
+import kplich.backend.conversation.MessageToAClosedItemException
+import kplich.backend.conversation.payloads.requests.NewMessageRequest
+import kplich.backend.conversation.payloads.requests.offer.NewPlainAdvanceOfferRequest
+import kplich.backend.conversation.payloads.responses.offer.PlainAdvanceOfferResponse
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -22,7 +22,7 @@ class ConversationMessageSendingTest: ConversationTest() {
 
         val messageRequest = NewMessageRequest(messageContent)
 
-        val conversation = messageService.sendMessage(4, messageRequest, 2)
+        val conversation = conversationService.sendMessage(4, messageRequest, 2)
 
         assertThat(conversation.messages.any {
             it.textContent == messageContent && it.sendingUser == users[1] ?: error("user not found")
@@ -37,7 +37,7 @@ class ConversationMessageSendingTest: ConversationTest() {
         val messageRequest = NewMessageRequest(messageContent)
 
         assertThrows<ConversationWithSelfException> {
-            messageService.sendMessage(4, messageRequest)
+            conversationService.sendMessage(4, messageRequest)
         }
     }
 
@@ -48,7 +48,7 @@ class ConversationMessageSendingTest: ConversationTest() {
 
         val messageRequest = NewMessageRequest(messageContent)
 
-        val conversation = messageService.sendMessage(4, messageRequest)
+        val conversation = conversationService.sendMessage(4, messageRequest)
 
         assertThat(conversation.messages).anyMatch {
             it.textContent == messageContent && it.sendingUser == users[2] ?: error("user not found")
@@ -63,7 +63,7 @@ class ConversationMessageSendingTest: ConversationTest() {
         val messageRequest = NewMessageRequest(messageContent)
 
         assertThrows<IllegalConversationAccessException> {
-            messageService.sendMessage(4, messageRequest, 2)
+            conversationService.sendMessage(4, messageRequest, 2)
         }
     }
 
@@ -78,7 +78,7 @@ class ConversationMessageSendingTest: ConversationTest() {
 
         val messageRequest = NewMessageRequest(messageContent, offerRequest)
 
-        val conversation = messageService.sendMessage(4, messageRequest)
+        val conversation = conversationService.sendMessage(4, messageRequest)
 
         val offers = conversation.messages.mapNotNull { message -> message.offer }
         assertThat(offers.size).isEqualTo(1)
@@ -93,7 +93,7 @@ class ConversationMessageSendingTest: ConversationTest() {
     @WithMockIdUser(id = 2, username = "kplich2")
     fun `interested user cannot send a message to a closed item`() {
         assertThrows<MessageToAClosedItemException> {
-            messageService.sendMessage(8, NewMessageRequest("any content"))
+            conversationService.sendMessage(8, NewMessageRequest("any content"))
         }
     }
 }

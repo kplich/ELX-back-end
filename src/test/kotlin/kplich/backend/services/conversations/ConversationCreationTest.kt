@@ -1,8 +1,8 @@
 package kplich.backend.services.conversations
 
 import kplich.backend.configurations.security.WithMockIdUser
-import kplich.backend.exceptions.items.ConversationNotFoundException
-import kplich.backend.payloads.requests.conversation.NewMessageRequest
+import kplich.backend.conversation.ConversationNotFoundException
+import kplich.backend.conversation.payloads.requests.NewMessageRequest
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -14,14 +14,14 @@ class ConversationCreationTest : ConversationTest() {
     @WithMockIdUser(id = 2, username = "kplich2")
     fun `interested user can create a conversation`() {
         assertThrows<ConversationNotFoundException> {
-            messageService.getConversation(5)
+            conversationService.getConversation(5)
         }
 
         val messageContent = "Really New message from user 2"
 
         val messageRequest = NewMessageRequest(messageContent)
 
-        val conversation = messageService.sendMessage(5, messageRequest)
+        val conversation = conversationService.sendMessage(5, messageRequest)
 
         Assertions.assertThat(conversation.messages.size).isEqualTo(1)
         Assertions.assertThat(conversation.messages[0].textContent).isEqualTo(messageContent)
@@ -32,7 +32,7 @@ class ConversationCreationTest : ConversationTest() {
     @WithMockIdUser(id = 1, username = "kplich1")
     fun `item owner cannot start a conversation`() {
         assertThrows<ConversationNotFoundException> {
-            messageService.getConversation(5, 2)
+            conversationService.getConversation(5, 2)
         }
 
         val messageContent = "Really New message from user 2"
@@ -40,7 +40,7 @@ class ConversationCreationTest : ConversationTest() {
         val messageRequest = NewMessageRequest(messageContent)
 
         assertThrows<ConversationNotFoundException> {
-            messageService.sendMessage(5, messageRequest, 2)
+            conversationService.sendMessage(5, messageRequest, 2)
         }
     }
 }

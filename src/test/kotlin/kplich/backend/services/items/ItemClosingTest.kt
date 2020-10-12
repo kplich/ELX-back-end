@@ -1,9 +1,9 @@
 package kplich.backend.services.items
 
 import kplich.backend.configurations.security.WithMockIdUser
-import kplich.backend.exceptions.items.ItemAlreadyClosedException
-import kplich.backend.exceptions.items.ItemNotFoundException
-import kplich.backend.exceptions.items.UnauthorizedItemUpdateRequestException
+import kplich.backend.items.ItemAlreadyClosedException
+import kplich.backend.items.ItemNotFoundException
+import kplich.backend.items.UnauthorizedItemUpdateRequestException
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
