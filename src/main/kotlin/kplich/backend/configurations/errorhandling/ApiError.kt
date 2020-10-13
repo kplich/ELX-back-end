@@ -10,6 +10,7 @@ data class ApiError(
         @JsonIgnore
         val httpStatus: HttpStatus,
         val message: String,
+        val userMessage: String,
         val debugMessage: String,
 
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")

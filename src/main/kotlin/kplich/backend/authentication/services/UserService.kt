@@ -23,8 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
-// Lazy annotations required due to beans created in WebSecurity configuration that depends on UserDetailsService
-
+// @Lazy() annotations required due to beans created in WebSecurity configuration that depends on UserDetailsService
 @Service
 class UserService(
         private val userRepository: ApplicationUserRepository,
@@ -54,7 +53,12 @@ class UserService(
             throw UserAlreadyExistsException(signUpRequest.username)
         }
 
-        println(passwordEncoder.hashCode())
+        if (signUpRequest.ethereumAddress != null) {
+            if (userRepository.existsByEthereumAddress(signUpRequest.ethereumAddress)) {
+                throw EthereumAddressAlreadyExistsException(signUpRequest.ethereumAddress)
+            }
+        }
+
         val user = ApplicationUser(signUpRequest.username, passwordEncoder.encode(signUpRequest.password), signUpRequest.ethereumAddress)
         val roles = mutableSetOf<Role>()
         roles.add(roleRepository.findByName(Role.RoleEnum.ROLE_USER) ?: throw RoleNotFoundException(Role.RoleEnum.ROLE_USER))
@@ -72,6 +76,8 @@ class UserService(
         val loggedInId = getCurrentlyLoggedId() ?: throw NoUserLoggedInException()
 
         val user = userRepository.findByIdOrThrow(loggedInId, ::UserWithIdNotFoundException)
+
+        if(userRepository.existsByEthereumAddress(setEthereumAddressRequest.ethereumAddress))
 
         if(user.ethereumAddress != null) {
             throw EthereumAddressAlreadySetException(loggedInId)

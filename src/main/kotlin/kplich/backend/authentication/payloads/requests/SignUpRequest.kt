@@ -21,7 +21,10 @@ data class SignUpRequest(
         ])
         val password: String,
 
-        @get:Size(min = ETHEREUM_ADDRESS_LENGTH, max = ETHEREUM_ADDRESS_LENGTH)
+        @get:Size(
+                min = ETHEREUM_ADDRESS_LENGTH,
+                max = ETHEREUM_ADDRESS_LENGTH,
+                message = ADDRESS_MUST_BE_42_CHARACTERS_LONG)
         // TODO: ethereum address validation
         val ethereumAddress: String? = null
 ) {
@@ -36,5 +39,7 @@ data class SignUpRequest(
         const val PASSWORD_MUST_HAVE_LOWERCASE_LETTER = "Password must contain a lowercase letter."
         const val PASSWORD_MUST_HAVE_DIGIT = "Password must contain a digit."
         const val PASSWORD_MUST_HAVE_SPECIAL_CHARACTER = "Password must contain a special character."
+
+        const val ADDRESS_MUST_BE_42_CHARACTERS_LONG = "Ethereum address must be exactly 42 characters long."
     }
 }

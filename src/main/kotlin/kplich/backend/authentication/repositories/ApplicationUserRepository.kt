@@ -7,4 +7,6 @@ interface ApplicationUserRepository : JpaRepository<ApplicationUser, Long> {
     fun findByUsername(username: String): ApplicationUser?
 
     fun existsByUsername(username: String): Boolean
+
+    fun existsByEthereumAddress(ethereumAddress: String): Boolean
 }

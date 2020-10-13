@@ -6,7 +6,10 @@ import javax.validation.constraints.NotBlank
 import javax.validation.constraints.Size
 
 @Entity
-@Table(name = "users", indexes = [Index(columnList = "username", unique = true)])
+@Table(
+        name = "users",
+        uniqueConstraints = [UniqueConstraint(columnNames = ["username"]), UniqueConstraint(columnNames = ["ethereum_address"])]
+)
 data class ApplicationUser(
         @NotBlank
         @Size(min = 3, max = 20)
@@ -17,6 +20,7 @@ data class ApplicationUser(
         var password: String,
 
         @Size(min = ETHEREUM_ADDRESS_LENGTH, max = ETHEREUM_ADDRESS_LENGTH)
+        @Column(name = "ethereum_address")
         // TODO: address validation through regex (or even checksum)
         var ethereumAddress: String? = null,
 

@@ -5,7 +5,10 @@ import kplich.backend.items.entities.Item
 import javax.persistence.*
 
 @Entity
-@Table(name = "conversations", indexes = [Index(columnList = "interested_user_id, item_id", unique = true)])
+@Table(
+        name = "conversations",
+        indexes = [Index(columnList = "interested_user_id, item_id", unique = true)]
+)
 data class Conversation(
         @OneToOne
         var interestedUser: ApplicationUser,
