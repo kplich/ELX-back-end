@@ -78,6 +78,8 @@ class UserService(
         }
 
         user.ethereumAddress = setEthereumAddressRequest.ethereumAddress
+
+        userRepository.save(user)
     }
 
     @Throws(RoleNotFoundException::class, AuthenticationCredentialsNotFoundException::class, BadCredentialsException::class)
