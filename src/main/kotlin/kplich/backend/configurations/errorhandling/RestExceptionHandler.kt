@@ -10,15 +10,33 @@ import org.springframework.web.context.request.WebRequest
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
 
 @RestControllerAdvice
-class RestExceptionHandler: ResponseEntityExceptionHandler() {
+class RestExceptionHandler : ResponseEntityExceptionHandler() {
 
-    override fun handleMethodArgumentNotValid(ex: MethodArgumentNotValidException, headers: HttpHeaders, status: HttpStatus, request: WebRequest): ResponseEntity<Any> {
-        val error = ApiError(status, VALIDATION_ERROR_MESSAGE, ex.bindingResult.allErrors.map {error -> error.defaultMessage}.joinToString("\n"), ex.bindingResult.toString())
+    override fun handleMethodArgumentNotValid(
+            ex: MethodArgumentNotValidException,
+            headers: HttpHeaders,
+            status: HttpStatus,
+            request: WebRequest
+    ): ResponseEntity<Any> {
+        val error = ApiError(
+                status,
+                VALIDATION_ERROR_MESSAGE,
+                ex.bindingResult
+                        .allErrors
+                        .map { error -> error.defaultMessage }
+                        .joinToString("\n"),
+                ex.bindingResult.toString()
+        )
 
         return error.response
     }
 
-    override fun handleHttpMessageNotReadable(ex: HttpMessageNotReadableException, headers: HttpHeaders, status: HttpStatus, request: WebRequest): ResponseEntity<Any> {
+    override fun handleHttpMessageNotReadable(
+            ex: HttpMessageNotReadableException,
+            headers: HttpHeaders,
+            status: HttpStatus,
+            request: WebRequest
+    ): ResponseEntity<Any> {
         val error = ApiError(
                 status,
                 MALFORMED_JSON_MESSAGE,

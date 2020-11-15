@@ -28,10 +28,16 @@ class JwtAuthenticationFilter(
 
     @Throws(AuthenticationException::class)
     override fun attemptAuthentication(
-            request: HttpServletRequest, response: HttpServletResponse): Authentication {
+            request: HttpServletRequest,
+            response: HttpServletResponse
+    ): Authentication {
         return try {
-            val loginRequest: LoginRequest = ObjectMapper().readValue(request.inputStream, LoginRequest::class.java)
-            val authenticationToken = UsernamePasswordAuthenticationToken(loginRequest.username, loginRequest.password)
+            val loginRequest: LoginRequest = ObjectMapper()
+                    .readValue(request.inputStream, LoginRequest::class.java)
+            val authenticationToken = UsernamePasswordAuthenticationToken(
+                    loginRequest.username,
+                    loginRequest.password
+            )
 
             val id = userService.getIdOfUsername(loginRequest.username)
             authenticationToken.details = id
@@ -46,7 +52,8 @@ class JwtAuthenticationFilter(
             request: HttpServletRequest,
             response: HttpServletResponse,
             chain: FilterChain,
-            auth: Authentication) {
+            auth: Authentication
+    ) {
 
         val id = auth.details as Long
         val ethereumAddress = userService.getUser(id).ethereumAddress

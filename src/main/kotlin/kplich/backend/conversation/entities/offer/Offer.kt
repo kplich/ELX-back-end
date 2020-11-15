@@ -4,6 +4,9 @@ import kplich.backend.configurations.PricePrecisionConstants
 import kplich.backend.authentication.entities.ApplicationUser
 import kplich.backend.conversation.entities.Conversation
 import kplich.backend.conversation.entities.Message
+import kplich.backend.conversation.payloads.responses.offer.DoubleAdvanceOfferResponse
+import kplich.backend.conversation.payloads.responses.offer.OfferResponse
+import kplich.backend.conversation.payloads.responses.offer.PlainAdvanceOfferResponse
 import kplich.backend.items.entities.Item
 import java.math.BigDecimal
 import javax.persistence.*
@@ -93,6 +96,25 @@ abstract class Offer(
         }
 
         return this
+    }
+
+    fun toResponse(): OfferResponse {
+        return when(this) {
+            is PlainAdvanceOffer -> PlainAdvanceOfferResponse(
+                    advance = advance,
+                    id = id,
+                    price = price,
+                    offerStatus = offerStatus,
+                    contractAddress = contractAddress
+            )
+            is DoubleAdvanceOffer -> DoubleAdvanceOfferResponse(
+                    id = id,
+                    price = price,
+                    offerStatus = offerStatus,
+                    contractAddress = contractAddress
+            )
+            else -> throw IllegalArgumentException("Cannot turn into offer response")
+        }
     }
 }
 

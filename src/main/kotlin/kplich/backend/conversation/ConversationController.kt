@@ -15,9 +15,14 @@ class ConversationController(
 ) {
 
     @GetMapping("/{itemId}/conversation")
-    fun getConversation(@PathVariable itemId: Long, @RequestParam(name = "subjectId", required = false) subjectId: Long?): ResponseEntity<FullConversationResponse> {
-        return if(subjectId != null) {
-            ResponseEntity.ok(conversationService.getConversation(itemId, subjectId))
+    fun getConversation(
+            @PathVariable itemId: Long,
+            @RequestParam(
+                    name = "receipientId",
+                    required = false) receipientId: Long?
+    ): ResponseEntity<FullConversationResponse> {
+        return if(receipientId != null) {
+            ResponseEntity.ok(conversationService.getConversation(itemId, receipientId))
         } else {
             ResponseEntity.ok(conversationService.getConversation(itemId))
         }
@@ -27,10 +32,10 @@ class ConversationController(
     fun sendMessage(
             @PathVariable itemId: Long,
             @RequestBody newMessageRequest: NewMessageRequest,
-            @RequestParam(name = "subjectId", required = false) subjectId: Long?
+            @RequestParam(name = "receipientId", required = false) receipientId: Long?
     ): ResponseEntity<FullConversationResponse> {
-        return if(subjectId != null) {
-            ResponseEntity.ok(conversationService.sendMessage(itemId, newMessageRequest, subjectId))
+        return if(receipientId != null) {
+            ResponseEntity.ok(conversationService.sendMessage(itemId, newMessageRequest, receipientId))
         } else {
             ResponseEntity.ok(conversationService.sendMessage(itemId, newMessageRequest))
         }

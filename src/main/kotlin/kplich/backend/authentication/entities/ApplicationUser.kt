@@ -1,5 +1,6 @@
 package kplich.backend.authentication.entities
 
+import kplich.backend.authentication.payloads.responses.SimpleUserResponse
 import java.time.LocalDateTime
 import javax.persistence.*
 import javax.validation.constraints.NotBlank
@@ -37,6 +38,10 @@ data class ApplicationUser(
                 inverseJoinColumns = [JoinColumn(name = "role_id")])
         var roles: MutableSet<Role> = hashSetOf()
 ) {
+    fun toSimpleResponse(): SimpleUserResponse {
+        return SimpleUserResponse(this.id, this.ethereumAddress, this.username)
+    }
+
     companion object {
         const val ETHEREUM_ADDRESS_LENGTH = 42
     }

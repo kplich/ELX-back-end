@@ -43,8 +43,9 @@ class UserService(
         return userRepository.findByUsername(username)?.id ?: throw UsernameNotFoundException(username)
     }
 
-    fun getUser(id: Long): SimpleUserResponse {
-        return userRepository.findByIdOrThrow(id, ::UserWithIdNotFoundException).toSimpleResponse()
+    @Throws(UserWithIdNotFoundException::class)
+    fun getUser(id: Long): ApplicationUser {
+        return userRepository.findByIdOrThrow(id, ::UserWithIdNotFoundException)
     }
 
     @Throws(UserAlreadyExistsException::class, RoleNotFoundException::class)
@@ -73,14 +74,12 @@ class UserService(
             EthereumAddressAlreadySetException::class)
     // TODO: test this
     fun setEthereumAddress(setEthereumAddressRequest: SetEthereumAddressRequest) {
-        val loggedInId = getCurrentlyLoggedId() ?: throw NoUserLoggedInException()
-
-        val user = userRepository.findByIdOrThrow(loggedInId, ::UserWithIdNotFoundException)
+        val user = getLoggedInUser()
 
         if(userRepository.existsByEthereumAddress(setEthereumAddressRequest.ethereumAddress))
 
         if(user.ethereumAddress != null) {
-            throw EthereumAddressAlreadySetException(loggedInId)
+            throw EthereumAddressAlreadySetException(user.id)
         }
 
         user.ethereumAddress = setEthereumAddressRequest.ethereumAddress
@@ -112,8 +111,19 @@ class UserService(
         }
     }
 
+    @Throws(
+            NoUserLoggedInException::class,
+            UserWithIdNotFoundException::class
+    )
+    fun getLoggedInUser(): ApplicationUser {
+        val loggedInId = getCurrentlyLoggedId()
+                ?: throw NoUserLoggedInException()
+
+        return userRepository.findByIdOrThrow(loggedInId, ::UserWithIdNotFoundException)
+    }
+
     companion object {
-        fun getCurrentlyLoggedId(): Long? {
+        private fun getCurrentlyLoggedId(): Long? {
             return SecurityContextHolder.getContext()
                     ?.authentication
                     ?.details as? Long

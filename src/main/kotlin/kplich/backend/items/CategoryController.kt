@@ -42,8 +42,7 @@ class ItemController(
     }
 
     @PostMapping("/")
-    @ResponseStatus(HttpStatus.CREATED)
-    fun addItem(@RequestBody @Valid itemAddRequest: ItemAddRequest): ResponseEntity<ItemResponse> {
+    fun addItem(@Valid @RequestBody itemAddRequest: ItemAddRequest): ResponseEntity<ItemResponse> {
         return ResponseEntity.status(HttpStatus.CREATED).body(itemService.addItem(itemAddRequest))
     }
 }

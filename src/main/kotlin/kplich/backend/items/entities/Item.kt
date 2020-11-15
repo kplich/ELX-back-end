@@ -11,7 +11,16 @@ import kplich.backend.configurations.PricePrecisionConstants.PRICE_TOO_HIGH_MSG
 import kplich.backend.configurations.PricePrecisionConstants.PRICE_TOO_LOW_MSG
 import kplich.backend.configurations.PricePrecisionConstants.PRICE_TOO_PRECISE_MSG
 import kplich.backend.authentication.entities.ApplicationUser
+import kplich.backend.conversation.ConversationNotFoundException
 import kplich.backend.conversation.entities.Conversation
+import kplich.backend.items.payloads.responses.CategoryResponse
+import kplich.backend.items.payloads.responses.ItemResponse
+import kplich.backend.user.NoAcceptedOfferFound
+import kplich.backend.user.NoConversationWithBuyerException
+import kplich.backend.user.payloads.responses.items.ItemBoughtResponse
+import kplich.backend.user.payloads.responses.items.ItemSoldResponse
+import kplich.backend.user.payloads.responses.items.ItemWantedToBuyResponse
+import kplich.backend.user.payloads.responses.items.ItemWantedToSellResponse
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import javax.persistence.*
@@ -88,6 +97,97 @@ data class Item(
         return this
     }
 
+    fun toResponse(): ItemResponse {
+        return ItemResponse(
+                id,
+                title,
+                description,
+                price,
+                addedBy.toSimpleResponse(),
+                addedOn,
+                category.toResponse(),
+                usedStatus,
+                photos.map { photo -> photo.url },
+                closedOn
+        )
+    }
+
+    fun toWantedToSellResponse(): ItemWantedToSellResponse {
+        return ItemWantedToSellResponse(
+                id = id,
+                title = title,
+                description = description,
+                price = price,
+                addedBy = addedBy.toSimpleResponse(),
+                addedOn = addedOn,
+                category = category.toResponse(),
+                usedStatus = usedStatus,
+                photoUrl = photos[0].url,
+                conversations = conversations.map { it.toSimpleResponse() }
+        )
+    }
+
+    fun toSoldResponse(): ItemSoldResponse {
+        val conversationWithBuyer = conversations.find {
+            it.messages.any { message -> message.offer?.isAccepted ?: false }
+        } ?: throw NoConversationWithBuyerException(id)
+
+        val messageWithAcceptedOffer = conversationWithBuyer.messages.find {
+            it.offer?.isAccepted ?: false
+        } ?: throw NoAcceptedOfferFound(id, conversationWithBuyer.id)
+
+
+        return ItemSoldResponse(
+                id = id,
+                title = title,
+                description = description,
+                price = price,
+                addedBy = addedBy.toSimpleResponse(),
+                addedOn = addedOn,
+                category = category.toResponse(),
+                usedStatus = usedStatus,
+                photoUrl = photos[0].url,
+                offer = messageWithAcceptedOffer.offer!!.toResponse()
+        )
+    }
+
+    fun toWantedToBuyResponse(interestedUser: ApplicationUser): ItemWantedToBuyResponse {
+        return ItemWantedToBuyResponse(
+                id = id,
+                title = title,
+                description = description,
+                price = price,
+                addedBy = addedBy.toSimpleResponse(),
+                addedOn = addedOn,
+                category = category.toResponse(),
+                usedStatus = usedStatus,
+                photoUrl = photos[0].url,
+                conversation = conversations.filter {
+                    it.interestedUser == interestedUser
+                }.map {
+                    it.toSimpleResponse()
+                }[0]
+        )
+    }
+
+    fun toBoughtResponse(interestedUser: ApplicationUser): ItemBoughtResponse {
+        return ItemBoughtResponse(
+                id = id,
+                title = title,
+                description = description,
+                price = price,
+                addedBy = addedBy.toSimpleResponse(),
+                addedOn = addedOn,
+                category = category.toResponse(),
+                usedStatus = usedStatus,
+                photoUrl = photos[0].url,
+                offer = conversations.find { it.interestedUser == interestedUser }
+                        ?.messages?.find { it.offer?.isAccepted ?: false }
+                        ?.offer?.toResponse()
+                        ?: throw ConversationNotFoundException(id, interestedUser.id)
+        )
+    }
+
     companion object {
         const val TITLE_REQURIED_MSG = "Title is required."
         const val TITLE_MIN_LENGTH = 10
@@ -135,7 +235,14 @@ data class Category(
 
         @Id
         var id: Int
-)
+) {
+    fun toResponse(): CategoryResponse {
+        return CategoryResponse(
+                id,
+                name
+        )
+    }
+}
 
 enum class UsedStatus {
     NEW, USED, NOT_APPLICABLE

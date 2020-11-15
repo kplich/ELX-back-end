@@ -26,14 +26,18 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 class WebSecurity(
         private val userService: UserService,
         private val jwtAuthorizationFilter: JwtAuthorizationFilter,
-        private val jwtAuthenticationFilter: JwtAuthenticationFilter) : WebSecurityConfigurerAdapter() {
+        private val jwtAuthenticationFilter: JwtAuthenticationFilter) :
+        WebSecurityConfigurerAdapter() {
 
     @Value("\${cors.origins}")
     private val allowedOrigins: List<String> = emptyList()
 
-    @Throws(Exception::class)
-    public override fun configure(authenticationManagerBuilder: AuthenticationManagerBuilder) {
-        authenticationManagerBuilder.userDetailsService<UserDetailsService>(userService).passwordEncoder(bCryptPasswordEncoder())
+    public override fun configure(
+            authenticationManagerBuilder: AuthenticationManagerBuilder
+    ) {
+        authenticationManagerBuilder
+                .userDetailsService<UserDetailsService>(userService)
+                .passwordEncoder(bCryptPasswordEncoder())
     }
 
     @Bean
@@ -42,20 +46,19 @@ class WebSecurity(
     }
 
     override fun configure(http: HttpSecurity) {
-        http
-                .cors().and()
-                .csrf().disable()
-                .addFilter(jwtAuthenticationFilter)
-                .addFilter(jwtAuthorizationFilter)
-                .authorizeRequests()
-                    .antMatchers(HttpMethod.POST, "/auth/log-in").permitAll()
-                    .antMatchers(HttpMethod.POST, "/auth/sign-up").permitAll()
-                    .antMatchers(HttpMethod.GET, "/items/{id:[0-9]+}").permitAll()
-                    .antMatchers(HttpMethod.GET, "/items").permitAll()
-                    .antMatchers(HttpMethod.GET, "/categories").permitAll()
-                    .anyRequest().authenticated()
-                    .and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        http.cors().and()
+            .csrf().disable()
+            .addFilter(jwtAuthenticationFilter)
+            .addFilter(jwtAuthorizationFilter)
+            .authorizeRequests()
+                .antMatchers(HttpMethod.POST, "/auth/log-in").permitAll()
+                .antMatchers(HttpMethod.POST, "/auth/sign-up").permitAll()
+                .antMatchers(HttpMethod.GET, "/items/{id:[0-9]+}").permitAll()
+                .antMatchers(HttpMethod.GET, "/items").permitAll()
+                .antMatchers(HttpMethod.GET, "/categories").permitAll()
+                .anyRequest().authenticated()
+                .and()
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
         jwtAuthenticationFilter.setFilterProcessesUrl("/auth/log-in")
     }
@@ -71,7 +74,7 @@ class WebSecurity(
 
     @Bean
     @Throws(java.lang.Exception::class)
-    override fun authenticationManagerBean(): AuthenticationManager? {
+    override fun authenticationManagerBean(): AuthenticationManager {
         return super.authenticationManagerBean()
     }
 

@@ -1,6 +1,7 @@
 package kplich.backend.items.services
 
 import kplich.backend.authentication.UserWithIdNotFoundException
+import kplich.backend.authentication.entities.ApplicationUser
 import kplich.backend.items.entities.Item
 import kplich.backend.items.entities.ItemPhoto
 import kplich.backend.items.*
@@ -20,8 +21,8 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class ItemService(
+        private val userService: UserService,
         private val itemRepository: ItemRepository,
-        private val userRepository: ApplicationUserRepository,
         private val categoryRepository: CategoryRepository,
         private val photoRepository: PhotoRepository
 ) {
@@ -40,6 +41,12 @@ class ItemService(
     @Transactional(readOnly = true)
     fun getItem(id: Long): ItemResponse {
         return itemRepository.findByIdOrThrow(id, ::ItemNotFoundException).toResponse()
+    }
+
+    @Throws(ItemNotFoundException::class)
+    @Transactional(readOnly = true)
+    fun getItemEntity(id: Long): Item {
+        return itemRepository.findByIdOrThrow(id, ::ItemNotFoundException)
     }
 
     @Throws(
@@ -72,6 +79,20 @@ class ItemService(
         return itemRepository.save(item.close()).toResponse()
     }
 
+    @Throws(
+            ItemNotFoundException::class,
+            UnauthorizedItemUpdateRequestException::class,
+            ItemAlreadyClosedException::class
+    )
+    @Transactional
+    fun closeItemEntity(item: Item) {
+
+        if (item.cannotBeUpdatedByCurrentlyLoggedUser()) throw UnauthorizedItemUpdateRequestException(item.id)
+        if (item.closed) throw ItemAlreadyClosedException(item.id)
+
+        itemRepository.save(item.close())
+    }
+
     @Transactional(readOnly = true)
     fun getAllOpenItems(filteringCriteria: ItemFilteringCriteria?): List<ItemResponse> {
         // TODO: implement relevance of of search results
@@ -82,6 +103,11 @@ class ItemService(
         }.map {
             it.toResponse()
         }
+    }
+
+    @Transactional(readOnly = true)
+    fun getAllItemsAddedBy(user: ApplicationUser): List<Item> {
+        return itemRepository.findByAddedBy(user)
     }
 
     @Throws(
@@ -95,10 +121,12 @@ class ItemService(
         val description = this.description
         val price = this.price
 
-        val loggedInId = UserService.getCurrentlyLoggedId()
-                ?: throw UnauthorizedItemAddingRequestException()
+        val addedBy = try {
+            userService.getLoggedInUser()
+        } catch (e: Exception) {
+            throw UnauthorizedItemAddingRequestException()
+        }
 
-        val addedBy = userRepository.findByIdOrThrow(loggedInId, ::UserWithIdNotFoundException)
         val category = categoryRepository.findByIdOrThrow(this.category, ::CategoryNotFoundException)
         val usedStatus = this.usedStatus
 
@@ -137,7 +165,11 @@ class ItemService(
     }
 
     private fun Item.cannotBeUpdatedByCurrentlyLoggedUser(): Boolean {
-        val loggedInId = UserService.getCurrentlyLoggedId()
-        return loggedInId == null || this.addedBy.id != loggedInId
+        val loggedInUser = try {userService.getLoggedInUser()} catch (e: Exception) {null}
+        return if (loggedInUser == null) {
+            true
+        } else {
+            this.addedBy.id != loggedInUser.id
+        }
     }
 }

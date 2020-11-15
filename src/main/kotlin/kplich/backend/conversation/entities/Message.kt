@@ -3,6 +3,8 @@ package kplich.backend.conversation.entities
 import kplich.backend.authentication.entities.ApplicationUser
 import kplich.backend.conversation.entities.Message.Companion.CONTENT_AND_OFFER_NULL_MESSAGE
 import kplich.backend.conversation.entities.offer.Offer
+import kplich.backend.conversation.payloads.responses.message.MessageResponse
+import kplich.backend.conversation.payloads.responses.message.SimpleMessageResponse
 import java.time.LocalDateTime
 import javax.persistence.*
 import javax.validation.Constraint
@@ -37,6 +39,26 @@ data class Message(
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         var id: Long = 0
 ) {
+
+    fun toResponse(): MessageResponse {
+        return MessageResponse(
+                id = id,
+                sendingUser = sender.toSimpleResponse(),
+                sentOn = sentOn,
+                textContent = content,
+                offer = offer?.toResponse()
+        )
+    }
+
+    fun toSimpleResponse(): SimpleMessageResponse {
+        return SimpleMessageResponse(
+                id = id,
+                sendingUser = sender.toSimpleResponse(),
+                sentOn = sentOn,
+                textContent = content
+        )
+    }
+
     companion object {
         const val MESSAGE_CONTENT_MAX_LENGTH = 1000
         const val MESSAGE_TOO_LONG_MSG = "Message is too long."
@@ -56,8 +78,6 @@ annotation class EitherContentOrOfferMustBeNotNull(
 class EitherContentOrOfferMustBeNotNullValidator
     : ConstraintValidator<EitherContentOrOfferMustBeNotNull, Message> {
     override fun isValid(value: Message, context: ConstraintValidatorContext): Boolean {
-        println(value.content)
-        println(value.offer)
         return with(value) {
             !(content == null && offer == null)
         }
