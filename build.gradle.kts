@@ -60,6 +60,17 @@ tasks.withType<KotlinCompile> {
 	}
 }
 
+tasks.register("bootRunDev") {
+    group = "application"
+    description = "Runs this project as a Spring Boot application with the dev profile"
+    doFirst {
+        tasks.bootRun.configure {
+            systemProperty("spring.profiles.active", "dev")
+        }
+    }
+    finalizedBy("bootRun")
+}
+
 allOpen {
     annotation("javax.persistence.Entity")
     annotation("javax.persistence.Embeddable")
