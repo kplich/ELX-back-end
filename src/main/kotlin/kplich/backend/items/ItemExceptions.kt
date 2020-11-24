@@ -13,7 +13,7 @@ class ItemNotFoundException(id: Long) : ElxResponseException(HttpStatus.NOT_FOUN
 
 class ItemAlreadyClosedException(id: Long) : ElxResponseException(HttpStatus.CONFLICT, "Item with ID $id is already closed.")
 
-class UnauthorizedItemAddingRequestException : ElxResponseException(HttpStatus.UNAUTHORIZED, "User isn't authorized to add an item")
+class UnauthorizedItemAddingRequestException : ElxResponseException(HttpStatus.FORBIDDEN, "User isn't authorized to add an item")
 
 class UnauthorizedItemUpdateRequestException(id: Long) : ElxResponseException(HttpStatus.UNAUTHORIZED, "This user isn't authorized to update item with ID $id.")
 

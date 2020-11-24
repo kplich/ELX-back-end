@@ -31,7 +31,10 @@ class ItemService(
         return categoryRepository.findAll().map { it.toResponse() }
     }
 
-    @Throws(BadEditItemRequestException::class, UnauthorizedItemAddingRequestException::class)
+    @Throws(
+            BadEditItemRequestException::class,
+            UnauthorizedItemAddingRequestException::class
+    )
     @Transactional
     fun addItem(request: ItemAddRequest): ItemResponse {
         return itemRepository.save(request.mapToItem()).toResponse()
@@ -52,7 +55,8 @@ class ItemService(
     @Throws(
             ItemNotFoundException::class,
             UnauthorizedItemUpdateRequestException::class,
-            BadEditItemRequestException::class)
+            BadEditItemRequestException::class
+    )
     @Transactional
     fun updateItem(request: ItemUpdateRequest): ItemResponse {
         val oldItem = itemRepository.findByIdOrThrow(request.id, ::ItemNotFoundException)

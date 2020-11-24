@@ -1,6 +1,7 @@
 package kplich.backend.items.payloads.requests
 
-import com.fasterxml.jackson.annotation.JsonIgnore
+import io.swagger.annotations.ApiModel
+import io.swagger.annotations.ApiModelProperty
 import kplich.backend.configurations.PricePrecisionConstants.PRICE_DECIMAL_PART
 import kplich.backend.configurations.PricePrecisionConstants.PRICE_INTEGER_PART
 import kplich.backend.configurations.PricePrecisionConstants.PRICE_MAXIMUM_STRING
@@ -22,9 +23,9 @@ import kplich.backend.items.entities.Item.Companion.TITLE_MAX_LENGTH
 import kplich.backend.items.entities.Item.Companion.TITLE_MIN_LENGTH
 import kplich.backend.items.entities.UsedStatus
 import java.math.BigDecimal
-import java.time.LocalDateTime
 import javax.validation.constraints.*
 
+@ApiModel(description = "request for adding a new item")
 data class ItemAddRequest(
         @get:NotBlank(message = Item.TITLE_REQURIED_MSG)
         @get:Size(min = TITLE_MIN_LENGTH, max = TITLE_MAX_LENGTH, message = TITLE_LENGTH_MSG)
@@ -40,19 +41,16 @@ data class ItemAddRequest(
         @get:Digits(integer = PRICE_INTEGER_PART, fraction = PRICE_DECIMAL_PART, message = PRICE_TOO_PRECISE_MSG)
         val price: BigDecimal,
 
+        @ApiModelProperty("ID of the category of the item")
         @get:NotNull(message = CATEGORY_REQUIRED_MSG)
         val category: Int,
 
+        @ApiModelProperty("status of the item - was it used or not?")
         @get:NotNull(message = STATUS_REQUIRED_MSG)
         val usedStatus: UsedStatus,
 
+        @ApiModelProperty("list of URLs of the photo items")
         @get:NotNull(message = PHOTOS_REQUIRED_MSG)
         @get:Size(min = 0, max = 8, message = PHOTOS_SIZE_MSG)
         val photos: List<String>,
-
-        @JsonIgnore
-        val addedOn: LocalDateTime = LocalDateTime.now(),
-
-        @JsonIgnore
-        val closedOn: LocalDateTime? = null
 )

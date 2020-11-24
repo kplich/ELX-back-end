@@ -1,5 +1,7 @@
 package kplich.backend.items.payloads.requests
 
+import io.swagger.annotations.ApiModel
+import io.swagger.annotations.ApiModelProperty
 import kplich.backend.configurations.PricePrecisionConstants.PRICE_DECIMAL_PART
 import kplich.backend.configurations.PricePrecisionConstants.PRICE_INTEGER_PART
 import kplich.backend.configurations.PricePrecisionConstants.PRICE_MAXIMUM_STRING
@@ -16,8 +18,12 @@ import javax.validation.constraints.DecimalMax
 import javax.validation.constraints.DecimalMin
 import javax.validation.constraints.Digits
 
+@ApiModel(description = "model for filtering the items based on criteria")
 data class ItemFilteringCriteria(
+        @ApiModelProperty("string containing search keywords")
         val searchQuery: String?,
+
+        @ApiModelProperty("ID of a category")
         val category: Int?,
 
         @get:DecimalMin(value = PRICE_MINIMUM_STRING, inclusive = true, message = PRICE_TOO_LOW_MSG)
@@ -30,6 +36,7 @@ data class ItemFilteringCriteria(
         @get:Digits(integer = PRICE_INTEGER_PART, fraction = PRICE_DECIMAL_PART, message = PRICE_TOO_PRECISE_MSG)
         val maximalPrice: BigDecimal?,
 
+        @ApiModelProperty("allowed statuses")
         val statuses: List<UsedStatus>?
 ) {
     private val containsWords get(): Predicate<Item> = Predicate { t ->
@@ -65,8 +72,6 @@ data class ItemFilteringCriteria(
     companion object {
         private val WHITESPACE_PATTERN = Pattern.compile("(?U)\\s+")
 
-        val isNotClosed get(): Predicate<Item> = Predicate {
-            !it.closed
-        }
+        val isNotClosed get(): Predicate<Item> = Predicate { !it.closed }
     }
 }

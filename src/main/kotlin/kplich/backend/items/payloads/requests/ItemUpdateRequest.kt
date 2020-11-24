@@ -1,5 +1,7 @@
 package kplich.backend.items.payloads.requests
 
+import io.swagger.annotations.ApiModel
+import io.swagger.annotations.ApiModelProperty
 import kplich.backend.configurations.PricePrecisionConstants
 import kplich.backend.configurations.PricePrecisionConstants.PRICE_DECIMAL_PART
 import kplich.backend.configurations.PricePrecisionConstants.PRICE_INTEGER_PART
@@ -24,6 +26,7 @@ import kplich.backend.items.entities.UsedStatus
 import java.math.BigDecimal
 import javax.validation.constraints.*
 
+@ApiModel(description = "a request for updating an item")
 data class ItemUpdateRequest(
         @get:NotNull(message = ID_REQUIRED_MSG)
         @get:Min(1)
@@ -43,6 +46,7 @@ data class ItemUpdateRequest(
         @get:Digits(integer = PRICE_INTEGER_PART, fraction = PRICE_DECIMAL_PART, message = PRICE_TOO_PRECISE_MSG)
         val price: BigDecimal,
 
+        @ApiModelProperty("ID of the item category")
         @get:NotNull(message = CATEGORY_REQUIRED_MSG)
         val category: Int,
 
