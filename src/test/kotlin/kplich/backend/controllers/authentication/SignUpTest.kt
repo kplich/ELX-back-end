@@ -2,7 +2,6 @@ package kplich.backend.controllers.authentication
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import kplich.backend.authentication.AuthenticationController
-import kplich.backend.configurations.errorhandling.RestExceptionHandler.Companion.VALIDATION_ERROR_MESSAGE
 import kplich.backend.configurations.security.JwtUtil
 import kplich.backend.authentication.entities.Role
 import kplich.backend.authentication.RoleNotFoundException
@@ -63,7 +62,6 @@ class SignUpTest {
                 .content(objectMapper.writeValueAsString(signupRequest)))
                 // then
                 .andExpect(status().isBadRequest)
-                .andExpect(content().string(containsString(VALIDATION_ERROR_MESSAGE)))
                 .andExpect(content().string(containsString(SignUpRequest.USERNAME_MUST_BE_BETWEEN_3_AND_20)))
     }
 
@@ -79,7 +77,6 @@ class SignUpTest {
                 .content(objectMapper.writeValueAsString(signupRequest)))
                 // then
                 .andExpect(status().isBadRequest)
-                .andExpect(content().string(containsString(VALIDATION_ERROR_MESSAGE)))
                 .andExpect(content().string(containsString(SignUpRequest.PASSWORD_MUST_BE_BETWEEN_8_AND_40)))
     }
 
@@ -95,7 +92,6 @@ class SignUpTest {
                 .content(objectMapper.writeValueAsString(signupRequest)))
                 // then
                 .andExpect(status().isBadRequest)
-                .andExpect(content().string(containsString(VALIDATION_ERROR_MESSAGE)))
                 .andExpect(content().string(containsString(SignUpRequest.PASSWORD_MUST_HAVE_SPECIAL_CHARACTER)))
                 .andExpect(content().string(containsString(SignUpRequest.PASSWORD_MUST_HAVE_DIGIT)))
 
@@ -113,7 +109,6 @@ class SignUpTest {
                 .content(objectMapper.writeValueAsString(signupRequest)))
                 // then
                 .andExpect(status().isBadRequest)
-                .andExpect(content().string(containsString(VALIDATION_ERROR_MESSAGE)))
                 .andExpect(content().string(containsString(SignUpRequest.USERNAME_REQUIRED)))
     }
 
@@ -129,7 +124,6 @@ class SignUpTest {
                 .content(objectMapper.writeValueAsString(signupRequest)))
                 // then
                 .andExpect(status().isBadRequest)
-                .andExpect(content().string(containsString(VALIDATION_ERROR_MESSAGE)))
                 .andExpect(content().string(containsString(SignUpRequest.PASSWORD_REQUIRED)))
     }
 

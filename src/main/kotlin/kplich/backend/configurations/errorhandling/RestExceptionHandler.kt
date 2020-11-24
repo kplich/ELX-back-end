@@ -20,7 +20,6 @@ class RestExceptionHandler : ResponseEntityExceptionHandler() {
     ): ResponseEntity<Any> {
         val error = ApiError(
                 status,
-                VALIDATION_ERROR_MESSAGE,
                 ex.bindingResult
                         .allErrors
                         .map { error -> error.defaultMessage }
@@ -39,15 +38,9 @@ class RestExceptionHandler : ResponseEntityExceptionHandler() {
     ): ResponseEntity<Any> {
         val error = ApiError(
                 status,
-                MALFORMED_JSON_MESSAGE,
                 ex.cause?.message ?: ex.message ?: "",
                 ex.cause?.message ?: ex.message ?: "")
 
         return error.response
-    }
-
-    companion object {
-        const val VALIDATION_ERROR_MESSAGE = "Validation Error"
-        const val MALFORMED_JSON_MESSAGE = "Malformed JSON"
     }
 }
