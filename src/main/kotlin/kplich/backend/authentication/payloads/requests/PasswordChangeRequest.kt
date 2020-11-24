@@ -1,5 +1,6 @@
 package kplich.backend.authentication.payloads.requests
 
+import io.swagger.annotations.ApiModel
 import kplich.backend.authentication.payloads.requests.PasswordChangeRequest.Companion.PASSWORDS_MUSTNT_MATCH
 import javax.validation.Constraint
 import javax.validation.ConstraintValidator
@@ -10,6 +11,7 @@ import javax.validation.constraints.Pattern
 import javax.validation.constraints.Size
 import kotlin.reflect.KClass
 
+@ApiModel(description = "a request for changing the user's password")
 @PasswordsNotEqual(message = PASSWORDS_MUSTNT_MATCH)
 data class PasswordChangeRequest(
         @get:NotBlank(message = OLD_PASSWORD_REQUIRED)

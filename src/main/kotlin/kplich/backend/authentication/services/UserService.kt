@@ -87,7 +87,10 @@ class UserService(
         userRepository.save(user)
     }
 
-    @Throws(RoleNotFoundException::class, AuthenticationCredentialsNotFoundException::class, BadCredentialsException::class)
+    @Throws(
+            RoleNotFoundException::class,
+            AuthenticationCredentialsNotFoundException::class,
+            BadCredentialsException::class)
     @Transactional
     fun changePassword(passwordChangeRequest: PasswordChangeRequest) {
 

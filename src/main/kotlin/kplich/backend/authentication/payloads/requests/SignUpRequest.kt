@@ -1,10 +1,12 @@
 package kplich.backend.authentication.payloads.requests
 
+import io.swagger.annotations.ApiModel
 import kplich.backend.authentication.entities.ApplicationUser.Companion.ETHEREUM_ADDRESS_LENGTH
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.Pattern
 import javax.validation.constraints.Size
 
+@ApiModel(description = "a request for signing up")
 data class SignUpRequest(
         @get:NotBlank(message = USERNAME_REQUIRED)
         @get:Size(min = 3, max = 20, message = USERNAME_MUST_BE_BETWEEN_3_AND_20)

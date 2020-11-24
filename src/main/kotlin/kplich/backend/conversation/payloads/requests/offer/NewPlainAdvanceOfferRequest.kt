@@ -1,5 +1,7 @@
 package kplich.backend.conversation.payloads.requests.offer
 
+import io.swagger.annotations.ApiModel
+import io.swagger.annotations.ApiModelProperty
 import kplich.backend.configurations.PricePrecisionConstants
 import java.math.BigDecimal
 import javax.validation.Constraint
@@ -12,10 +14,12 @@ import javax.validation.constraints.Digits
 import javax.validation.constraints.NotNull
 import kotlin.reflect.KClass
 
+@ApiModel(description = "a request for creating an offer with a price and an advance")
 @AdvanceNoGreaterThanPrice
 class NewPlainAdvanceOfferRequest(
         price: BigDecimal,
 
+        @ApiModelProperty("advance offered")
         @get:NotNull(message = PricePrecisionConstants.ADVANCE_REQUIRED_MSG)
         @get:DecimalMin(
                 value = PricePrecisionConstants.PRICE_MINIMUM_STRING,

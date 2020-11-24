@@ -89,7 +89,6 @@ class ConversationService(
     )
     fun sendMessage(itemId: Long, newMessageRequest: NewMessageRequest): FullConversationResponse {
         val item = itemService.getItemEntity(itemId)
-
         if (item.closed) {
             throw MessageToAClosedItemException(itemId)
         }

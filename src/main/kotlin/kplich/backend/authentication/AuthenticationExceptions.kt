@@ -16,4 +16,4 @@ class EthereumAddressAlreadyExistsException(ethereumAddress: String)
 class EthereumAddressAlreadySetException(id: Long)
     : ElxResponseException(HttpStatus.CONFLICT, "User with id $id already has Ethereum address set!")
 
-class NoUserLoggedInException : ElxResponseException(HttpStatus.UNAUTHORIZED, "No user is logged in!")
+class NoUserLoggedInException : ElxResponseException(HttpStatus.FORBIDDEN, "No user is logged in!")
