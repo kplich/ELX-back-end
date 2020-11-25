@@ -75,8 +75,8 @@ class ChangePasswordTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(passwordChangeRequest))
                         .header(AUTHORIZATION, getTokenHeader()))
-                .andExpect(status().isOk)
-                .andExpect(content().string(equalTo(EMPTY_JSON_BODY)))
+                .andExpect(status().isNoContent)
+                .andExpect(content().string(equalTo(EMPTY_BODY)))
     }
 
     @Test
