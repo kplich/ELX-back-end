@@ -1,10 +1,9 @@
 package kplich.backend.services.items
 
 import kplich.backend.configurations.security.WithMockIdUser
-import kplich.backend.items.entities.UsedStatus
 import kplich.backend.items.BadEditItemRequestException
 import kplich.backend.items.UnauthorizedItemAddingRequestException
-import kplich.backend.authentication.UserWithIdNotFoundException
+import kplich.backend.items.entities.UsedStatus
 import kplich.backend.items.payloads.requests.ItemAddRequest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -66,7 +65,7 @@ class ItemCreatingTest : ItemTest() {
         )
 
 
-        assertThrows<UserWithIdNotFoundException> {
+        assertThrows<UnauthorizedItemAddingRequestException> {
             this.itemService.addItem(request)
         }
     }
