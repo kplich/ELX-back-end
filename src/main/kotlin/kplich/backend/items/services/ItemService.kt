@@ -90,8 +90,6 @@ class ItemService(
     )
     @Transactional
     fun closeItemEntity(item: Item) {
-
-        if (item.cannotBeUpdatedByCurrentlyLoggedUser()) throw UnauthorizedItemUpdateRequestException(item.id)
         if (item.closed) throw ItemAlreadyClosedException(item.id)
 
         itemRepository.save(item.close())

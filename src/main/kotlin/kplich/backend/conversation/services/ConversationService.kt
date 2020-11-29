@@ -183,12 +183,16 @@ class ConversationService(
         val itemOwner = offerToAccept.item.addedBy
         val interestedUser = offerToAccept.conversation.interestedUser
 
-        // if the same user who sent the offer
-        // or someone not related to the conversation
+        // if someone not related to the conversation
         // wants to accept the offer,
         // throw an exception
-        if((offerToAccept.sender.id == loggedInUser.id)
-                || (loggedInUser.id != itemOwner.id && loggedInUser.id != interestedUser.id)) {
+        if((loggedInUser.id != itemOwner.id && loggedInUser.id != interestedUser.id)) {
+            throw UnauthorizedOfferModificationException(offerId, loggedInUser.id)
+        }
+        // if the same user who sent the offer
+        // wants to accept the offer,
+        // throw an exception
+        if((offerToAccept.sender.id == loggedInUser.id)) {
             throw UnauthorizedOfferModificationException(offerId, loggedInUser.id)
         }
 
