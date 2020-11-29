@@ -2,9 +2,9 @@ package kplich.backend.controllers.authentication
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import kplich.backend.authentication.AuthenticationController
-import kplich.backend.configurations.security.JwtUtil
 import kplich.backend.authentication.payloads.requests.PasswordChangeRequest
 import kplich.backend.authentication.services.UserService
+import kplich.backend.configurations.security.JwtUtil
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.not
 import org.hamcrest.core.StringContains.containsString

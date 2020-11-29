@@ -8,6 +8,9 @@ import kplich.backend.conversation.payloads.responses.offer.DoubleAdvanceOfferRe
 import kplich.backend.conversation.payloads.responses.offer.PlainAdvanceOfferResponse
 import kplich.backend.items.entities.UsedStatus
 import kplich.backend.items.payloads.responses.CategoryResponse
+import kplich.backend.user.payloads.responses.items.ItemBoughtResponse
+import kplich.backend.user.payloads.responses.items.ItemSoldResponse
+import kplich.backend.user.payloads.responses.items.ItemWantedToBuyResponse
 import kplich.backend.user.payloads.responses.items.ItemWantedToSellResponse
 import java.math.BigDecimal
 import java.time.LocalDateTime
@@ -54,7 +57,7 @@ open class UserItemsData {
                                     ),
                                     lastOffer = DoubleAdvanceOfferResponse(
                                             id = 5,
-                                            price = BigDecimal("0.5"),
+                                            price = BigDecimal("0.5000"),
                                             offerStatus = OfferStatus.AWAITING
                                     )
                             ),
@@ -69,13 +72,91 @@ open class UserItemsData {
                                     ),
                                     lastOffer = PlainAdvanceOfferResponse(
                                             id = 7,
-                                            price = BigDecimal("0.46"),
-                                            advance = BigDecimal("0.36"),
+                                            price = BigDecimal("0.4600"),
+                                            advance = BigDecimal("0.3600"),
                                             offerStatus = OfferStatus.CANCELLED
                                     )
                             )
                     )
+            ),
+            2 to ItemWantedToSellResponse(
+                    id = 2,
+                    title = "Dog kennel",
+                    description = "120 cm x 80 cm x 100 cm\nit's possible to send the kennel by post!",
+                    price = BigDecimal("0.5930"),
+                    addedBy = users[4] ?: error("user must exist!"),
+                    addedOn = LocalDateTime.parse("2020-11-29T03:52:16.22115"),
+                    category = categories[4] ?: error("category must exist"),
+                    usedStatus = UsedStatus.USED,
+                    photoUrl = "https://firebasestorage.googleapis.com/v0/b/elx-front-end.appspot.com/o/items%2F1606618333377?alt=media&token=a0969322-1757-4381-ac7b-82c2324dfb43",
+                    conversations = emptyList()
+
             )
     )
 
+    val itemsSold: Map<Int, ItemSoldResponse> = mapOf(
+            7 to ItemSoldResponse(
+                    id = 7,
+                    title = "New Balance Shoes, Size 39",
+                    description = "a bit worn out, but still in a good condition. very hard to find nowadays!",
+                    price = BigDecimal("0.1220"),
+                    addedBy = users[4] ?: error("user must exist"),
+                    addedOn = LocalDateTime.parse("2020-11-29T04:22:17.870117"),
+                    category = categories[3] ?: error("category must exist"),
+                    usedStatus = UsedStatus.USED,
+                    photoUrl = "https://firebasestorage.googleapis.com/v0/b/elx-front-end.appspot.com/o/items%2F1606620134985?alt=media&token=482cef7a-2b39-47ec-9643-eae2cec859f8",
+                    offer = PlainAdvanceOfferResponse(
+                            id = 4,
+                            advance = BigDecimal("0.0600"),
+                            price = BigDecimal("0.1200"),
+                            offerStatus = OfferStatus.ACCEPTED,
+                            contractAddress = "0xB1Bd1AffDd5eD74F8d09Ce5e9fC51d064C8f8497"
+                    )
+            )
+    )
+
+    val itemsWantedToBuy: Map<Int, ItemWantedToBuyResponse> = mapOf(
+            6 to ItemWantedToBuyResponse(
+                    id = 6,
+                    title = "Cute socks with bears",
+                    description = "Very comfortable socks with bears\nSmall size 36-38\nNEW!",
+                    price = BigDecimal("0.0052"),
+                    addedBy = users[2] ?: error("user must exist"),
+                    addedOn = LocalDateTime.parse("2020-11-15T18:25:48.767058"),
+                    category = categories[3] ?: error("category must exist"),
+                    usedStatus = UsedStatus.NEW,
+                    photoUrl = "https://firebasestorage.googleapis.com/v0/b/elx-front-end.appspot.com/o/items%2F1605461144016?alt=media&token=11caee65-a9b2-426f-baca-853fddb52147",
+                    conversation = SimpleConversationResponse(
+                            id = 1,
+                            interestedUser = users[4] ?: error("user must exist"),
+                            lastMessage = SimpleMessageResponse(
+                                    id = 4,
+                                    sendingUser = users[2] ?: error("user must exist"),
+                                    sentOn = LocalDateTime.parse("2020-11-29T04:15:59.528206"),
+                                    textContent = "no, unfortunately not :("
+                            ),
+                            lastOffer = null
+                    )
+            )
+    )
+
+    val itemsBought: Map<Int, ItemBoughtResponse> = mapOf(
+            5 to ItemBoughtResponse(
+                    id = 5,
+                    title = "Aquarium set (720 litres)",
+                    description = "720 litres (200x60x60)/alu diversa cover, module lighting, metal cupboard\navailable after fish sold or together with fish\n",
+                    price = BigDecimal("1.4780"),
+                    addedBy = users[2] ?: error("user must exist"),
+                    addedOn = LocalDateTime.parse("2020-11-15T18:22:00.21909"),
+                    category = categories[4] ?: error("category must exist"),
+                    usedStatus = UsedStatus.USED,
+                    photoUrl = "https://firebasestorage.googleapis.com/v0/b/elx-front-end.appspot.com/o/items%2F1605460912648?alt=media&token=39053190-ca35-479e-928b-2b86b8ec4fd8",
+                    offer = DoubleAdvanceOfferResponse(
+                            id = 2,
+                            price = BigDecimal("1.5430"),
+                            offerStatus = OfferStatus.ACCEPTED,
+                            contractAddress = "0x6FDecbFb659b3680B5ab576B0d70c495d6374269"
+                    )
+            )
+    )
 }

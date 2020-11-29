@@ -18,9 +18,9 @@ import java.math.BigDecimal
         JsonSubTypes.Type(value = DoubleAdvanceOfferResponse::class, name = "DoubleAdvanceOfferResponse")
 )
 abstract class OfferResponse(
-        val id: Long,
-        val price: BigDecimal,
-        val offerStatus: OfferStatus,
+        open val id: Long,
+        open val price: BigDecimal,
+        open val offerStatus: OfferStatus,
         @ApiModelProperty("address of the contract associated with the offer")
-        val contractAddress: String? = null
+        open val contractAddress: String? = null
 )

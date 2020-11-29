@@ -2,20 +2,19 @@ package kplich.backend.services.user
 
 import kplich.backend.authentication.NoUserLoggedInException
 import kplich.backend.configurations.security.WithMockIdUser
-import kplich.backend.user.payloads.responses.items.ItemSoldResponse
 import org.assertj.core.api.Assertions
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import javax.transaction.Transactional
 
 class ItemsSoldTest: UserItemsTest() {
     @Test
-    @WithMockIdUser(id = 4, "kplich4")
-    @Disabled
+    @WithMockIdUser(id = 4, "NewKidOnTheBlock")
+    @Transactional
     fun `user's items are loaded correctly`() {
-        val expectedItems = emptyList<ItemSoldResponse>()
+        val expectedItems = itemsSold.values
 
-        val foundItems = userItemsService.getItemsSold().toTypedArray()
+        val foundItems = userItemsService.getItemsSold()
 
         Assertions.assertThat(foundItems).containsExactlyInAnyOrderElementsOf(expectedItems)
     }

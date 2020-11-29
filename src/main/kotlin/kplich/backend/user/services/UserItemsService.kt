@@ -3,12 +3,12 @@ package kplich.backend.user.services
 import kplich.backend.authentication.NoUserLoggedInException
 import kplich.backend.authentication.UserWithIdNotFoundException
 import kplich.backend.authentication.services.UserService
+import kplich.backend.conversation.services.ConversationService
+import kplich.backend.items.services.ItemService
 import kplich.backend.user.payloads.responses.items.ItemBoughtResponse
 import kplich.backend.user.payloads.responses.items.ItemSoldResponse
 import kplich.backend.user.payloads.responses.items.ItemWantedToBuyResponse
 import kplich.backend.user.payloads.responses.items.ItemWantedToSellResponse
-import kplich.backend.conversation.services.ConversationService
-import kplich.backend.items.services.ItemService
 import org.springframework.stereotype.Service
 
 @Service
