@@ -5,7 +5,7 @@ import kplich.backend.items.payloads.responses.ItemResponse
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
-abstract class ItemTestData : BaseTestData() {
+abstract class ItemTestData : BaseItemConversationTestData() {
     protected val items
         get(): Map<Long, ItemResponse> = mapOf(
                 1L to ItemResponse(

@@ -10,7 +10,7 @@ import kplich.backend.items.payloads.responses.ItemResponse
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
-abstract class ConversationTestData : BaseTestData() {
+abstract class ConversationTestData : BaseItemConversationTestData() {
 
     protected val items
         get(): Map<Long, ItemResponse> = mapOf(
