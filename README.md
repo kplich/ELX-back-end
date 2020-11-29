@@ -11,10 +11,11 @@ Edit the `application-dev.properties` file with details about your database driv
 
 Use the default data initialization script or fill it with your own data.
 To use the application fully, you'll certainly have to change the users' Ethereum addresses.
-The script provides three accounts:
+The script provides four accounts:
 - username: jasmine03, password: maybE4$$$
 - username: maryjann password: Maryjann1!
 - username: jerrybumbleberry, password: Jerrry1!
+- username: NewKidOnTheBlock, password: NewKidd0)
 
 On Windows, run:
 ```shell script
