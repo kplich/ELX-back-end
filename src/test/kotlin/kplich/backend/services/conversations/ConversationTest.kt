@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.jdbc.Sql
 
 @SpringBootTest
-@Sql("/other-data.sql")
+@Sql("/item-conversation-data.sql")
 abstract class ConversationTest : ConversationTestData() {
 
     @Autowired
