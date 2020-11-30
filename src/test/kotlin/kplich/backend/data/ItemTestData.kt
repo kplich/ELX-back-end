@@ -1,26 +1,11 @@
 package kplich.backend.data
 
-import kplich.backend.entities.UsedStatus
-import kplich.backend.payloads.responses.items.CategoryResponse
-import kplich.backend.payloads.responses.items.ItemResponse
+import kplich.backend.items.entities.UsedStatus
+import kplich.backend.items.payloads.responses.ItemResponse
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
-abstract class ItemTestData {
-    protected val categories
-        get(): Map<Int, CategoryResponse> = mapOf(
-                1 to CategoryResponse(1, "House and Garden"),
-                2 to CategoryResponse(2, "Electronics"),
-                3 to CategoryResponse(3, "Fashion")
-        )
-
-    private val users
-        get(): Map<Int, ItemResponse.ItemAddedByResponse> = mapOf(
-                1 to ItemResponse.ItemAddedByResponse(1, "kplich"),
-                2 to ItemResponse.ItemAddedByResponse(2, "kplich2"),
-                3 to ItemResponse.ItemAddedByResponse(3, "kplich3")
-        )
-
+abstract class ItemTestData : BaseItemConversationTestData() {
     protected val items
         get(): Map<Long, ItemResponse> = mapOf(
                 1L to ItemResponse(

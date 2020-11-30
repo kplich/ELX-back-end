@@ -2,11 +2,11 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
 	id("org.springframework.boot") version "2.3.1.RELEASE"
-	id("io.spring.dependency-management") version "1.0.9.RELEASE"
-	kotlin("jvm") version "1.3.72"
-	kotlin("plugin.spring") version "1.3.72"
-	kotlin("plugin.jpa") version "1.3.72"
-    kotlin("plugin.allopen") version "1.3.72"
+    id("io.spring.dependency-management") version "1.0.9.RELEASE"
+    kotlin("jvm") version "1.4.0"
+    kotlin("plugin.spring") version "1.4.0"
+    kotlin("plugin.jpa") version "1.4.0"
+    kotlin("plugin.allopen") version "1.4.0"
 }
 
 group = "kplich"
@@ -35,7 +35,7 @@ dependencies {
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.2")
 
     // PostgreSQL driver
-    runtimeOnly("org.postgresql:postgresql")
+    implementation("org.postgresql:postgresql")
 
 
     testImplementation("org.springframework.security:spring-security-test")
@@ -44,6 +44,10 @@ dependencies {
     }
     // H2 driver
     testRuntimeOnly("com.h2database:h2")
+
+    implementation("io.springfox:springfox-swagger2:2.9.2")
+    implementation("io.springfox:springfox-swagger-ui:2.9.2")
+    implementation("io.springfox:springfox-bean-validators:2.9.2")
 }
 
 tasks.withType<Test> {
@@ -55,6 +59,17 @@ tasks.withType<KotlinCompile> {
         freeCompilerArgs = listOf("-Xjsr305=strict")
         jvmTarget = "11"
 	}
+}
+
+tasks.register("bootRunDev") {
+    group = "application"
+    description = "Runs this project as a Spring Boot application with the dev profile"
+    doFirst {
+        tasks.bootRun.configure {
+            systemProperty("spring.profiles.active", "dev")
+        }
+    }
+    finalizedBy("bootRun")
 }
 
 allOpen {

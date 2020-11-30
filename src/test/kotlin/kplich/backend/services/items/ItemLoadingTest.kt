@@ -1,6 +1,6 @@
 package kplich.backend.services.items
 
-import kplich.backend.exceptions.ItemNotFoundException
+import kplich.backend.items.ItemNotFoundException
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -28,7 +28,7 @@ class ItemLoadingTest : ItemTest() {
 
         val foundItems = this.itemService.getAllOpenItems(null).toTypedArray()
 
-        assertThat(foundItems).containsExactlyInAnyOrderElementsOf(expectedItems)
+        assertThat(foundItems).containsAll(expectedItems)
     }
 
     @Test

@@ -1,6 +1,6 @@
 package kplich.backend.configurations.security
 
-import kplich.backend.services.UserDetailsServiceImpl
+import kplich.backend.authentication.services.UserService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -10,6 +10,7 @@ import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.config.http.SessionCreationPolicy
@@ -23,16 +24,20 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 class WebSecurity(
-        private val userDetailsService: UserDetailsServiceImpl,
+        private val userService: UserService,
         private val jwtAuthorizationFilter: JwtAuthorizationFilter,
-        private val jwtAuthenticationFilter: JwtAuthenticationFilter) : WebSecurityConfigurerAdapter() {
+        private val jwtAuthenticationFilter: JwtAuthenticationFilter) :
+        WebSecurityConfigurerAdapter() {
 
     @Value("\${cors.origins}")
     private val allowedOrigins: List<String> = emptyList()
 
-    @Throws(Exception::class)
-    public override fun configure(authenticationManagerBuilder: AuthenticationManagerBuilder) {
-        authenticationManagerBuilder.userDetailsService<UserDetailsService>(userDetailsService).passwordEncoder(bCryptPasswordEncoder())
+    public override fun configure(
+            authenticationManagerBuilder: AuthenticationManagerBuilder
+    ) {
+        authenticationManagerBuilder
+                .userDetailsService<UserDetailsService>(userService)
+                .passwordEncoder(bCryptPasswordEncoder())
     }
 
     @Bean
@@ -41,27 +46,35 @@ class WebSecurity(
     }
 
     override fun configure(http: HttpSecurity) {
-        http
-                .cors().and()
-                .csrf().disable()
-                .addFilter(jwtAuthenticationFilter)
-                .addFilter(jwtAuthorizationFilter)
-                .authorizeRequests()
-                    .antMatchers(HttpMethod.POST, "/auth/log-in").permitAll()
-                    .antMatchers(HttpMethod.POST, "/auth/sign-up").permitAll()
-                    .antMatchers(HttpMethod.GET, "/items/{id:[0-9]+}").permitAll()
-                    .antMatchers(HttpMethod.GET, "/items").permitAll()
-                    .antMatchers(HttpMethod.GET, "/categories").permitAll()
-                    .anyRequest().authenticated()
-                    .and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        http.cors().and()
+            .csrf().disable()
+            .addFilter(jwtAuthenticationFilter)
+            .addFilter(jwtAuthorizationFilter)
+            .authorizeRequests()
+                .antMatchers(HttpMethod.POST, "/auth/log-in").permitAll()
+                .antMatchers(HttpMethod.POST, "/auth/sign-up").permitAll()
+                .antMatchers(HttpMethod.GET, "/items/{id:[0-9]+}").permitAll()
+                .antMatchers(HttpMethod.GET, "/items").permitAll()
+                .antMatchers(HttpMethod.GET, "/categories").permitAll()
+                .anyRequest().authenticated()
+                .and()
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
         jwtAuthenticationFilter.setFilterProcessesUrl("/auth/log-in")
     }
 
+    override fun configure(web: WebSecurity?) {
+        web?.ignoring()
+                ?.antMatchers("/v2/api-docs/**")
+                ?.antMatchers("/swagger.json")
+                ?.antMatchers("/swagger-ui.html")
+                ?.antMatchers("/swagger-resources/**")
+                ?.antMatchers("/webjars/**")
+    }
+
     @Bean
     @Throws(java.lang.Exception::class)
-    override fun authenticationManagerBean(): AuthenticationManager? {
+    override fun authenticationManagerBean(): AuthenticationManager {
         return super.authenticationManagerBean()
     }
 

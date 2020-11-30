@@ -1,10 +1,10 @@
 package kplich.backend.controllers.authentication
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import kplich.backend.authentication.AuthenticationController
+import kplich.backend.authentication.payloads.requests.PasswordChangeRequest
+import kplich.backend.authentication.services.UserService
 import kplich.backend.configurations.security.JwtUtil
-import kplich.backend.controllers.AuthenticationController
-import kplich.backend.payloads.requests.authentication.PasswordChangeRequest
-import kplich.backend.services.UserDetailsServiceImpl
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.not
 import org.hamcrest.core.StringContains.containsString
@@ -23,7 +23,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 class ChangePasswordTest {
 
     @MockBean
-    private lateinit var userService: UserDetailsServiceImpl
+    private lateinit var userService: UserService
 
     @Autowired
     private lateinit var jwtUtil: JwtUtil
@@ -75,8 +75,8 @@ class ChangePasswordTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(passwordChangeRequest))
                         .header(AUTHORIZATION, getTokenHeader()))
-                .andExpect(status().isOk)
-                .andExpect(content().string(equalTo(EMPTY_JSON_BODY)))
+                .andExpect(status().isNoContent)
+                .andExpect(content().string(equalTo(EMPTY_BODY)))
     }
 
     @Test
@@ -93,11 +93,13 @@ class ChangePasswordTest {
     }
 
     private fun getTokenHeader(): String {
-        return "$BEARER ${jwtUtil.generateJwt(USERNAME)}"
+        return "$BEARER ${jwtUtil.generateJwt(ID, USERNAME, ETHEREUM_ADDRESS)}"
     }
 
     companion object {
+        private const val ID = 1000L
         private const val USERNAME = "testing_user"
+        private const val ETHEREUM_ADDRESS = "0xc1912fee45d61c87cc5ea59dae31190fffff232d"
 
         private const val AUTHORIZATION = "Authorization"
         private const val BEARER = "Bearer"

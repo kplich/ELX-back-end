@@ -1,6 +1,6 @@
 package kplich.backend.configurations.security
 
-import kplich.backend.entities.Role
+import kplich.backend.authentication.entities.Role
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 
